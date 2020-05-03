@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "umd",
+        "lib": ["dom", "ES6"], 
+        "strict": true,
+        "strictNullChecks": false, 
+        "moduleResolution": "node",
+        "allowJs": true,
+        "outDir": "./dist",
+        "types": ["node"],
+      },
+    "include": [
+      "index.ts",
+      "../pb/bchrpc_pb.js",
+      "../pb/bchrpc_pb.d.ts",
+      "../pb/BchrpcServiceClientPb.ts"
+    ],
+    "exclude": [
+      "node_modules"
+    ],
+    "files": [
+        "index.ts"
+      ]
+  }
