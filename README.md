@@ -31,7 +31,7 @@ For an example usage subscribing to transactions see `example.ts`
 
 ## Scripts
 
-Note, this project was created in node10 and used `protoc` version 3.11.4, open to using features from es2017.
+**Note:** this project was created in node v12.2.0 (LTS) and used `protoc` version 3.11.4; and is open to using features from es2017 anthough initally targeted at es6.
 
 ### Build
 
@@ -44,7 +44,7 @@ To transpile, browserify and minify use:
 
 If for some reason you need to update the gcash proto files yourself to add some future functionality use:
 
-*Important* an installed version of `protoc` [install](https://github.com/protocolbuffers/protobuf/releases/latest)
+**Important** an installed version of `protoc` [install](https://github.com/protocolbuffers/protobuf/releases/latest)
  is required to run `pb-build`. 
 
     npm run pb-clean     # remove old definitions
