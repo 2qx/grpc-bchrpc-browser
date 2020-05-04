@@ -12,17 +12,17 @@ to generate the client rather than the older and
 more widely used @improbable-eng/grpc-web.
 
 The client is built from the pb files in advance rather
-than on-the-fly, a functionality available with the @improbable library.
+than on-the-fly, a functionality which may be employed with the @improbable library.
 
 ## See also
 
 It's likely that these versions may be more what you're looking for in your project:
 
 For an implementation with node compatibility & TypeScript 
-see: [https://github.com/simpleledgerinc/grpc-bchrpc-web]
+see: [grpc-bchrpc-web](https://github.com/simpleledgerinc/grpc-bchrpc-web)
 
 For an implementation using a local gcash node from nodejs 
-see: [https://github.com/simpleledgerinc/grpc-bchrpc-node]
+see: [grpc-bchrpc-node](https://github.com/simpleledgerinc/grpc-bchrpc-node)
 
 ## Usage
 
@@ -31,7 +31,7 @@ For an example usage subscribing to transactions see `example.ts`
 
 ## Scripts
 
-Note, this project was created in node10 and used `protoc` version 3.11.4 using features from es2017.
+Note, this project was created in node10 and used `protoc` version 3.11.4, open to using features from es2017.
 
 ### Build
 
@@ -44,7 +44,7 @@ To transpile, browserify and minify use:
 
 If for some reason you need to update the gcash proto files yourself to add some future functionality use:
 
-*Important* an installed version of `protoc` (install)[https://github.com/protocolbuffers/protobuf/releases/latest]
+*Important* an installed version of `protoc` [install](https://github.com/protocolbuffers/protobuf/releases/latest)
  is required to run `pb-build`. 
 
     npm run pb-clean     # remove old definitions
