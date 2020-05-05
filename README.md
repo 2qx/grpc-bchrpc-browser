@@ -43,8 +43,8 @@ To transpile, browserify and minify use:
 
 Tests can be run either from console or in a browser.  The test modules and javascript must be built prior to running tests
 
-   npm run test
-   npm run test:browser
+    npm run test
+    npm run test:browser
 
 ### Updating the Spec
 
