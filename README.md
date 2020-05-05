@@ -50,7 +50,7 @@ Tests can be run either from console or in a browser.  The test modules and java
 
 If for some reason you need to update the gcash proto files yourself to add some future functionality use:
 
-**Important** an installed version of `protoc` [install](https://github.com/protocolbuffers/protobuf/releases/latest)
+**Important** an [installed](https://github.com/protocolbuffers/protobuf/releases/latest) version of `protoc`  
  is required to run `pb-build`. 
 
     npm run pb-clean     # remove old definitions
