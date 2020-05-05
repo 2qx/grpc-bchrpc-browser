@@ -26,7 +26,7 @@ see: [grpc-bchrpc-node](https://github.com/simpleledgerinc/grpc-bchrpc-node)
 
 ## Usage
 
-For an example usage subscribing to transactions see `example.ts`
+For an example usage subscribing to transactions see `example/`
 
 
 ## Scripts

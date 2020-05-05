@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "ES6",
-        "module": "umd",
+        "module": "commonjs",
         "lib": ["dom", "ES6"], 
         "strict": true,
         "strictNullChecks": false, 
@@ -12,6 +12,7 @@
       },
     "include": [
       "index.ts",
+      "index.spec.ts",
       "../pb/bchrpc_pb.js",
       "../pb/bchrpc_pb.d.ts",
       "../pb/BchrpcServiceClientPb.ts"

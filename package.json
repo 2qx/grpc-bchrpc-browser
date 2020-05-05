@@ -4,12 +4,12 @@
   "description": "BCHD gRPC client for browsers",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && mkdirp dist && browserify index.js --standalone bchrpc > dist/bchrpc.js && uglifyjs dist/bchrpc.js > dist/bchrpc.min.js",
+    "build": "tsc && mkdirp dist && browserify index.js --standalone bchrpc > dist/bchrpc.js && uglifyjs dist/bchrpc.js > dist/bchrpc.min.js && browserify index.spec.js --standalone test > index.spec.mjs",
     "pb-build": "protoc -I=pb bchrpc.proto --js_out=import_style=commonjs,binary:pb --grpc-web_out=import_style=typescript,mode=grpcwebtext:pb",
     "pb-update": "wget https://raw.githubusercontent.com/gcash/bchd/master/bchrpc/bchrpc.proto -O pb/bchrpc.proto",
     "pb-clean": "rm pb/*",
-    "test": "nyc mocha 'test/*.ts'",
-    "test:browser": "live-server --port=9000 --mount=/:test"
+    "test": "nyc mocha '*.spec.js'",
+    "test:browser": "live-server --port=9000 "
   },
   "repository": {
     "type": "git",
@@ -40,7 +40,9 @@
     "@types/google-protobuf": "^3.7.1",
     "google-protobuf": "^3.6.1",
     "grpc": "^1.15.0",
-    "grpc-web": "^1.0.7"
+    "grpc-web": "^1.0.7",
+    "xhr2": "^0.2.0",
+    "xmlhttprequest": "^1.8.0"
   },
   "keywords": [
     "bch",
