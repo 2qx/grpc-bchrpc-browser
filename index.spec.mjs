@@ -32,7 +32,7 @@ const client = new index_1.GrpcClient({
     options: {}
 });
 /*
-   If running in nodejs, import xhr2
+   If running within nodejs, import xhr2
 */
 if (typeof window === 'undefined') {
     global.XMLHttpRequest = xhr2_1.XMLHttpRequest;
@@ -65,6 +65,19 @@ describe("grpc-bchrpc-browser", () => {
         // check output value
         chai_1.assert.equal(tx1.getOutputsList()[0].getValue(), 0.00035283 * Math.pow(10, 8));
         chai_1.assert.equal(tx1.getOutputsList()[0].getAddress(), "qregyd3kcklc58fd6r8epfwulpvd9f4mr5gxg8n8y7");
+    }));
+    it("Get UTXOs", () => __awaiter(void 0, void 0, void 0, function* () {
+        const eaterAddress = "bitcoincash:qp6e6enhpy0fwwu7nkvlr8rgl06ru0c9lywalz8st5"; // 1BitcoinEaterAddressDontSendf59kuE
+        const confirmedRes = yield client.getAddressUtxos({ address: eaterAddress, includeMempool: false }, null);
+        const confirmedTxns = yield confirmedRes.getOutputsList();
+        const unconfirmedRes = yield client.getAddressUtxos({ address: eaterAddress, includeMempool: true }, null);
+        const unconfirmedTxns = yield unconfirmedRes.getOutputsList();
+        const confirmedValueArray = yield Promise.all(confirmedTxns.map((x) => __awaiter(void 0, void 0, void 0, function* () { return x.getValue(); })));
+        const confirmedValue = confirmedValueArray.reduce((a, b) => a + b, 0);
+        const unconfirmedValueArray = yield Promise.all(unconfirmedTxns.map((x) => __awaiter(void 0, void 0, void 0, function* () { return x.getValue(); })));
+        const unconfirmedValue = unconfirmedValueArray.reduce((a, b) => a + b, 0) - confirmedValue;
+        chai_1.assert.isAtLeast(confirmedValue, 1313538732, "Value is greater than 1313538732");
+        chai_1.assert.equal(unconfirmedValue, 0, "Assume there are no unconfiremd transactions");
     }));
     it("submitTransaction should broadcast", () => __awaiter(void 0, void 0, void 0, function* () {
         const txnHex = "010000000552df9fd3f9bf1f13993e8b7e5b42530394ed644f0df4c0fdd32cf531acc75505030000006a47304402201039b25fa81feb74d8dd0eb25ae065e8baf3c944d7728f77fb68fa0c9b67d2c2022013f0bc158946826791c58dcd5187da1b2dfb3dd36227880e6d3830fe91327ea7c1210383c67be45a2bef59274c29341dd55592973d0b0f14c7810a353fbdff62f613defeffffff34e29914bd556e3a3818342ceff2ae526ef96bf3c3d09777df9f655be52931cf100300006a473044022034070971b4a27f279560a2f8b735ee3324d0dea54999bc24f851a7c6d500a1a102200b09402cf061a15f8ec88f606d8a864f9cc0e86c50ea78c9ce282337bdce19af4121020414832a8304904eec02ae00997ece267f234908d06633d75a8a4e1e4350e172ffffffff34e29914bd556e3a3818342ceff2ae526ef96bf3c3d09777df9f655be52931cf0f0300006a473044022071c84830f0da6abf35f93abebf2a8f3415cbeb3e9d967321a6944bbb6b6ec6aa022006bbfd5019fbc3d516dea6dde5f1d78c4e5428e6f305f00964efde70490ed2374121020414832a8304904eec02ae00997ece267f234908d06633d75a8a4e1e4350e172ffffffff34e29914bd556e3a3818342ceff2ae526ef96bf3c3d09777df9f655be52931cf0e0300006b483045022100ba0e0e300047c23f0e1bf5b83c240f8ad8da99c8021177b75329e30432953855022024d7ddffe1b8ad31d6f0a7955d7ae4d915ab40b31c367f9ed6e0400bc9ba69a94121020414832a8304904eec02ae00997ece267f234908d06633d75a8a4e1e4350e172ffffffff34e29914bd556e3a3818342ceff2ae526ef96bf3c3d09777df9f655be52931cf0d0300006b4830450221009d35b7f99e55486d4d5ee7208dc4c34c157e68f55a4fc7b7765c86b8d9af296f022058d754701593829d0ed4a5ea8881737ae185c7ead271b748e4eb76b92386261d4121020414832a8304904eec02ae00997ece267f234908d06633d75a8a4e1e4350e172ffffffff040000000000000000496a04534c500001010453454e4420c4b0d62156b3fa5c8f3436079b5394f7edc1bef5dc1cd2f9d0c4d46f82cca47908000000000000000108000000000000000408000000000000005a22020000000000001976a914d20919767967b6305778ef2c8680e1bab9f9070588ac22020000000000001976a914750689c893d2b2a0e805b8b356283126d7d1e5c088ac22020000000000001976a9149af63d01b056c5b3e0a1d6f74e46ba0543a579bd88ac00000000";

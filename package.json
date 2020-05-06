@@ -8,7 +8,7 @@
     "pb-build": "protoc -I=pb bchrpc.proto --js_out=import_style=commonjs,binary:pb --grpc-web_out=import_style=typescript,mode=grpcwebtext:pb",
     "pb-update": "wget https://raw.githubusercontent.com/gcash/bchd/master/bchrpc/bchrpc.proto -O pb/bchrpc.proto",
     "pb-clean": "rm pb/*",
-    "test": "nyc mocha '*.spec.js'",
+    "test": "nyc mocha --timeout=3000 '*.spec.js'",
     "test:browser": "live-server --port=9000 "
   },
   "repository": {

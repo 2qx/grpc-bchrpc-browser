@@ -1,7 +1,7 @@
 import { Buffer } from "buffer";
 import { assert } from "chai";
 import  { XMLHttpRequest }  from "xhr2";
-
+import { UnspentOutput, Transaction } from "./pb/bchrpc_pb";
 import { GrpcClient } from "./index";
 
 const client = new GrpcClient(
@@ -53,6 +53,21 @@ describe("grpc-bchrpc-browser", () => {
         // check output value
         assert.equal(tx1.getOutputsList()[0].getValue(), 0.00035283 * 10 ** 8);
         assert.equal(tx1.getOutputsList()[0].getAddress(), "qregyd3kcklc58fd6r8epfwulpvd9f4mr5gxg8n8y7");
+    });
+
+    it("Get UTXOs", async () => {
+        const eaterAddress = "bitcoincash:qp6e6enhpy0fwwu7nkvlr8rgl06ru0c9lywalz8st5"; // 1BitcoinEaterAddressDontSendf59kuE
+        const confirmedRes = await client.getAddressUtxos({address: eaterAddress, includeMempool: false}, null);
+        const confirmedTxns = await confirmedRes.getOutputsList();
+        const unconfirmedRes = await client.getAddressUtxos({address: eaterAddress, includeMempool: true}, null);
+        const unconfirmedTxns = await unconfirmedRes.getOutputsList();
+        
+        const confirmedValueArray =  await Promise.all(confirmedTxns.map(async x => { return x.getValue()}));
+        const confirmedValue = confirmedValueArray.reduce((a, b) => a + b, 0);
+        const unconfirmedValueArray =  await Promise.all(unconfirmedTxns.map(async x => { return x.getValue()}));
+        const unconfirmedValue = unconfirmedValueArray.reduce((a, b) => a + b, 0) - confirmedValue
+        assert.isAtLeast(confirmedValue, 1313538732, "Value is greater than 1313538732")
+        assert.equal(unconfirmedValue, 0, "Assume there are no unconfiremd transactions")
     });
 
     it("submitTransaction should broadcast", async () => {
