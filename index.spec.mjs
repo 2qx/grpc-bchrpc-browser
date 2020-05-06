@@ -66,7 +66,7 @@ describe("grpc-bchrpc-browser", () => {
         chai_1.assert.equal(tx1.getOutputsList()[0].getValue(), 0.00035283 * Math.pow(10, 8));
         chai_1.assert.equal(tx1.getOutputsList()[0].getAddress(), "qregyd3kcklc58fd6r8epfwulpvd9f4mr5gxg8n8y7");
     }));
-    it("Get UTXOs", () => __awaiter(void 0, void 0, void 0, function* () {
+    it("getAddressUtxos should get UTXOs", () => __awaiter(void 0, void 0, void 0, function* () {
         const eaterAddress = "bitcoincash:qp6e6enhpy0fwwu7nkvlr8rgl06ru0c9lywalz8st5"; // 1BitcoinEaterAddressDontSendf59kuE
         const confirmedRes = yield client.getAddressUtxos({ address: eaterAddress, includeMempool: false }, null);
         const confirmedTxns = yield confirmedRes.getOutputsList();

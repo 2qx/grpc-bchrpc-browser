@@ -8,11 +8,14 @@ a [BCHD](https://bchd.cash) full node.
 ## Motivation
 
 This project uses Google's grpc/grpc-web library 
-to generate the client rather than the older and 
+to generate a client, rather than the older and 
 more widely used @improbable-eng/grpc-web.
 
 The client is built from the pb files in advance rather
 than on-the-fly, a functionality which may be employed with the @improbable library.
+
+The motivation is toward lower maintenance, long-term stability and support by using 
+the google library, not that this thinking played out well with the framework formerly known as angular. 
 
 ## See also
 
