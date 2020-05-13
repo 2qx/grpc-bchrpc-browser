@@ -9,7 +9,7 @@
     "pb-update": "wget https://raw.githubusercontent.com/gcash/bchd/master/bchrpc/bchrpc.proto -O pb/bchrpc.proto",
     "pb-clean": "rm pb/*",
     "pb-docs-html": "docker pull pseudomuto/protoc-gen-doc && docker run --rm -v $(pwd)/docs:/out  -v $(pwd)/pb:/protos pseudomuto/protoc-gen-doc --doc_opt=html,index.html",
-    "pb-docs-md": "docker pull pseudomuto/protoc-gen-doc && docker run --rm -v $(pwd)/docs:/out  -v $(pwd)/pb:/protos pseudomuto/protoc-gen-doc --doc_opt=markdown,README.md && cat README_header.md docs/README.md > README.md",
+    "pb-docs-md": "docker pull pseudomuto/protoc-gen-doc && docker run --rm -v $(pwd)/docs:/out  -v $(pwd)/pb:/protos pseudomuto/protoc-gen-doc --doc_opt=markdown,README_docs.md && cat README_header.md docs/README_docs.md > README.md",
     "test": "nyc mocha --timeout=3000 '*.spec.js'",
     "test:browser": "live-server --port=9000 test/"
   },
