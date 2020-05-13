@@ -5,6 +5,12 @@ A bchd rpc client for browsers using grpc/grpc-web
 This package provides a simple gRPC client for connecting web applications to 
 a [BCHD](https://bchd.cash) full node.
 
+[a mobile friendly version](https://2qx.github.io/grpc-bchrpc-browser/) of this [project](https://github.com/2qx/grpc-bchrpc-browser).
+
+[Live tests](https://2qx.github.io/grpc-bchrpc-browser/test/) may be run in your browser right now.
+
+[Documentation](https://2qx.github.io/grpc-bchrpc-browser/doc/) for using the rpc client is generated from the provided proto files
+
 ## Motivation
 
 This project uses Google's grpc/grpc-web library 
@@ -34,7 +40,7 @@ For an example usage subscribing to transactions see `example/`
 
 ## Scripts
 
-**Note:** this project was created in node v12.2.0 (LTS) and used `protoc` version 3.11.4; and is open to using features from es2017 anthough initally targeted at es6.
+**Note:** this project was created in node v12.2.0 (LTS) and used `protoc` version 3.11.4; and is open to using features from es2017 although initially targeted at es6.
 
 ### Build
 
@@ -59,6 +65,7 @@ If for some reason you need to update the gcash proto files yourself to add some
     npm run pb-clean     # remove old definitions
     npm run pb-update    # download bchrpc.proto from gcash/bchd/master
     npm run pb-build     # create client library
+    npm run pb-doc       # generate documentation
 
 ## BCHD Full Nodes w/ gRPC
 
