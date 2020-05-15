@@ -11,9 +11,9 @@ import {
 const client = new GrpcClient(
     {
         //url: "https://bchd.fountainhead.cash",
-        url: "https://bchd.sploit.cash",
+        //url: "https://bchd.sploit.cash",
         //url: "https://bchd.imaginary.cash:8335",
-        //url: "https://bchd.greyh.at:8335",
+        url: "https://bchd.greyh.at:8335",
         testnet: false,
         options: {}
     }
@@ -36,12 +36,23 @@ class Live {
         this.stream = await client.subscribeTransactions({
             includeMempoolAcceptance: true,
             includeBlockAcceptance: true,
-            includeSerializedTxn: true
+            includeSerializedTxn: false
         })
 
         this.stream.on('data', function (message: TransactionNotification) {
-            console.log(Buffer.from(message.getSerializedTransaction_asU8()).toString('hex'))
-            
+            const tx = message.getUnconfirmedTransaction().getTransaction()!
+            console.log("txn: " + Buffer.from(tx.getHash_asU8().reverse()).toString("hex"))
+            console.log("    size: " + tx.getSize())
+            console.log("    inputs: " )
+            for(const input of tx.getInputsList()){
+                console.log("        " + input.getAddress() + " " + input.getValue() + "  " )
+            }
+            console.log("    outputs: " )
+            for(const output of tx.getOutputsList()){
+                console.log("        " + output.getAddress() + " " + output.getValue() + " " + Buffer.from(output.getPubkeyScript_asU8().reverse()).toString("hex"))
+                console.log("        " + output.getScriptClass())
+                console.log("        " + output.getDisassembledScript())
+            }
         });
         this.stream.on('status', function (status) {
             console.log(status)

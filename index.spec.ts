@@ -23,8 +23,8 @@ if (typeof window === 'undefined') {
 describe("grpc-bchrpc-browser", () => {
 
     it("getRawTransaction returns the transaction (README example)", async () => {
-        const txid = "11556da6ee3cb1d14727b3a8f4b37093b6fecd2bc7d577a02b4e98b7be58a7e8";
-        const res = await client.getRawTransaction({ hash: txid, reversedHashOrder: true }, null);
+        const txHex = "11556da6ee3cb1d14727b3a8f4b37093b6fecd2bc7d577a02b4e98b7be58a7e8";
+        const res = await client.getRawTransaction({ hashHex: txHex, reverseHex: true }, null);
         assert.equal(res.getTransaction_asU8().length, 441);
     });
 
@@ -35,7 +35,26 @@ describe("grpc-bchrpc-browser", () => {
         assert.equal(hash, "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
     });
 
-    it("getAddressTransactions for and example address", async () => {
+    it("getBlockInfo for hex hash 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f", async () => {
+        const hashHex = "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f";
+        const info = await client.getBlockInfo({hashHex: hashHex, reverseHex: true}, null);
+        assert.equal(info.getInfo()!.getHeight(), 0);
+        const hash = Buffer.from(info.getInfo()!.getHash_asU8().reverse()).toString("hex");
+        assert.equal(hash, "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
+    });
+
+    it("getBlockInfo for hash b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA=", async () => {
+        const hexString = "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"
+        const hashArray = Uint8Array.from(Buffer.from(hexString, 'hex')).reverse();
+        const hash = Buffer.from(hashArray).toString('base64') // "b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA="
+        const info = await client.getBlockInfo({hash: hash}, null);
+        assert.equal(info.getInfo()!.getHeight(), 0);
+        const hashHex = Buffer.from(info.getInfo()!.getHash_asU8().reverse()).toString("hex");
+        assert.equal(hashHex, "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
+    });
+
+
+    it("getAddressTransactions for an address", async () => {
         const exampleAddress = "bitcoincash:qregyd3kcklc58fd6r8epfwulpvd9f4mr5gxg8n8y7";
         const firstTxid = "5248906d6ac8425f287727797307d7305291f57d30406cb627e6573bbb77a344";
         const res = await client.getAddressTransactions({address: exampleAddress, height: 0}, null);
@@ -67,7 +86,7 @@ describe("grpc-bchrpc-browser", () => {
         const unconfirmedValueArray =  await Promise.all(unconfirmedTxns.map(async x => { return x.getValue()}));
         const unconfirmedValue = unconfirmedValueArray.reduce((a, b) => a + b, 0) - confirmedValue
         assert.isAtLeast(confirmedValue, 1313538732, "Value is greater than 1313538732")
-        assert.equal(unconfirmedValue, 0, "Assume there are no unconfiremd transactions")
+        assert.equal(unconfirmedValue, 0, "Assume there are no unconfirmed transactions")
     });
 
     it("submitTransaction should broadcast", async () => {

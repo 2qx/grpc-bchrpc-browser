@@ -39,8 +39,8 @@ if (typeof window === 'undefined') {
 }
 describe("grpc-bchrpc-browser", () => {
     it("getRawTransaction returns the transaction (README example)", () => __awaiter(void 0, void 0, void 0, function* () {
-        const txid = "11556da6ee3cb1d14727b3a8f4b37093b6fecd2bc7d577a02b4e98b7be58a7e8";
-        const res = yield client.getRawTransaction({ hash: txid, reversedHashOrder: true }, null);
+        const txHex = "11556da6ee3cb1d14727b3a8f4b37093b6fecd2bc7d577a02b4e98b7be58a7e8";
+        const res = yield client.getRawTransaction({ hashHex: txHex, reverseHex: true }, null);
         chai_1.assert.equal(res.getTransaction_asU8().length, 441);
     }));
     it("getBlockInfo for index 0", () => __awaiter(void 0, void 0, void 0, function* () {
@@ -49,7 +49,21 @@ describe("grpc-bchrpc-browser", () => {
         const hash = buffer_1.Buffer.from(info.getInfo().getHash_asU8().reverse()).toString("hex");
         chai_1.assert.equal(hash, "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
     }));
-    it("getAddressTransactions for and example address", () => __awaiter(void 0, void 0, void 0, function* () {
+    it("getBlockInfo for hex hash 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f", () => __awaiter(void 0, void 0, void 0, function* () {
+        const hashHex = "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f";
+        const info = yield client.getBlockInfo({ hashHex: hashHex, reverseHex: true }, null);
+        chai_1.assert.equal(info.getInfo().getHeight(), 0);
+        const hash = buffer_1.Buffer.from(info.getInfo().getHash_asU8().reverse()).toString("hex");
+        chai_1.assert.equal(hash, "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
+    }));
+    it("getBlockInfo for hash b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA=", () => __awaiter(void 0, void 0, void 0, function* () {
+        const hash = "b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA=";
+        const info = yield client.getBlockInfo({ hash: hash }, null);
+        chai_1.assert.equal(info.getInfo().getHeight(), 0);
+        const hashHex = buffer_1.Buffer.from(info.getInfo().getHash_asU8().reverse()).toString("hex");
+        chai_1.assert.equal(hashHex, "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
+    }));
+    it("getAddressTransactions for an address", () => __awaiter(void 0, void 0, void 0, function* () {
         const exampleAddress = "bitcoincash:qregyd3kcklc58fd6r8epfwulpvd9f4mr5gxg8n8y7";
         const firstTxid = "5248906d6ac8425f287727797307d7305291f57d30406cb627e6573bbb77a344";
         const res = yield client.getAddressTransactions({ address: exampleAddress, height: 0 }, null);
@@ -77,7 +91,7 @@ describe("grpc-bchrpc-browser", () => {
         const unconfirmedValueArray = yield Promise.all(unconfirmedTxns.map((x) => __awaiter(void 0, void 0, void 0, function* () { return x.getValue(); })));
         const unconfirmedValue = unconfirmedValueArray.reduce((a, b) => a + b, 0) - confirmedValue;
         chai_1.assert.isAtLeast(confirmedValue, 1313538732, "Value is greater than 1313538732");
-        chai_1.assert.equal(unconfirmedValue, 0, "Assume there are no unconfiremd transactions");
+        chai_1.assert.equal(unconfirmedValue, 0, "Assume there are no unconfirmed transactions");
     }));
     it("submitTransaction should broadcast", () => __awaiter(void 0, void 0, void 0, function* () {
         const txnHex = "010000000552df9fd3f9bf1f13993e8b7e5b42530394ed644f0df4c0fdd32cf531acc75505030000006a47304402201039b25fa81feb74d8dd0eb25ae065e8baf3c944d7728f77fb68fa0c9b67d2c2022013f0bc158946826791c58dcd5187da1b2dfb3dd36227880e6d3830fe91327ea7c1210383c67be45a2bef59274c29341dd55592973d0b0f14c7810a353fbdff62f613defeffffff34e29914bd556e3a3818342ceff2ae526ef96bf3c3d09777df9f655be52931cf100300006a473044022034070971b4a27f279560a2f8b735ee3324d0dea54999bc24f851a7c6d500a1a102200b09402cf061a15f8ec88f606d8a864f9cc0e86c50ea78c9ce282337bdce19af4121020414832a8304904eec02ae00997ece267f234908d06633d75a8a4e1e4350e172ffffffff34e29914bd556e3a3818342ceff2ae526ef96bf3c3d09777df9f655be52931cf0f0300006a473044022071c84830f0da6abf35f93abebf2a8f3415cbeb3e9d967321a6944bbb6b6ec6aa022006bbfd5019fbc3d516dea6dde5f1d78c4e5428e6f305f00964efde70490ed2374121020414832a8304904eec02ae00997ece267f234908d06633d75a8a4e1e4350e172ffffffff34e29914bd556e3a3818342ceff2ae526ef96bf3c3d09777df9f655be52931cf0e0300006b483045022100ba0e0e300047c23f0e1bf5b83c240f8ad8da99c8021177b75329e30432953855022024d7ddffe1b8ad31d6f0a7955d7ae4d915ab40b31c367f9ed6e0400bc9ba69a94121020414832a8304904eec02ae00997ece267f234908d06633d75a8a4e1e4350e172ffffffff34e29914bd556e3a3818342ceff2ae526ef96bf3c3d09777df9f655be52931cf0d0300006b4830450221009d35b7f99e55486d4d5ee7208dc4c34c157e68f55a4fc7b7765c86b8d9af296f022058d754701593829d0ed4a5ea8881737ae185c7ead271b748e4eb76b92386261d4121020414832a8304904eec02ae00997ece267f234908d06633d75a8a4e1e4350e172ffffffff040000000000000000496a04534c500001010453454e4420c4b0d62156b3fa5c8f3436079b5394f7edc1bef5dc1cd2f9d0c4d46f82cca47908000000000000000108000000000000000408000000000000005a22020000000000001976a914d20919767967b6305778ef2c8680e1bab9f9070588ac22020000000000001976a914750689c893d2b2a0e805b8b356283126d7d1e5c088ac22020000000000001976a9149af63d01b056c5b3e0a1d6f74e46ba0543a579bd88ac00000000";
@@ -25856,6 +25870,12 @@ const buffer_1 = require("buffer");
 const bchrpc = __importStar(require("../pb/bchrpc_pb"));
 const bchrpc_pb_service = __importStar(require("../pb/BchrpcServiceClientPb"));
 class GrpcClient {
+    /**
+    * Create a client.
+    * @param url - The bchd server expressed as host:port.
+    * @param testnet - Whether testnet is being used, default:false.
+    * @param options - grpc client options.
+    */
     constructor({ url, testnet = false, options }) {
         if (!url && !testnet) {
             url = "bchd.fountainhead.cash:443";
@@ -25871,6 +25891,10 @@ class GrpcClient {
         }
         this.client = new bchrpc_pb_service.bchrpcClient(url, null, options);
     }
+    /**
+    * Get information about transactions in mempool
+    * @param metadata - optional parameters for grpcWeb client
+    */
     getMempoolInfo(metadata) {
         return new Promise((resolve, reject) => {
             this.client.getMempoolInfo(new bchrpc.GetMempoolInfoRequest(), metadata, (err, response) => {
@@ -25883,9 +25907,16 @@ class GrpcClient {
             });
         });
     }
-    getRawMempool({}, metadata) {
+    /**
+    * Get transactions from mempool
+    * @param fullTransactions - A flag to return full transaction data. Default is `false`, only transaction hashes are returned.
+    * @param metadata - Optional parameters for grpcWeb client
+    */
+    getMempool({ fullTransactions }, metadata) {
         const req = new bchrpc.GetMempoolRequest();
-        req.setFullTransactions(false);
+        if (fullTransactions) {
+            req.setFullTransactions(fullTransactions);
+        }
         return new Promise((resolve, reject) => {
             this.client.getMempool(req, metadata, (err, response) => {
                 if (err !== null) {
@@ -25897,13 +25928,28 @@ class GrpcClient {
             });
         });
     }
-    getRawTransaction({ hash, reverseOrder, reversedHashOrder }, metadata) {
+    /**
+    * Get a raw transaction
+    * @param hash - the hash, in either a base64 encoded string or byte array, little-endian.
+    * @param hashHex - the hash as a hexadecimal encoded string, sill be overridden by hash if provided.
+    * @param reverseHex - Flag to reverse endian of hashHex, setting `true` will reverse a big-endian `hex` hash.
+    * @param metadata - Optional parameters for grpcWeb client
+    */
+    getRawTransaction({ hash, hashHex, reverseHex }, metadata) {
         const req = new bchrpc.GetRawTransactionRequest();
-        if (reverseOrder || reversedHashOrder) {
-            req.setHash(new Uint8Array(hash.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))).reverse());
+        if (hashHex) {
+            if (reverseHex) {
+                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))).reverse());
+            }
+            else {
+                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))));
+            }
+        }
+        else if (hash) {
+            req.setHash(hash);
         }
         else {
-            req.setHash(new Uint8Array(hash.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))));
+            throw Error("No hash provided for transaction");
         }
         return new Promise((resolve, reject) => {
             this.client.getRawTransaction(req, metadata, (err, response) => {
@@ -25916,13 +25962,28 @@ class GrpcClient {
             });
         });
     }
-    getTransaction({ hash, reverseOrder, reversedHashOrder }, metadata) {
+    /**
+    * Get a transaction
+    * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
+    * @param hashHex - the hash as a hexadecimal encoded string, will be overridden by hash, if provided.
+    * @param reverseHex - Flag to reverse endian of hashHex, setting `true` will reverse a big-endian `hex` hash.
+    * @param metadata - Optional parameters for grpcWeb client
+    */
+    getTransaction({ hash, hashHex, reverseHex }, metadata) {
         const req = new bchrpc.GetTransactionRequest();
-        if (reverseOrder || reversedHashOrder) {
-            req.setHash(new Uint8Array(hash.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))).reverse());
+        if (hashHex) {
+            if (reverseHex) {
+                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))).reverse());
+            }
+            else {
+                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))));
+            }
+        }
+        else if (hash) {
+            req.setHash(hash);
         }
         else {
-            req.setHash(new Uint8Array(hash.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))));
+            throw Error("No hash provided for transaction");
         }
         return new Promise((resolve, reject) => {
             this.client.getTransaction(req, metadata, (err, response) => {
@@ -25935,7 +25996,18 @@ class GrpcClient {
             });
         });
     }
-    getAddressTransactions({ address, nbSkip, nbFetch, height, hash, reversedHashOrder }, metadata) {
+    /**
+    * Get transactions related to a particular address
+    * @param address - Bitcoin cash address in casharr format.
+    * @param nbSkip - Number of transactions to skip, in chronological order.
+    * @param nbFetch - Number of transactions return.
+    * @param height - Filter to only return transactions after this block number.
+    * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
+    * @param hashHex - the hash as a hexadecimal encoded string, will be overridden by `hash`, if provided.
+    * @param reverseHex - Flag to reverse endian of hashHex, setting `true` will reverse a big-endian `hex` hash.
+    * @param metadata - Optional parameters for grpcWeb client
+    */
+    getAddressTransactions({ address, nbSkip, nbFetch, height, hashHex, reverseHex }, metadata) {
         const req = new bchrpc.GetAddressTransactionsRequest();
         if (nbSkip) {
             req.setNbSkip(nbSkip);
@@ -25946,12 +26018,12 @@ class GrpcClient {
         if (height) {
             req.setHeight(height);
         }
-        if (hash) {
-            if (reversedHashOrder) {
-                req.setHash(new Uint8Array(hash.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))).reverse());
+        if (hashHex) {
+            if (reverseHex) {
+                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))).reverse());
             }
             else {
-                req.setHash(new Uint8Array(hash.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))));
+                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))));
             }
         }
         req.setAddress(address);
@@ -26006,13 +26078,29 @@ class GrpcClient {
             });
         });
     }
-    getRawBlock({ hash, reverseOrder, reversedHashOrder }, metadata) {
+    /**
+     * getRawBlock
+     *
+     * Retrieve raw block from a hash
+     * @param hash - the hash, in either a 'base64' encoded string or byte array, little-endian.
+     * @param hashHex - the hash as a 'hex' encoded string, will be overridden by hash if also provided.
+     * @param reverseHex - a flag to reverse endian of hashHex, setting `true` will reverse a big-endian hash.
+     */
+    getRawBlock({ hash, hashHex, reverseHex }, metadata) {
         const req = new bchrpc.GetRawBlockRequest();
-        if (reverseOrder || reversedHashOrder) {
-            req.setHash(new Uint8Array(hash.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))).reverse());
+        if (hashHex) {
+            if (reverseHex) {
+                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))).reverse());
+            }
+            else {
+                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))));
+            }
+        }
+        else if (hash) {
+            req.setHash(hash);
         }
         else {
-            req.setHash(new Uint8Array(hash.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))));
+            throw Error("No hash provided for raw block request");
         }
         return new Promise((resolve, reject) => {
             this.client.getRawBlock(req, metadata, (err, response) => {
@@ -26025,18 +26113,31 @@ class GrpcClient {
             });
         });
     }
-    getBlock({ index, hash, reversedHashOrder, fullTransactions }, metadata) {
+    /**
+     * getBlock
+     *
+     * Retrieve block info given a block number or hash
+     * @param index - the block number to be retrieved.
+     * @param hash - the hash, in either a 'base64' encoded string or byte array, little-endian.
+     * @param hashHex - the hash as a 'hex' encoded string, will be overridden by hash if also provided.
+     * @param reverseHex - a flag to reverse endian of hashHex, setting `true` will reverse a big-endian hash.
+     * @param fullTransactions - a flag to return full transaction data, by defult `false` only transaction hashes are returned.
+     */
+    getBlock({ index, hash, hashHex, reverseHex, fullTransactions }, metadata) {
         const req = new bchrpc.GetBlockRequest();
         if (index !== null && index !== undefined) {
             req.setHeight(index);
         }
-        else if (hash) {
-            if (reversedHashOrder) {
-                req.setHash(new Uint8Array(hash.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))).reverse());
+        else if (hashHex) {
+            if (reverseHex) {
+                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))).reverse());
             }
             else {
-                req.setHash(new Uint8Array(hash.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))));
+                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))));
             }
+        }
+        else if (hash) {
+            req.setHash(hash);
         }
         else {
             throw Error("No index or hash provided for block");
@@ -26055,18 +26156,30 @@ class GrpcClient {
             });
         });
     }
-    getBlockInfo({ index, hash, reversedHashOrder }, metadata) {
+    /**
+     * getBlockInfo
+     *
+     * Retrieve block info given a block number or hash
+     * @param index - the block number to be retrieved.
+     * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
+     * @param hashHex - the hash as a 'hex' encoded string, will be overridden a hash if provided.
+     * @param reverseHex - a flag to reverse endian of hashHex, for big-endian strings.
+     */
+    getBlockInfo({ index, hash, hashHex, reverseHex }, metadata) {
         const req = new bchrpc.GetBlockInfoRequest();
         if (index !== null && index !== undefined) {
             req.setHeight(index);
         }
-        else if (hash) {
-            if (reversedHashOrder) {
-                req.setHash(new Uint8Array(hash.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))).reverse());
+        else if (hashHex) {
+            if (reverseHex) {
+                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))).reverse());
             }
             else {
-                req.setHash(new Uint8Array(hash.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))));
+                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))));
             }
+        }
+        else if (hash) {
+            req.setHash(hash);
         }
         else {
             throw Error("No index or hash provided for block");
@@ -26082,6 +26195,11 @@ class GrpcClient {
             });
         });
     }
+    /**
+     * getBlockchainInfo
+     *
+     * Retrieve block info for the network, network state and host node.
+     */
     getBlockchainInfo({}, metadata) {
         return new Promise((resolve, reject) => {
             this.client.getBlockchainInfo(new bchrpc.GetBlockchainInfoRequest(), metadata, (err, response) => {

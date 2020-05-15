@@ -463,7 +463,7 @@
         
       
         <h3 id="pb.BlockInfo">BlockInfo</h3>
-        <p></p>
+        <p>Identification.</p>
 
         
           <table class="field-table">
@@ -476,91 +476,92 @@
                   <td>hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>Identification. </p></td>
+                  <td><p>The hash expressed in little-endian </p></td>
                 </tr>
               
                 <tr>
                   <td>height</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The block number, an incremental index for each block mined. </p></td>
                 </tr>
               
                 <tr>
                   <td>version</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p>Block header data. </p></td>
+                  <td><p>A version number to track software/protocol upgrades </p></td>
                 </tr>
               
                 <tr>
                   <td>previous_block</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Hash of the previous block </p></td>
                 </tr>
               
                 <tr>
                   <td>merkle_root</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The root of the merkle tree built from all transactions in the block. </p></td>
                 </tr>
               
                 <tr>
                   <td>timestamp</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>When mining of the block started, expressed in seconds since 1970-01-01. </p></td>
                 </tr>
               
                 <tr>
                   <td>bits</td>
                   <td><a href="#uint32">uint32</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>TODO-DOCS:? Difficulty in Compressed Target Format </p></td>
                 </tr>
               
                 <tr>
                   <td>nonce</td>
                   <td><a href="#uint32">uint32</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>A random value that was generated during block mining which happend to
+result in a computed block hash below the difficulty target at the time. </p></td>
                 </tr>
               
                 <tr>
                   <td>confirmations</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p>Metadata. </p></td>
+                  <td><p>Number of blocks in a chain, including the this block upon creation. </p></td>
                 </tr>
               
                 <tr>
                   <td>difficulty</td>
                   <td><a href="#double">double</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Difficulty target at time of creation </p></td>
                 </tr>
               
                 <tr>
                   <td>next_block_hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Hash of the next block </p></td>
                 </tr>
               
                 <tr>
                   <td>size</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Size of the block in bytes </p></td>
                 </tr>
               
                 <tr>
                   <td>median_time</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>TODO-DOCS:? The median block time of the latest 11 block timestamps </p></td>
                 </tr>
               
             </tbody>
@@ -629,23 +630,23 @@
                   <td>address</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The address to query transactions, in lowercase cashaddr format.
+The network prefix is optional (i.e. &#34;cashaddress:&#34;). </p></td>
                 </tr>
               
                 <tr>
                   <td>nb_skip</td>
                   <td><a href="#uint32">uint32</a></td>
                   <td></td>
-                  <td><p>Control the number of transactions to be fetched from the blockchain.
-These controls only apply to the confirmed transactions. All unconfirmed
-ones will be returned always. </p></td>
+                  <td><p>Skip some number of confirmed transactions.
+Does not affect results of unconfirmed transactions. </p></td>
                 </tr>
               
                 <tr>
                   <td>nb_fetch</td>
                   <td><a href="#uint32">uint32</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The number of transtions to be fetched. </p></td>
                 </tr>
               
                 <tr>
@@ -683,14 +684,14 @@ ones will be returned always. </p></td>
                   <td>confirmed_transactions</td>
                   <td><a href="#pb.Transaction">Transaction</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
+                  <td><p>Transactions that have been included in a block. </p></td>
                 </tr>
               
                 <tr>
                   <td>unconfirmed_transactions</td>
                   <td><a href="#pb.MempoolTransaction">MempoolTransaction</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
+                  <td><p>Transactions in mempool which have not been included in a block. </p></td>
                 </tr>
               
             </tbody>
@@ -714,14 +715,15 @@ ones will be returned always. </p></td>
                   <td>address</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The address to query transactions, in lowercase cashaddr format.
+The network prefix is optional (i.e. &#34;cashaddress:&#34;). </p></td>
                 </tr>
               
                 <tr>
                   <td>include_mempool</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>When include_mempool is true, unconfirmed transctions from mempool are returned. Default is false. </p></td>
                 </tr>
               
             </tbody>
@@ -769,14 +771,14 @@ ones will be returned always. </p></td>
                   <td>hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The block hash as a byte array or base64 encoded string, little-endian. </p></td>
                 </tr>
               
                 <tr>
                   <td>height</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The block number </p></td>
                 </tr>
               
             </tbody>
@@ -824,14 +826,14 @@ ones will be returned always. </p></td>
                   <td>hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The block hash as a byte array or base64 encoded string, little-endian. </p></td>
                 </tr>
               
                 <tr>
                   <td>height</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The block number </p></td>
                 </tr>
               
             </tbody>
@@ -879,21 +881,21 @@ ones will be returned always. </p></td>
                   <td>hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The block hash as a byte array or base64 encoded string, little-endian. </p></td>
                 </tr>
               
                 <tr>
                   <td>height</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The block number </p></td>
                 </tr>
               
                 <tr>
                   <td>full_transactions</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>Provide full transaction info instead of only the hashes. </p></td>
+                  <td><p>Provide full transaction info instead of only hashes. </p></td>
                 </tr>
               
             </tbody>
@@ -1076,14 +1078,14 @@ ones will be returned always. </p></td>
                   <td>size</td>
                   <td><a href="#uint32">uint32</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The count of transactions in the mempool </p></td>
                 </tr>
               
                 <tr>
                   <td>bytes</td>
                   <td><a href="#uint32">uint32</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The size of the current mempool in bytes </p></td>
                 </tr>
               
             </tbody>
@@ -1248,23 +1250,23 @@ ones will be returned always. </p></td>
                   <td>address</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The address to query transactions, in lowercase cashaddr format.
+The network prefix is optional (i.e. &#34;cashaddress:&#34;). </p></td>
                 </tr>
               
                 <tr>
                   <td>nb_skip</td>
                   <td><a href="#uint32">uint32</a></td>
                   <td></td>
-                  <td><p>Control the number of transactions to be fetched from the blockchain.
-These controls only apply to the confirmed transactions. All unconfirmed
-ones will be returned always. </p></td>
+                  <td><p>The number of confirmed transactions to skip starting with the oldest first.
+Does not affect results of unconfirmed transactions. </p></td>
                 </tr>
               
                 <tr>
                   <td>nb_fetch</td>
                   <td><a href="#uint32">uint32</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The number of transtions to be fetched. </p></td>
                 </tr>
               
                 <tr>
@@ -1302,14 +1304,14 @@ ones will be returned always. </p></td>
                   <td>confirmed_transactions</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
+                  <td><p>Transactions that have been in a block. </p></td>
                 </tr>
               
                 <tr>
                   <td>unconfirmed_transactions</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
+                  <td><p>Transactions in mempool which have not been included in a block. </p></td>
                 </tr>
               
             </tbody>
@@ -1333,14 +1335,14 @@ ones will be returned always. </p></td>
                   <td>hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The block hash as a byte array or base64 encoded string, little-endian. </p></td>
                 </tr>
               
                 <tr>
                   <td>height</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The block number </p></td>
                 </tr>
               
             </tbody>
@@ -1498,7 +1500,7 @@ ones will be returned always. </p></td>
                   <td>include_mempool</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>When include_mempool is true, unconfirmed transctions from mempool are returned. Default is false. </p></td>
                 </tr>
               
             </tbody>
@@ -1736,7 +1738,7 @@ Default is false, block will be Marshaled (see `BlockInfo` and `BlockNotificatio
                   <td>include_mempool</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>When include_mempool is true, new transactions coming in from the mempool are
+                  <td><p>When include_mempool is true, new unconfirmed transactions from mempool are
 included apart from the ones confirmed in a block. </p></td>
                 </tr>
               
@@ -2020,7 +2022,7 @@ Default is false, transaction will be Marshaled (see `Transaction`, `MempoolTran
                   <td>addresses</td>
                   <td><a href="#string">string</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
+                  <td><p>Filter by address(es) </p></td>
                 </tr>
               
                 <tr>

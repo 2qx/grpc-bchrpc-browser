@@ -187,24 +187,24 @@ Testnet:
 <a name="pb.BlockInfo"></a>
 
 ### BlockInfo
-
+Identification.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hash | [bytes](#bytes) |  | Identification. |
-| height | [int32](#int32) |  |  |
-| version | [int32](#int32) |  | Block header data. |
-| previous_block | [bytes](#bytes) |  |  |
-| merkle_root | [bytes](#bytes) |  |  |
-| timestamp | [int64](#int64) |  |  |
-| bits | [uint32](#uint32) |  |  |
-| nonce | [uint32](#uint32) |  |  |
-| confirmations | [int32](#int32) |  | Metadata. |
-| difficulty | [double](#double) |  |  |
-| next_block_hash | [bytes](#bytes) |  |  |
-| size | [int32](#int32) |  |  |
-| median_time | [int64](#int64) |  |  |
+| hash | [bytes](#bytes) |  | The hash expressed in little-endian |
+| height | [int32](#int32) |  | The block number, an incremental index for each block mined. |
+| version | [int32](#int32) |  | A version number to track software/protocol upgrades |
+| previous_block | [bytes](#bytes) |  | Hash of the previous block |
+| merkle_root | [bytes](#bytes) |  | The root of the merkle tree built from all transactions in the block. |
+| timestamp | [int64](#int64) |  | When mining of the block started, expressed in seconds since 1970-01-01. |
+| bits | [uint32](#uint32) |  | TODO-DOCS:? Difficulty in Compressed Target Format |
+| nonce | [uint32](#uint32) |  | A random value that was generated during block mining which happend to result in a computed block hash below the difficulty target at the time. |
+| confirmations | [int32](#int32) |  | Number of blocks in a chain, including the this block upon creation. |
+| difficulty | [double](#double) |  | Difficulty target at time of creation |
+| next_block_hash | [bytes](#bytes) |  | Hash of the next block |
+| size | [int32](#int32) |  | Size of the block in bytes |
+| median_time | [int64](#int64) |  | TODO-DOCS:? The median block time of the latest 11 block timestamps |
 
 
 
@@ -237,9 +237,9 @@ Testnet:
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| address | [string](#string) |  |  |
-| nb_skip | [uint32](#uint32) |  | Control the number of transactions to be fetched from the blockchain. These controls only apply to the confirmed transactions. All unconfirmed ones will be returned always. |
-| nb_fetch | [uint32](#uint32) |  |  |
+| address | [string](#string) |  | The address to query transactions, in lowercase cashaddr format. The network prefix is optional (i.e. &#34;cashaddress:&#34;). |
+| nb_skip | [uint32](#uint32) |  | Skip some number of confirmed transactions. Does not affect results of unconfirmed transactions. |
+| nb_fetch | [uint32](#uint32) |  | The number of transtions to be fetched. |
 | hash | [bytes](#bytes) |  |  |
 | height | [int32](#int32) |  |  |
 
@@ -256,8 +256,8 @@ Testnet:
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| confirmed_transactions | [Transaction](#pb.Transaction) | repeated |  |
-| unconfirmed_transactions | [MempoolTransaction](#pb.MempoolTransaction) | repeated |  |
+| confirmed_transactions | [Transaction](#pb.Transaction) | repeated | Transactions that have been included in a block. |
+| unconfirmed_transactions | [MempoolTransaction](#pb.MempoolTransaction) | repeated | Transactions in mempool which have not been included in a block. |
 
 
 
@@ -272,8 +272,8 @@ Testnet:
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| address | [string](#string) |  |  |
-| include_mempool | [bool](#bool) |  |  |
+| address | [string](#string) |  | The address to query transactions, in lowercase cashaddr format. The network prefix is optional (i.e. &#34;cashaddress:&#34;). |
+| include_mempool | [bool](#bool) |  | When include_mempool is true, unconfirmed transctions from mempool are returned. Default is false. |
 
 
 
@@ -303,8 +303,8 @@ Testnet:
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hash | [bytes](#bytes) |  |  |
-| height | [int32](#int32) |  |  |
+| hash | [bytes](#bytes) |  | The block hash as a byte array or base64 encoded string, little-endian. |
+| height | [int32](#int32) |  | The block number |
 
 
 
@@ -334,8 +334,8 @@ Testnet:
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hash | [bytes](#bytes) |  |  |
-| height | [int32](#int32) |  |  |
+| hash | [bytes](#bytes) |  | The block hash as a byte array or base64 encoded string, little-endian. |
+| height | [int32](#int32) |  | The block number |
 
 
 
@@ -365,9 +365,9 @@ Testnet:
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hash | [bytes](#bytes) |  |  |
-| height | [int32](#int32) |  |  |
-| full_transactions | [bool](#bool) |  | Provide full transaction info instead of only the hashes. |
+| hash | [bytes](#bytes) |  | The block hash as a byte array or base64 encoded string, little-endian. |
+| height | [int32](#int32) |  | The block number |
+| full_transactions | [bool](#bool) |  | Provide full transaction info instead of only hashes. |
 
 
 
@@ -469,8 +469,8 @@ Testnet:
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| size | [uint32](#uint32) |  |  |
-| bytes | [uint32](#uint32) |  |  |
+| size | [uint32](#uint32) |  | The count of transactions in the mempool |
+| bytes | [uint32](#uint32) |  | The size of the current mempool in bytes |
 
 
 
@@ -563,9 +563,9 @@ Testnet:
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| address | [string](#string) |  |  |
-| nb_skip | [uint32](#uint32) |  | Control the number of transactions to be fetched from the blockchain. These controls only apply to the confirmed transactions. All unconfirmed ones will be returned always. |
-| nb_fetch | [uint32](#uint32) |  |  |
+| address | [string](#string) |  | The address to query transactions, in lowercase cashaddr format. The network prefix is optional (i.e. &#34;cashaddress:&#34;). |
+| nb_skip | [uint32](#uint32) |  | The number of confirmed transactions to skip starting with the oldest first. Does not affect results of unconfirmed transactions. |
+| nb_fetch | [uint32](#uint32) |  | The number of transtions to be fetched. |
 | hash | [bytes](#bytes) |  |  |
 | height | [int32](#int32) |  |  |
 
@@ -582,8 +582,8 @@ Testnet:
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| confirmed_transactions | [bytes](#bytes) | repeated |  |
-| unconfirmed_transactions | [bytes](#bytes) | repeated |  |
+| confirmed_transactions | [bytes](#bytes) | repeated | Transactions that have been in a block. |
+| unconfirmed_transactions | [bytes](#bytes) | repeated | Transactions in mempool which have not been included in a block. |
 
 
 
@@ -598,8 +598,8 @@ Testnet:
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hash | [bytes](#bytes) |  |  |
-| height | [int32](#int32) |  |  |
+| hash | [bytes](#bytes) |  | The block hash as a byte array or base64 encoded string, little-endian. |
+| height | [int32](#int32) |  | The block number |
 
 
 
@@ -691,7 +691,7 @@ Testnet:
 | ----- | ---- | ----- | ----------- |
 | hash | [bytes](#bytes) |  |  |
 | index | [uint32](#uint32) |  |  |
-| include_mempool | [bool](#bool) |  |  |
+| include_mempool | [bool](#bool) |  | When include_mempool is true, unconfirmed transctions from mempool are returned. Default is false. |
 
 
 
@@ -811,7 +811,7 @@ Options to define data structure to be sent by SubscribeBlock stream:
 | ----- | ---- | ----- | ----------- |
 | subscribe | [TransactionFilter](#pb.TransactionFilter) |  |  |
 | unsubscribe | [TransactionFilter](#pb.TransactionFilter) |  |  |
-| include_mempool | [bool](#bool) |  | When include_mempool is true, new transactions coming in from the mempool are included apart from the ones confirmed in a block. |
+| include_mempool | [bool](#bool) |  | When include_mempool is true, new unconfirmed transactions from mempool are included apart from the ones confirmed in a block. |
 | include_in_block | [bool](#bool) |  | When include_in_block is true, transactions are included when they are confirmed. This notification is sent in addition to any requested mempool notifications. |
 | serialize_tx | [bool](#bool) |  | When serialize_tx is true, transactions are serialized using bitcoin protocol encoding. Default is false, transaction will be Marshaled (see `Transaction`, `MempoolTransaction` and `TransactionNotification`) |
 
@@ -909,7 +909,7 @@ Options to define data structure to be sent by SubscribeBlock stream:
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| addresses | [string](#string) | repeated |  |
+| addresses | [string](#string) | repeated | Filter by address(es) |
 | outpoints | [Transaction.Input.Outpoint](#pb.Transaction.Input.Outpoint) | repeated |  |
 | data_elements | [bytes](#bytes) | repeated |  |
 | all_transactions | [bool](#bool) |  | Subscribed/Unsubscribe to everything. Other filters will be ignored. |
