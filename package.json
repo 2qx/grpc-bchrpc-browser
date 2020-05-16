@@ -1,56 +1,58 @@
 {
-  "name": "grpc-bchrpc-browser",
-  "version": "0.0.1",
-  "description": "BCHD gRPC client for browsers",
-  "main": "index.js",
-  "scripts": {
-    "build": "tsc && mkdirp dist && browserify index.js --standalone bchrpc > dist/bchrpc.js && uglifyjs dist/bchrpc.js > dist/bchrpc.min.js && browserify index.spec.js --standalone test > test/index.spec.mjs",
-    "pb-build": "protoc -I=pb bchrpc.proto --js_out=import_style=commonjs,binary:pb --grpc-web_out=import_style=typescript,mode=grpcwebtext:pb",
-    "pb-update": "# wget https://raw.githubusercontent.com/gcash/bchd/master/bchrpc/bchrpc.proto -O pb/bchrpc.proto",
-    "pb-clean": "rm pb/*",
-    "pb-docs-html": "docker pull pseudomuto/protoc-gen-doc && docker run --rm -v $(pwd)/docs:/out  -v $(pwd)/pb:/protos pseudomuto/protoc-gen-doc --doc_opt=html,index.html",
-    "pb-docs-md": "docker pull pseudomuto/protoc-gen-doc && docker run --rm -v $(pwd)/docs:/out  -v $(pwd)/pb:/protos pseudomuto/protoc-gen-doc --doc_opt=markdown,README_docs.md && cat README_header.md docs/README_docs.md > README.md",
-    "test": "nyc mocha --timeout=3000 '*.spec.js'",
-    "test:browser": "live-server --port=9000 test/"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/2qx/grpc-bchrpc-browser.git"
-  },
-  "bugs": {
-    "url": "https://github.com/2qx/grpc-bchrpc-browser/issues"
-  },
-  "homepage": "https://github.com/2qx/grpc-bchrpc-browser#readme",
-  "devDependencies": {
-    "@istanbuljs/nyc-config-typescript": "^0.1.3",
-    "@types/chai": "^4.2.11",
-    "@types/mocha": "^5.2.7",
-    "browserify": "^16.5.1",
-    "buffer": "^5.5.0",
-    "chai": "^4.2.0",
-    "live-server": "^1.2.1",
-    "mocha": "^7.1.1",
-    "mocha-steps": "^1.3.0",
-    "nyc": "^14.1.1",
-    "source-map-support": "^0.5.16",
-    "ts-node": "^8.7.0",
-    "ts-protoc-gen": "^0.10.0",
-    "typescript": "^3.8.3",
-    "uglify-es": "^3.3.9"
-  },
-  "dependencies": {
-    "@types/google-protobuf": "^3.7.1",
-    "google-protobuf": "^3.6.1",
-    "grpc": "^1.15.0",
-    "grpc-web": "^1.0.7",
-    "xhr2": "^0.2.0",
-    "xmlhttprequest": "^1.8.0"
-  },
-  "keywords": [
-    "bch",
-    "bitcoin cash",
-    "grpc"
-  ],
-  "author": "",
-  "license": "ISC"
+    "name": "grpc-bchrpc-browser",
+    "version": "0.0.1",
+    "description": "BCHD gRPC client for browsers",
+    "main": "index.js",
+    "scripts": {
+        "build": "tsc && mkdirp dist && browserify index.js --standalone bchrpc > dist/bchrpc.js && uglifyjs dist/bchrpc.js > dist/bchrpc.min.js && browserify index.spec.js --standalone test > test/index.spec.mjs",
+        "pb-build": "protoc -I=pb bchrpc.proto --js_out=import_style=commonjs,binary:pb --grpc-web_out=import_style=typescript,mode=grpcwebtext:pb",
+        "pb-update": "# our proto is forked at the moment # wget https://raw.githubusercontent.com/gcash/bchd/master/bchrpc/bchrpc.proto -O pb/bchrpc.proto",
+        "pb-clean": "rm pb/*",
+        "pb-docs-html": "docker pull pseudomuto/protoc-gen-doc && docker run --rm -v $(pwd)/docs:/out  -v $(pwd)/pb:/protos pseudomuto/protoc-gen-doc --doc_opt=/out/html.tmpl,index.html",
+        "pb-docs-md": "docker pull pseudomuto/protoc-gen-doc && docker run --rm -v $(pwd)/docs:/out  -v $(pwd)/pb:/protos pseudomuto/protoc-gen-doc --doc_opt=markdown,README_docs.md && cat README_header.md docs/README_docs.md > README.md",
+        "pb-grpcui-install": "go get github.com/fullstorydev/grpcui && go install github.com/fullstorydev/grpcui/cmd/grpcui",
+        "pb-grpcui": "grpcui -proto pb/bchrpc.proto bchd.fountainhead.cash:443",
+        "test": "nyc mocha --timeout=3000 '*.spec.js'",
+        "test:browser": "live-server --port=9000 test/"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/2qx/grpc-bchrpc-browser.git"
+    },
+    "bugs": {
+        "url": "https://github.com/2qx/grpc-bchrpc-browser/issues"
+    },
+    "homepage": "https://github.com/2qx/grpc-bchrpc-browser#readme",
+    "devDependencies": {
+        "@istanbuljs/nyc-config-typescript": "^0.1.3",
+        "@types/chai": "^4.2.11",
+        "@types/mocha": "^5.2.7",
+        "browserify": "^16.5.1",
+        "buffer": "^5.5.0",
+        "chai": "^4.2.0",
+        "live-server": "^1.2.1",
+        "mocha": "^7.1.1",
+        "mocha-steps": "^1.3.0",
+        "nyc": "^14.1.1",
+        "source-map-support": "^0.5.16",
+        "ts-node": "^8.7.0",
+        "ts-protoc-gen": "^0.10.0",
+        "typescript": "^3.8.3",
+        "uglify-es": "^3.3.9"
+    },
+    "dependencies": {
+        "@types/google-protobuf": "^3.7.1",
+        "google-protobuf": "^3.6.1",
+        "grpc": "^1.15.0",
+        "grpc-web": "^1.0.7",
+        "xhr2": "^0.2.0",
+        "xmlhttprequest": "^1.8.0"
+    },
+    "keywords": [
+        "bch",
+        "bitcoin cash",
+        "grpc"
+    ],
+    "author": "",
+    "license": "ISC"
 }

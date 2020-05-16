@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package pb;
 
-// bchrpc contains a set of RPCs that can be exposed publicly via
+// bchrpc contains a set of Remote Procedure Calls (RPCs) that can be exposed publicly via
 // the command line options. This service could be authenticated or
 // unauthenticated.
 service bchrpc {
@@ -107,44 +107,64 @@ service bchrpc {
 
 message GetMempoolInfoRequest {}
 message GetMempoolInfoResponse {
-
     // The count of transactions in the mempool
     uint32 size = 1;
-    // The size of the current mempool in bytes
+    // The size in bytes of all transactions in the mempool 
     uint32 bytes = 2;
 }
 
 message GetMempoolRequest {
-    // Provide full transaction info instead of only the hashes.
+    // When true, full transaction data is provided instead of just transaction hashes.
     bool full_transactions = 1;
 }
+
 message GetMempoolResponse {
     message TransactionData {
         // Either one of the two following is provided, depending on the request.
         oneof txids_or_txs {
+            // The transaction hash
             bytes transaction_hash = 1;
+            // The transaction data
             Transaction transaction = 2;
         }
     }
-
+    
+    // List of unconfirmed transactions.
     repeated TransactionData transaction_data = 1;
 }
 
 message GetBlockchainInfoRequest {}
 message GetBlockchainInfoResponse {
+
+    // Bitcoin network types
     enum BitcoinNet {
+        
+        // Live public network with monetary value.
         MAINNET  = 0;
+        // An isolated environment for automated testing.
         REGTEST  = 1;
+        // A public environment where monetary value is agreed to be zero,
+        // and some checks for transaction conformity are disabled.
         TESTNET3 = 2;
+        // Private testnets for large scale simulations (or stress testing),
+        // where a specified list of nodes is used, rather than node discovery.
         SIMNET   = 3;
     }
 
+    // Which network the node is operating on.
     BitcoinNet bitcoin_net = 1;
+
+    // The current number of blocks on the longest chain.
     int32 best_height = 2;
+    // The hash of the block on the tip of the longest chain
     bytes best_block_hash = 3;
+    // Threshold for adding new blocks.
     double difficulty = 4;
+    // Median time of the last 11 blocks.
     int64 median_time = 5;
+    // True if the node has full transaction index is enabled.
     bool tx_index = 6;
+    // True if the node has address index is enabled.
     bool addr_index =7;
 }
 
@@ -157,6 +177,7 @@ message GetBlockInfoRequest {
     }
 }
 message GetBlockInfoResponse {
+    // Marshaled block header data, as well as metadata.
     BlockInfo info = 1;
 }
 
@@ -171,6 +192,7 @@ message GetBlockRequest {
     bool full_transactions = 3;
 }
 message GetBlockResponse {
+    // A marshaled block
     Block block = 1;
 }
 
@@ -183,6 +205,7 @@ message GetRawBlockRequest {
     }
 }
 message GetRawBlockResponse {
+    // Raw block data 
     bytes block = 1;
 }
 
@@ -194,6 +217,7 @@ message GetBlockFilterRequest {
         int32 height = 2;
     }
 }
+
 message GetBlockFilterResponse {
     bytes filter = 1;
 }
@@ -203,23 +227,47 @@ message GetHeadersRequest {
     bytes stop_hash = 2;
 }
 message GetHeadersResponse {
+    // List of block headers
     repeated BlockInfo headers = 1;
 }
 
+// Get a transaction from a transaction hash
 message GetTransactionRequest {
+    // A transaction hash
     bytes hash = 1;
 }
 message GetTransactionResponse {
+    // A marshaled transaction
     Transaction transaction = 1;
 }
 
+// Get an encoded transaction from a transaction hash
 message GetRawTransactionRequest {
+    // A transaction hash
     bytes hash = 1;
 }
 message GetRawTransactionResponse {
+    // Raw transaction in bytes
     bytes transaction = 1;
 }
 
+// Get transactions related to a specific address
+//
+// RECOMMENDED:
+// Parameters have been provided to query without creating 
+//   performance issues on the node or client.
+//
+// - The `nb_` parameters allow for paging over a large set 
+//        of transactions to cache client side, if necessary.
+//
+// - A starting block parameter (either `hash` or `height`) 
+//       may then be used to filter results to those occuring
+//       after a certain time.
+//
+// This approach will reduce both bandwith and response processing 
+//   for the client, as well as reduce workload on the node.
+// The paging and start_block parameters are not applied to 
+//   unconfirmed transactions. 
 message GetAddressTransactionsRequest {
 
     // The address to query transactions, in lowercase cashaddr format.
@@ -229,13 +277,14 @@ message GetAddressTransactionsRequest {
     // Skip some number of confirmed transactions.
     // Does not affect results of unconfirmed transactions.
     uint32 nb_skip = 2;
-    // The number of transtions to be fetched.
+    // Only fetch a specific number of transactions, at a time.
     uint32 nb_fetch = 3;
 
-    // If the start block is provided it will only return transactions after this
-    // block. This should be used if possible to save bandwidth.
+
     oneof start_block {
+        // Recommended: Only return transactions after a starting block identified by hash.
         bytes hash = 4;
+        // Recommended: Only return transactions after a starting block identified by block number.
         int32 height = 5;
     }
 }
@@ -247,6 +296,23 @@ message GetAddressTransactionsResponse {
     repeated MempoolTransaction unconfirmed_transactions = 2;
 }
 
+// Get encoded transactions related to a specific address
+//
+// RECOMMENDED:
+// Parameters have been provided to query without creating 
+//   performance issues on the node or client.
+//
+// - The `nb_` parameters allow for iterating over a large set 
+//        of transactions, if necessary.
+//
+// - A starting block parameter (either `hash` or `height`) 
+//       may then be used to filter results to those occuring
+//       after a certain time.
+//
+// This approach will reduce both bandwith and response processing 
+//   for the client, as well as reduce workload on the node.
+// The paging and start_block parameters are not applied to 
+//   unconfirmed transactions. 
 message GetRawAddressTransactionsRequest {
 
     // The address to query transactions, in lowercase cashaddr format.
@@ -256,13 +322,13 @@ message GetRawAddressTransactionsRequest {
     // The number of confirmed transactions to skip starting with the oldest first.
     // Does not affect results of unconfirmed transactions.
     uint32 nb_skip = 2;
-    // The number of transtions to be fetched.
+    // The total number of transtions to be fetched.
     uint32 nb_fetch = 3;
 
-    // If the start block is provided it will only return transactions after this
-    // block. This should be used if possible to save bandwidth.
     oneof start_block {
+        // Recommended: Only return transactions after a starting block identified by hash.
         bytes hash = 4;
+        // Recommended: Only return transactions after a starting block identified by block number.
         int32 height = 5;
     }
 }
@@ -281,11 +347,13 @@ message GetAddressUnspentOutputsRequest {
     bool include_mempool = 2;
 }
 message GetAddressUnspentOutputsResponse {
+    // List of unspent outputs
     repeated UnspentOutput outputs = 1;
 }
 
 message GetUnspentOutputRequest {
     bytes hash = 1;
+    // The number of the output, starting from zero.
     uint32 index = 2;
     // When include_mempool is true, unconfirmed transctions from mempool are returned. Default is false.
     bool include_mempool = 3;
@@ -293,6 +361,7 @@ message GetUnspentOutputRequest {
 message GetUnspentOutputResponse {
     Transaction.Input.Outpoint outpoint = 1;
     bytes pubkey_script = 2;
+    // Amount in satoshi
     int64 value = 3;
 
     bool is_coinbase = 4;
@@ -309,12 +378,14 @@ message GetMerkleProofResponse {
 }
 
 message SubmitTransactionRequest {
+    // The encoded transaction
     bytes transaction = 1;
 }
 message SubmitTransactionResponse {
     bytes hash = 1;
 }
 
+// Request to subscribe or unsubscribe from a stream of transactions
 message SubscribeTransactionsRequest {
     TransactionFilter subscribe = 1;
     TransactionFilter unsubscribe = 2;
@@ -369,29 +440,43 @@ message SubscribeBlocksRequest {
 // NOTIFICATIONS
 
 message BlockNotification {
+
+    // State of the block in relation to the chain.
     enum Type {
         CONNECTED = 0;
         DISCONNECTED = 1;
     }
 
+    // Whether the block is connected to the chain.
     Type type = 1;
     oneof block {
+        // Marshaled block header data, as well as metadata stored by the node.
         BlockInfo block_info = 2;
+        // A Block 
         Block marshaled_block = 3;
+        // Binary block, serialized using bitcoin protocol encoding.
         bytes serialized_block = 4;
     }
 }
 
 message TransactionNotification {
+    
+    // State of the transaction acceptance.
     enum Type {
+        // A transction in mempool.
         UNCONFIRMED = 0;
+        // A transaction in a block.
         CONFIRMED   = 1;
     }
 
+    // Whether or not the transaction has been included in a block
     Type type = 1;
     oneof transaction {
+        // A transaction included in a block.
         Transaction confirmed_transaction = 2;
+        // A broadcasted transaction in mempool.
         MempoolTransaction unconfirmed_transaction = 3;
+        // Binary transaction, serialized using bitcoin protocol encoding.
         bytes serialized_transaction = 4;
     }
 }
@@ -399,17 +484,20 @@ message TransactionNotification {
 
 // DATA MESSAGES
 
+// Metadata for identifying and validating a block 
 message BlockInfo {
+
     // Identification.
     
-    // The hash expressed in little-endian
+    // The repeated sha256 hash of the six header fields encoded according the protocol.
+    // sha256(sha256(encoded_header))
     bytes hash = 1;
     // The block number, an incremental index for each block mined.
     int32 height = 2;
 
     // Block header data.
 
-    // A version number to track software/protocol upgrades
+    // A version number to track software/protocol upgrades.
     int32 version = 3;
     // Hash of the previous block
     bytes previous_block = 4;
@@ -417,7 +505,7 @@ message BlockInfo {
     bytes merkle_root = 5;
     // When mining of the block started, expressed in seconds since 1970-01-01.
     int64 timestamp = 6;
-    // TODO-DOCS:? Difficulty in Compressed Target Format
+    // Difficulty in Compressed Target Format
     uint32 bits = 7;
     // A random value that was generated during block mining which happend to
     // result in a computed block hash below the difficulty target at the time.
@@ -425,7 +513,7 @@ message BlockInfo {
 
     // Metadata.
     
-    // Number of blocks in a chain, including the this block upon creation.
+    // Number of blocks in a chain, including the block itself upon creation.
     int32 confirmations = 9;
     // Difficulty target at time of creation
     double difficulty = 10;
@@ -433,7 +521,7 @@ message BlockInfo {
     bytes next_block_hash = 11;
     // Size of the block in bytes
     int32 size = 12;
-    // TODO-DOCS:? The median block time of the latest 11 block timestamps
+    // The median block time of the latest 11 block timestamps
     int64 median_time = 13;
 }
 
@@ -445,8 +533,9 @@ message Block {
             Transaction transaction = 2;
         }
     }
-
+    // Block header data, as well as metadata stored by the node.
     BlockInfo info = 1;
+    // List of transactions or transaction hashes.
     repeated TransactionData transaction_data = 2;
 }
 
@@ -456,17 +545,20 @@ message Transaction {
             bytes hash = 1;
             uint32 index = 2;
         }
-
+        // The number of the input, starting from zero.
         uint32 index = 1;
         Outpoint outpoint = 2;
         bytes signature_script = 3;
         uint32 sequence = 4;
+        // Amount in satoshi
         int64 value = 5;
         bytes previous_script = 6;
         string address = 7;
     }
     message Output {
+        // The number of the output, starting from zero.
         uint32 index = 1;
+        // Amount in satoshi
         int64 value = 2;
         bytes pubkey_script = 3;
         string address = 4;
@@ -474,26 +566,40 @@ message Transaction {
         string disassembled_script = 6;
     }
 
+    // The double sha256 hash of the encoded transaction.
+    // sha256(sha256(encoded_transaction))
     bytes hash = 1;
+    // The version of the transaction format.
     int32 version = 2;
+    // List of inputs 
     repeated Input inputs = 3;
+    // List of outputs
     repeated Output outputs = 4;
+    // The block height or timestamp after which this transaction is allowed. 
+    // If value is greater than 500 million, it is assumed to be an epoch timestamp,
+    // otherwise it is treated as a block-height.
     uint32 lock_time = 5;
 
     // Metadata
+
+    // The size of the transaction in bytes
     int32 size = 8;
+    // When the transaction was included in a block, in epoch time.
     int64 timestamp = 9;
+    // Number of blocks including proof of the transaction, including the block it appeared.
     int32 confirmations = 10;
+    // Number of the block containing the transaction.
     int32 block_height = 11;
+    // Hash of the block the transaction was recorded in.
     bytes block_hash = 12;
 }
 
 message MempoolTransaction {
     Transaction transaction = 1;
 
-    // The time when the transaction was added too the pool.
+    // When the transaction was witnessed by the node.
     int64 added_time = 2;
-    // The block height when the transaction was added to the pool.
+    // The block height at the time the transaction was added to the pool.
     int32 added_height = 3;
     // The total fee in satoshi the transaction pays.
     int64 fee = 4;
@@ -507,7 +613,7 @@ message UnspentOutput {
     Transaction.Input.Outpoint outpoint = 1;
     bytes pubkey_script = 2;
     int64 value = 3;
-
+    // Whether or not the input is a generation transaction, the result of mining.
     bool is_coinbase = 4;
     int32 block_height = 5;
 }
@@ -518,11 +624,9 @@ message TransactionFilter {
     repeated string addresses = 1;
 
     // TODO-DOCS: ? Filter by output hash and index
-
     repeated Transaction.Input.Outpoint outpoints = 2;
 
     // TODO-DOCS: ? Specify which transaction elements to return
-
     repeated bytes data_elements = 3;
 
     //TODO: Are these extra filters values relevant?

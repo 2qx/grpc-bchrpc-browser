@@ -19,7 +19,9 @@ const client = new GrpcClient(
     }
 );
 
-
+function asHex(u8: Uint8Array){
+    return Buffer.from(u8.reverse()).toString("hex")
+}
 class Live {
 
     stream?: grpcWeb.ClientReadableStream<TransactionNotification>;
@@ -40,19 +42,25 @@ class Live {
         })
 
         this.stream.on('data', function (message: TransactionNotification) {
-            const tx = message.getUnconfirmedTransaction().getTransaction()!
+            const mempool_tx = message.getUnconfirmedTransaction()!
+            const tx = mempool_tx.getTransaction()!
+            console.log("added: " + mempool_tx.getAddedTime())
+            console.log("height: " + mempool_tx.getAddedHeight())
             console.log("txn: " + Buffer.from(tx.getHash_asU8().reverse()).toString("hex"))
             console.log("    size: " + tx.getSize())
             console.log("    inputs: " )
             for(const input of tx.getInputsList()){
-                console.log("        " + input.getAddress() + " " + input.getValue() + "  " )
+                console.log("        " + input.getIndex() + " "  + asHex(input.getPreviousScript_asU8()))
+                console.log("        " + input.getIndex() +  " " + input.getAddress() + " " + input.getValue() + "  " )
+                console.log("        " + input.getIndex() + " "  + asHex(input.getSignatureScript_asU8()))
             }
             console.log("    outputs: " )
             for(const output of tx.getOutputsList()){
-                console.log("        " + output.getAddress() + " " + output.getValue() + " " + Buffer.from(output.getPubkeyScript_asU8().reverse()).toString("hex"))
-                console.log("        " + output.getScriptClass())
-                console.log("        " + output.getDisassembledScript())
+                console.log("        " + output.getIndex() + " " +  output.getScriptClass() + " " + output.getAddress() + " " + output.getValue() + " " + asHex(output.getPubkeyScript_asU8()))
+                console.log("        " + output.getIndex() + " " + output.getDisassembledScript())
             }
+            console.log("    locktime: " + tx.getLockTime())
+            console.log("    size: " + tx.getSize())
         });
         this.stream.on('status', function (status) {
             console.log(status)
