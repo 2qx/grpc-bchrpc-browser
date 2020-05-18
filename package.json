@@ -5,13 +5,14 @@
     "main": "index.js",
     "scripts": {
         "build": "tsc && mkdirp dist && browserify index.js --standalone bchrpc > dist/bchrpc.js && uglifyjs dist/bchrpc.js > dist/bchrpc.min.js && browserify index.spec.js --standalone test > test/index.spec.mjs",
+        "build:docs": "npx typedoc --mode modules --excludeExternals src/client.ts",
         "pb-build": "protoc -I=pb bchrpc.proto --js_out=import_style=commonjs,binary:pb --grpc-web_out=import_style=typescript,mode=grpcwebtext:pb",
-        "pb-update": "# our proto is forked at the moment # wget https://raw.githubusercontent.com/gcash/bchd/master/bchrpc/bchrpc.proto -O pb/bchrpc.proto",
-        "pb-clean": "rm pb/*",
-        "pb-docs-html": "docker pull pseudomuto/protoc-gen-doc && docker run --rm -v $(pwd)/docs:/out  -v $(pwd)/pb:/protos pseudomuto/protoc-gen-doc --doc_opt=/out/html.tmpl,index.html",
-        "pb-docs-md": "docker pull pseudomuto/protoc-gen-doc && docker run --rm -v $(pwd)/docs:/out  -v $(pwd)/pb:/protos pseudomuto/protoc-gen-doc --doc_opt=markdown,README_docs.md && cat README_header.md docs/README_docs.md > README.md",
+        "pb-clean": "echo the proto file in this project is forked ATM # rm pb/*",
+        "pb-docs-html": "docker pull pseudomuto/protoc-gen-doc && docker run --rm -v $(pwd)/docs_bchrpc:/out  -v $(pwd)/pb:/protos pseudomuto/protoc-gen-doc --doc_opt=/out/html.tmpl,index.html",
+        "pb-docs-md": "docker pull pseudomuto/protoc-gen-doc && docker run --rm -v $(pwd)/docs_bchrpc:/out  -v $(pwd)/pb:/protos pseudomuto/protoc-gen-doc --doc_opt=markdown,README.md",
         "pb-grpcui-install": "go get github.com/fullstorydev/grpcui && go install github.com/fullstorydev/grpcui/cmd/grpcui",
         "pb-grpcui": "grpcui -proto pb/bchrpc.proto bchd.fountainhead.cash:443",
+        "pb-update": "echo the proto file in this project is forked ATM # wget https://raw.githubusercontent.com/gcash/bchd/master/bchrpc/bchrpc.proto -O pb/bchrpc.proto",
         "test": "nyc mocha --timeout=3000 '*.spec.js'",
         "test:browser": "live-server --port=9000 test/"
     },
@@ -37,6 +38,7 @@
         "source-map-support": "^0.5.16",
         "ts-node": "^8.7.0",
         "ts-protoc-gen": "^0.10.0",
+        "typedoc": "^0.17.7",
         "typescript": "^3.8.3",
         "uglify-es": "^3.3.9"
     },

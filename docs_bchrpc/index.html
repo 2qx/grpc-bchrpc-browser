@@ -1,0 +1,2620 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Protocol Documentation</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Ubuntu:400,700,400italic"/>
+    <style>
+      body {
+        width: 60em;
+        margin: 1em auto;
+        color: #222;
+        font-family: "Ubuntu", sans-serif;
+        padding-bottom: 4em;
+      }
+
+      h1 {
+        font-weight: normal;
+        border-bottom: 1px solid #aaa;
+        padding-bottom: 0.5ex;
+      }
+
+      h2 {
+        border-bottom: 1px solid #aaa;
+        padding-bottom: 0.5ex;
+        margin: 1.5em 0;
+      }
+
+      h3 {
+        font-weight: normal;
+        border-bottom: 1px solid #aaa;
+        padding-bottom: 0.5ex;
+      }
+
+      a {
+        text-decoration: none;
+        color: #567e25;
+      }
+
+      table {
+        width: 100%;
+        font-size: 80%;
+        border-collapse: collapse;
+      }
+
+      thead {
+        font-weight: 700;
+        background-color: #dcdcdc;
+      }
+
+      tbody tr:nth-child(even) {
+        background-color: #fbfbfb;
+      }
+
+      td {
+        border: 1px solid #ccc;
+        padding: 0.5ex 2ex;
+      }
+
+      td p {
+        text-indent: 1em;
+        margin: 0;
+      }
+
+      td p:nth-child(1) {
+        text-indent: 0; /* No indent on first p in td */
+      }
+
+      /* Table of fields */
+      .field-table td:nth-child(1) { /* Field */
+        width: 10em;
+      }
+      .field-table td:nth-child(2) { /* Type */
+        width: 10em;
+      }
+      .field-table td:nth-child(3) { /* Label */
+        width: 6em;
+      }
+      .field-table td:nth-child(4) { /* Description */
+        width: auto;
+      }
+
+      /* Table of extensions */
+      .extension-table td:nth-child(1) { /* Extension */
+        width: 10em;
+      }
+      .extension-table td:nth-child(2) { /* Type */
+        width: 10em;
+      }
+      .extension-table td:nth-child(3) { /* Base */
+        width: 10em;
+      }
+      .extension-table td:nth-child(4) { /* Number */
+        width: 5em;
+      }
+      .extension-table td:nth-child(5) { /* Description */
+        width: auto;
+      }
+
+      /* Table of enum values. */
+      .enum-table td:nth-child(1) { /* Name */
+        width: 10em;
+      }
+      .enum-table td:nth-child(2) { /* Number */
+        width: 10em;
+      }
+      .enum-table td:nth-child(3) { /* Description */
+        width: auto;
+      }
+
+      /* Table of scalar value types. */
+      .scalar-value-types-table tr {
+        height: 3em;
+      }
+
+      /* Table of contents. */
+      #toc-container ul {
+        list-style-type: none;
+        padding-left: 1em;
+        line-height: 180%;
+        margin: 0;
+      }
+      #toc > li > a {
+        font-weight: bold;
+      }
+
+      /* File heading div */
+      .file-heading {
+        width: 100%;
+        display: table;
+        border-bottom: 1px solid #aaa;
+        margin: 4em 0 1.5em 0;
+      }
+      .file-heading h2 {
+        border: none;
+        display: table-cell;
+      }
+      .file-heading a {
+        text-align: right;
+        display: table-cell;
+      }
+
+      /* The 'M', 'E' and 'X' badges in the ToC */
+      .badge {
+        width: 1.6em;
+        height: 1.6em;
+        display: inline-block;
+
+        line-height: 1.6em;
+        text-align: center;
+        font-weight: bold;
+        font-size: 60%;
+
+        color: #89ba48;
+        background-color: #dff0c8;
+
+        margin: 0.5ex 1em 0.5ex -1em;
+        border: 1px solid #fbfbfb;
+        border-radius: 1ex;
+      }
+    </style>
+
+    <!-- User custom CSS -->
+    <link rel="stylesheet" type="text/css" href="stylesheet.css"/>
+  </head>
+
+  <body>
+
+    <h1 id="title">Protocol Documentation</h1>
+
+    <h2>Table of Contents</h2>
+
+    <div id="toc-container">
+      <ul id="toc">
+        
+          
+          <li>
+            <a href="#bchrpc.proto">bchrpc.proto</a>
+            <ul>
+               
+                <li>
+                  <a href="#pb.bchrpc"><span class="badge">S</span>bchrpc</a>
+                </li>
+              
+              
+                <li>
+                  <a href="#pb.Block"><span class="badge">M</span>Block</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.Block.TransactionData"><span class="badge">M</span>Block.TransactionData</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.BlockInfo"><span class="badge">M</span>BlockInfo</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.BlockNotification"><span class="badge">M</span>BlockNotification</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetAddressTransactionsRequest"><span class="badge">M</span>GetAddressTransactionsRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetAddressTransactionsResponse"><span class="badge">M</span>GetAddressTransactionsResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetAddressUnspentOutputsRequest"><span class="badge">M</span>GetAddressUnspentOutputsRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetAddressUnspentOutputsResponse"><span class="badge">M</span>GetAddressUnspentOutputsResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetBlockFilterRequest"><span class="badge">M</span>GetBlockFilterRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetBlockFilterResponse"><span class="badge">M</span>GetBlockFilterResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetBlockInfoRequest"><span class="badge">M</span>GetBlockInfoRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetBlockInfoResponse"><span class="badge">M</span>GetBlockInfoResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetBlockRequest"><span class="badge">M</span>GetBlockRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetBlockResponse"><span class="badge">M</span>GetBlockResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetBlockchainInfoRequest"><span class="badge">M</span>GetBlockchainInfoRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetBlockchainInfoResponse"><span class="badge">M</span>GetBlockchainInfoResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetHeadersRequest"><span class="badge">M</span>GetHeadersRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetHeadersResponse"><span class="badge">M</span>GetHeadersResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetMempoolInfoRequest"><span class="badge">M</span>GetMempoolInfoRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetMempoolInfoResponse"><span class="badge">M</span>GetMempoolInfoResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetMempoolRequest"><span class="badge">M</span>GetMempoolRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetMempoolResponse"><span class="badge">M</span>GetMempoolResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetMempoolResponse.TransactionData"><span class="badge">M</span>GetMempoolResponse.TransactionData</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetMerkleProofRequest"><span class="badge">M</span>GetMerkleProofRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetMerkleProofResponse"><span class="badge">M</span>GetMerkleProofResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetRawAddressTransactionsRequest"><span class="badge">M</span>GetRawAddressTransactionsRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetRawAddressTransactionsResponse"><span class="badge">M</span>GetRawAddressTransactionsResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetRawBlockRequest"><span class="badge">M</span>GetRawBlockRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetRawBlockResponse"><span class="badge">M</span>GetRawBlockResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetRawTransactionRequest"><span class="badge">M</span>GetRawTransactionRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetRawTransactionResponse"><span class="badge">M</span>GetRawTransactionResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetTransactionRequest"><span class="badge">M</span>GetTransactionRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetTransactionResponse"><span class="badge">M</span>GetTransactionResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetUnspentOutputRequest"><span class="badge">M</span>GetUnspentOutputRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetUnspentOutputResponse"><span class="badge">M</span>GetUnspentOutputResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.MempoolTransaction"><span class="badge">M</span>MempoolTransaction</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.SubmitTransactionRequest"><span class="badge">M</span>SubmitTransactionRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.SubmitTransactionResponse"><span class="badge">M</span>SubmitTransactionResponse</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.SubscribeBlocksRequest"><span class="badge">M</span>SubscribeBlocksRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.SubscribeTransactionsRequest"><span class="badge">M</span>SubscribeTransactionsRequest</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.Transaction"><span class="badge">M</span>Transaction</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.Transaction.Input"><span class="badge">M</span>Transaction.Input</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.Transaction.Input.Outpoint"><span class="badge">M</span>Transaction.Input.Outpoint</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.Transaction.Output"><span class="badge">M</span>Transaction.Output</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.TransactionFilter"><span class="badge">M</span>TransactionFilter</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.TransactionNotification"><span class="badge">M</span>TransactionNotification</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.UnspentOutput"><span class="badge">M</span>UnspentOutput</a>
+                </li>
+              
+              
+                <li>
+                  <a href="#pb.BlockNotification.Type"><span class="badge">E</span>BlockNotification.Type</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.GetBlockchainInfoResponse.BitcoinNet"><span class="badge">E</span>GetBlockchainInfoResponse.BitcoinNet</a>
+                </li>
+              
+                <li>
+                  <a href="#pb.TransactionNotification.Type"><span class="badge">E</span>TransactionNotification.Type</a>
+                </li>
+              
+              
+            </ul>
+          </li>
+        
+        <li><a href="#scalar-value-types">Scalar Value Types</a></li>
+      </ul>
+    </div>
+
+    
+      
+      <div class="file-heading">
+        <h2 id="bchrpc.proto">bchrpc.proto</h2><a href="#title">Top</a>
+      </div>
+      <p></p>
+      
+        <h3 id="pb.bchrpc">bchrpc</h3>
+        <p>Bitcoin Cash remote procedure calls is a protocol for communicating with a </p><p>bitcoin cash node from some client.  It is a set of methods, developed </p><p>for the bchd node, that can be exposed publicly via the command line options. </p><p>This service could be authenticated or unauthenticated.</p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Method Name</td><td>Request Type</td><td>Response Type</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>GetMempoolInfo</td>
+                <td><a href="#pb.GetMempoolInfoRequest">GetMempoolInfoRequest</a></td>
+                <td><a href="#pb.GetMempoolInfoResponse">GetMempoolInfoResponse</a></td>
+                <td><p>Get info about the mempool.</p></td>
+              </tr>
+            
+              <tr>
+                <td>GetMempool</td>
+                <td><a href="#pb.GetMempoolRequest">GetMempoolRequest</a></td>
+                <td><a href="#pb.GetMempoolResponse">GetMempoolResponse</a></td>
+                <td><p>Returns information about all of the transactions currently in the memory pool.
+Offers an option to return full transactions or just transactions hashes.</p></td>
+              </tr>
+            
+              <tr>
+                <td>GetBlockchainInfo</td>
+                <td><a href="#pb.GetBlockchainInfoRequest">GetBlockchainInfoRequest</a></td>
+                <td><a href="#pb.GetBlockchainInfoResponse">GetBlockchainInfoResponse</a></td>
+                <td><p>GetBlockchainInfo info about the blockchain including the most recent
+block hash and height.</p></td>
+              </tr>
+            
+              <tr>
+                <td>GetBlockInfo</td>
+                <td><a href="#pb.GetBlockInfoRequest">GetBlockInfoRequest</a></td>
+                <td><a href="#pb.GetBlockInfoResponse">GetBlockInfoResponse</a></td>
+                <td><p>Get info about the given block.</p></td>
+              </tr>
+            
+              <tr>
+                <td>GetBlock</td>
+                <td><a href="#pb.GetBlockRequest">GetBlockRequest</a></td>
+                <td><a href="#pb.GetBlockResponse">GetBlockResponse</a></td>
+                <td><p>Get a block.</p></td>
+              </tr>
+            
+              <tr>
+                <td>GetRawBlock</td>
+                <td><a href="#pb.GetRawBlockRequest">GetRawBlockRequest</a></td>
+                <td><a href="#pb.GetRawBlockResponse">GetRawBlockResponse</a></td>
+                <td><p>Get a serialized block.</p></td>
+              </tr>
+            
+              <tr>
+                <td>GetBlockFilter</td>
+                <td><a href="#pb.GetBlockFilterRequest">GetBlockFilterRequest</a></td>
+                <td><a href="#pb.GetBlockFilterResponse">GetBlockFilterResponse</a></td>
+                <td><p>Get a block filter.
+
+**Requires CfIndex**</p></td>
+              </tr>
+            
+              <tr>
+                <td>GetHeaders</td>
+                <td><a href="#pb.GetHeadersRequest">GetHeadersRequest</a></td>
+                <td><a href="#pb.GetHeadersResponse">GetHeadersResponse</a></td>
+                <td><p>This RPC sends a block locator object to the server and the server responds with
+a batch of no more than 2000 headers. Upon parsing the block locator, if the server
+concludes there has been a fork, it will send headers starting at the fork point,
+or genesis if no blocks in the locator are in the best chain. If the locator is
+already at the tip no headers will be returned.</p></td>
+              </tr>
+            
+              <tr>
+                <td>GetTransaction</td>
+                <td><a href="#pb.GetTransactionRequest">GetTransactionRequest</a></td>
+                <td><a href="#pb.GetTransactionResponse">GetTransactionResponse</a></td>
+                <td><p>Get a transaction given its hash.
+
+**Requires TxIndex**</p></td>
+              </tr>
+            
+              <tr>
+                <td>GetRawTransaction</td>
+                <td><a href="#pb.GetRawTransactionRequest">GetRawTransactionRequest</a></td>
+                <td><a href="#pb.GetRawTransactionResponse">GetRawTransactionResponse</a></td>
+                <td><p>Get a serialized transaction given its hash.
+
+**Requires TxIndex**</p></td>
+              </tr>
+            
+              <tr>
+                <td>GetAddressTransactions</td>
+                <td><a href="#pb.GetAddressTransactionsRequest">GetAddressTransactionsRequest</a></td>
+                <td><a href="#pb.GetAddressTransactionsResponse">GetAddressTransactionsResponse</a></td>
+                <td><p>Returns the transactions for the given address. Offers offset,
+limit, and from block options.
+
+**Requires AddressIndex**</p></td>
+              </tr>
+            
+              <tr>
+                <td>GetRawAddressTransactions</td>
+                <td><a href="#pb.GetRawAddressTransactionsRequest">GetRawAddressTransactionsRequest</a></td>
+                <td><a href="#pb.GetRawAddressTransactionsResponse">GetRawAddressTransactionsResponse</a></td>
+                <td><p>Returns the raw transactions for the given address. Offers offset,
+limit, and from block options.
+
+**Requires AddressIndex**</p></td>
+              </tr>
+            
+              <tr>
+                <td>GetAddressUnspentOutputs</td>
+                <td><a href="#pb.GetAddressUnspentOutputsRequest">GetAddressUnspentOutputsRequest</a></td>
+                <td><a href="#pb.GetAddressUnspentOutputsResponse">GetAddressUnspentOutputsResponse</a></td>
+                <td><p>Returns all the unspent transaction outputs for the given address.
+
+**Requires AddressIndex**</p></td>
+              </tr>
+            
+              <tr>
+                <td>GetUnspentOutput</td>
+                <td><a href="#pb.GetUnspentOutputRequest">GetUnspentOutputRequest</a></td>
+                <td><a href="#pb.GetUnspentOutputResponse">GetUnspentOutputResponse</a></td>
+                <td><p>Looks up the unspent output in the utxo set and returns the utxo metadata or not found.</p></td>
+              </tr>
+            
+              <tr>
+                <td>GetMerkleProof</td>
+                <td><a href="#pb.GetMerkleProofRequest">GetMerkleProofRequest</a></td>
+                <td><a href="#pb.GetMerkleProofResponse">GetMerkleProofResponse</a></td>
+                <td><p>Returns a merkle (SPV) proof that the given transaction is in the provided block.
+
+**Requires TxIndex***</p></td>
+              </tr>
+            
+              <tr>
+                <td>SubmitTransaction</td>
+                <td><a href="#pb.SubmitTransactionRequest">SubmitTransactionRequest</a></td>
+                <td><a href="#pb.SubmitTransactionResponse">SubmitTransactionResponse</a></td>
+                <td><p>Submit a transaction to all connected peers.</p></td>
+              </tr>
+            
+              <tr>
+                <td>SubscribeTransactions</td>
+                <td><a href="#pb.SubscribeTransactionsRequest">SubscribeTransactionsRequest</a></td>
+                <td><a href="#pb.TransactionNotification">TransactionNotification</a> stream</td>
+                <td><p>Subscribe to relevant transactions based on the subscription requests.
+
+This RPC does not use bi-directional streams and therefore can be used
+with grpc-web. You will need to close and re-open the stream whenever
+you want to update the addresses. If you are not using grpc-web
+then SubscribeTransactionStream is more appropriate.
+
+**Requires TxIndex to receive input metadata**</p></td>
+              </tr>
+            
+              <tr>
+                <td>SubscribeTransactionStream</td>
+                <td><a href="#pb.SubscribeTransactionsRequest">SubscribeTransactionsRequest</a> stream</td>
+                <td><a href="#pb.TransactionNotification">TransactionNotification</a> stream</td>
+                <td><p>Subscribe to relevant transactions based on the subscription requests.
+The parameters to filter transactions on can be updated by sending new
+SubscribeTransactionsRequest objects on the stream.
+
+Because this RPC is using bi-directional streaming it cannot be used with
+grpc-web.
+
+**Requires TxIndex to receive input metadata**</p></td>
+              </tr>
+            
+              <tr>
+                <td>SubscribeBlocks</td>
+                <td><a href="#pb.SubscribeBlocksRequest">SubscribeBlocksRequest</a></td>
+                <td><a href="#pb.BlockNotification">BlockNotification</a> stream</td>
+                <td><p>Subscribe to notifications of new blocks being connected to the blockchain
+or blocks being disconnected.</p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+
+        
+      
+        <h3 id="pb.Block">Block</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>info</td>
+                  <td><a href="#pb.BlockInfo">BlockInfo</a></td>
+                  <td></td>
+                  <td><p>Block header data, as well as metadata stored by the node. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>transaction_data</td>
+                  <td><a href="#pb.Block.TransactionData">Block.TransactionData</a></td>
+                  <td>repeated</td>
+                  <td><p>List of transactions or transaction hashes. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.Block.TransactionData">Block.TransactionData</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>transaction_hash</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>transaction</td>
+                  <td><a href="#pb.Transaction">Transaction</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.BlockInfo">BlockInfo</h3>
+        <p>Metadata for identifying and validating a block</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>hash</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>The repeated sha256 hash of the six header fields encoded according the protocol.
+sha256(sha256(encoded_header)) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>height</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>The block number, an incremental index for each block mined. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>version</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>A version number to track software/protocol upgrades. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>previous_block</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>Hash of the previous block </p></td>
+                </tr>
+              
+                <tr>
+                  <td>merkle_root</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>The root of the merkle tree built from all transactions in the block. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>timestamp</td>
+                  <td><a href="#int64">int64</a></td>
+                  <td></td>
+                  <td><p>When mining of the block started, expressed in seconds since 1970-01-01. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>bits</td>
+                  <td><a href="#uint32">uint32</a></td>
+                  <td></td>
+                  <td><p>Difficulty in Compressed Target Format </p></td>
+                </tr>
+              
+                <tr>
+                  <td>nonce</td>
+                  <td><a href="#uint32">uint32</a></td>
+                  <td></td>
+                  <td><p>A random value that was generated during block mining which happend to
+result in a computed block hash below the difficulty target at the time. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>confirmations</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>Number of blocks in a chain, including the block itself upon creation. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>difficulty</td>
+                  <td><a href="#double">double</a></td>
+                  <td></td>
+                  <td><p>Difficulty target at time of creation </p></td>
+                </tr>
+              
+                <tr>
+                  <td>next_block_hash</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>Hash of the next block </p></td>
+                </tr>
+              
+                <tr>
+                  <td>size</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>Size of the block in bytes </p></td>
+                </tr>
+              
+                <tr>
+                  <td>median_time</td>
+                  <td><a href="#int64">int64</a></td>
+                  <td></td>
+                  <td><p>The median block time of the latest 11 block timestamps </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.BlockNotification">BlockNotification</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>type</td>
+                  <td><a href="#pb.BlockNotification.Type">BlockNotification.Type</a></td>
+                  <td></td>
+                  <td><p>Whether the block is connected to the chain. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>block_info</td>
+                  <td><a href="#pb.BlockInfo">BlockInfo</a></td>
+                  <td></td>
+                  <td><p>Marshaled block header data, as well as metadata stored by the node. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>marshaled_block</td>
+                  <td><a href="#pb.Block">Block</a></td>
+                  <td></td>
+                  <td><p>A Block </p></td>
+                </tr>
+              
+                <tr>
+                  <td>serialized_block</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>Binary block, serialized using bitcoin protocol encoding. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetAddressTransactionsRequest">GetAddressTransactionsRequest</h3>
+        <p>GetAddressTransactionsRequest obtains transactions related to a specific address</p><p>RECOMMENDED:</p><p>Parameters have been provided to query without creating </p><p>performance issues on the node or client.</p><p>- The number of transactions to skip and fetch allow for iterating</p><p>over a large set of transactions, if necessary.</p><p>- A starting block parameter (either `hash` or `height`) </p><p>may then be used to filter results to those occuring</p><p>after a certain time.</p><p>This approach will reduce network traffic and response processing </p><p>for the client, as well as reduce workload on the node.</p><p>The paging and start_block parameters are not applied to </p><p>unconfirmed transactions.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>address</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The address to query transactions, in lowercase cashaddr format.
+The network prefix is optional (i.e. "cashaddress:"). </p></td>
+                </tr>
+              
+                <tr>
+                  <td>nb_skip</td>
+                  <td><a href="#uint32">uint32</a></td>
+                  <td></td>
+                  <td><p>Skip some number of confirmed transactions.
+Does not affect results of unconfirmed transactions. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>nb_fetch</td>
+                  <td><a href="#uint32">uint32</a></td>
+                  <td></td>
+                  <td><p>Only fetch a specific number of transactions, at a time. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>hash</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>Recommended: Only return transactions after a starting block identified by hash. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>height</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>Recommended: Only return transactions after a starting block identified by block number. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetAddressTransactionsResponse">GetAddressTransactionsResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>confirmed_transactions</td>
+                  <td><a href="#pb.Transaction">Transaction</a></td>
+                  <td>repeated</td>
+                  <td><p>Transactions that have been included in a block. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>unconfirmed_transactions</td>
+                  <td><a href="#pb.MempoolTransaction">MempoolTransaction</a></td>
+                  <td>repeated</td>
+                  <td><p>Transactions in mempool which have not been included in a block. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetAddressUnspentOutputsRequest">GetAddressUnspentOutputsRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>address</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The address to query transactions, in lowercase cashaddr format.
+The network prefix is optional (i.e. "cashaddress:"). </p></td>
+                </tr>
+              
+                <tr>
+                  <td>include_mempool</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>When include_mempool is true, unconfirmed transactions from mempool are returned. Default is false. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetAddressUnspentOutputsResponse">GetAddressUnspentOutputsResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>outputs</td>
+                  <td><a href="#pb.UnspentOutput">UnspentOutput</a></td>
+                  <td>repeated</td>
+                  <td><p>List of unspent outputs </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetBlockFilterRequest">GetBlockFilterRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>hash</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>The block hash as a byte array or base64 encoded string, little-endian. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>height</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>The block number </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetBlockFilterResponse">GetBlockFilterResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>filter</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetBlockInfoRequest">GetBlockInfoRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>hash</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>The block hash as a byte array or base64 encoded string, little-endian. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>height</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>The block number </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetBlockInfoResponse">GetBlockInfoResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>info</td>
+                  <td><a href="#pb.BlockInfo">BlockInfo</a></td>
+                  <td></td>
+                  <td><p>Marshaled block header data, as well as metadata. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetBlockRequest">GetBlockRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>hash</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>The block hash as a byte array or base64 encoded string, little-endian. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>height</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>The block number </p></td>
+                </tr>
+              
+                <tr>
+                  <td>full_transactions</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>Provide full transaction info instead of only hashes. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetBlockResponse">GetBlockResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>block</td>
+                  <td><a href="#pb.Block">Block</a></td>
+                  <td></td>
+                  <td><p>A marshaled block </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetBlockchainInfoRequest">GetBlockchainInfoRequest</h3>
+        <p></p>
+
+        
+
+        
+      
+        <h3 id="pb.GetBlockchainInfoResponse">GetBlockchainInfoResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>bitcoin_net</td>
+                  <td><a href="#pb.GetBlockchainInfoResponse.BitcoinNet">GetBlockchainInfoResponse.BitcoinNet</a></td>
+                  <td></td>
+                  <td><p>Which network the node is operating on. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>best_height</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>The current number of blocks on the longest chain. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>best_block_hash</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>The hash of the block on the tip of the longest chain </p></td>
+                </tr>
+              
+                <tr>
+                  <td>difficulty</td>
+                  <td><a href="#double">double</a></td>
+                  <td></td>
+                  <td><p>Threshold for adding new blocks. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>median_time</td>
+                  <td><a href="#int64">int64</a></td>
+                  <td></td>
+                  <td><p>Median time of the last 11 blocks. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>tx_index</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>True if the node has full transaction index is enabled. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>addr_index</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>True if the node has address index is enabled. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetHeadersRequest">GetHeadersRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>block_locator_hashes</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td>repeated</td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>stop_hash</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetHeadersResponse">GetHeadersResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>headers</td>
+                  <td><a href="#pb.BlockInfo">BlockInfo</a></td>
+                  <td>repeated</td>
+                  <td><p>List of block headers </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetMempoolInfoRequest">GetMempoolInfoRequest</h3>
+        <p></p>
+
+        
+
+        
+      
+        <h3 id="pb.GetMempoolInfoResponse">GetMempoolInfoResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>size</td>
+                  <td><a href="#uint32">uint32</a></td>
+                  <td></td>
+                  <td><p>The count of transactions in the mempool </p></td>
+                </tr>
+              
+                <tr>
+                  <td>bytes</td>
+                  <td><a href="#uint32">uint32</a></td>
+                  <td></td>
+                  <td><p>The size in bytes of all transactions in the mempool </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetMempoolRequest">GetMempoolRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>full_transactions</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>When true, full transaction data is provided instead of just transaction hashes. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetMempoolResponse">GetMempoolResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>transaction_data</td>
+                  <td><a href="#pb.GetMempoolResponse.TransactionData">GetMempoolResponse.TransactionData</a></td>
+                  <td>repeated</td>
+                  <td><p>List of unconfirmed transactions. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetMempoolResponse.TransactionData">GetMempoolResponse.TransactionData</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>transaction_hash</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>The transaction hash </p></td>
+                </tr>
+              
+                <tr>
+                  <td>transaction</td>
+                  <td><a href="#pb.Transaction">Transaction</a></td>
+                  <td></td>
+                  <td><p>The transaction data </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetMerkleProofRequest">GetMerkleProofRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>transaction_hash</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetMerkleProofResponse">GetMerkleProofResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>block</td>
+                  <td><a href="#pb.BlockInfo">BlockInfo</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>hashes</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td>repeated</td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>flags</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetRawAddressTransactionsRequest">GetRawAddressTransactionsRequest</h3>
+        <p>Get encoded transactions related to a specific address</p><p>RECOMMENDED:</p><p>Parameters have been provided to query without creating </p><p>performance issues on the node or client.</p><p>- The number of transactions to skip and fetch allow for iterating</p><p>over a large set of transactions, if necessary.</p><p>- A starting block parameter (either `hash` or `height`) </p><p>may then be used to filter results to those occuring</p><p>after a certain time.</p><p>This approach will reduce network traffic and response processing </p><p>for the client, as well as reduce workload on the node.</p><p>The paging and start_block parameters are not applied to </p><p>unconfirmed transactions.</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>address</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The address to query transactions, in lowercase cashaddr format.
+The network prefix is optional (i.e. "cashaddress:"). </p></td>
+                </tr>
+              
+                <tr>
+                  <td>nb_skip</td>
+                  <td><a href="#uint32">uint32</a></td>
+                  <td></td>
+                  <td><p>The number of confirmed transactions to skip starting with the oldest first.
+Does not affect results of unconfirmed transactions. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>nb_fetch</td>
+                  <td><a href="#uint32">uint32</a></td>
+                  <td></td>
+                  <td><p>The total number of transactions to be fetched. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>hash</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>Recommended: Only return transactions after a starting block identified by hash. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>height</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>Recommended: Only return transactions after a starting block identified by block number. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetRawAddressTransactionsResponse">GetRawAddressTransactionsResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>confirmed_transactions</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td>repeated</td>
+                  <td><p>Transactions that have been in a block. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>unconfirmed_transactions</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td>repeated</td>
+                  <td><p>Transactions in mempool which have not been included in a block. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetRawBlockRequest">GetRawBlockRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>hash</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>The block hash as a byte array or base64 encoded string, little-endian. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>height</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>The block number </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetRawBlockResponse">GetRawBlockResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>block</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>Raw block data </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetRawTransactionRequest">GetRawTransactionRequest</h3>
+        <p>Get an encoded transaction from a transaction hash</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>hash</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>A transaction hash </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetRawTransactionResponse">GetRawTransactionResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>transaction</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>Raw transaction in bytes </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetTransactionRequest">GetTransactionRequest</h3>
+        <p>Get a transaction from a transaction hash</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>hash</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>A transaction hash </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetTransactionResponse">GetTransactionResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>transaction</td>
+                  <td><a href="#pb.Transaction">Transaction</a></td>
+                  <td></td>
+                  <td><p>A marshaled transaction </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetUnspentOutputRequest">GetUnspentOutputRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>hash</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>index</td>
+                  <td><a href="#uint32">uint32</a></td>
+                  <td></td>
+                  <td><p>The number of the output, starting from zero. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>include_mempool</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>When include_mempool is true, unconfirmed transactions from mempool are returned. Default is false. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.GetUnspentOutputResponse">GetUnspentOutputResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>outpoint</td>
+                  <td><a href="#pb.Transaction.Input.Outpoint">Transaction.Input.Outpoint</a></td>
+                  <td></td>
+                  <td><p>A reference to the related input </p></td>
+                </tr>
+              
+                <tr>
+                  <td>pubkey_script</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>value</td>
+                  <td><a href="#int64">int64</a></td>
+                  <td></td>
+                  <td><p>Amount in satoshi </p></td>
+                </tr>
+              
+                <tr>
+                  <td>is_coinbase</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>block_height</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.MempoolTransaction">MempoolTransaction</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>transaction</td>
+                  <td><a href="#pb.Transaction">Transaction</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>added_time</td>
+                  <td><a href="#int64">int64</a></td>
+                  <td></td>
+                  <td><p>When the transaction was witnessed by the node. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>added_height</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>The block height at the time the transaction was added to the pool. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>fee</td>
+                  <td><a href="#int64">int64</a></td>
+                  <td></td>
+                  <td><p>The total fee in satoshi the transaction pays. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>fee_per_kb</td>
+                  <td><a href="#int64">int64</a></td>
+                  <td></td>
+                  <td><p>The fee in satoshi per kilobyte the transaction pays. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>starting_priority</td>
+                  <td><a href="#double">double</a></td>
+                  <td></td>
+                  <td><p>The priority of the transaction when it was added to the pool. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.SubmitTransactionRequest">SubmitTransactionRequest</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>transaction</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>The encoded transaction </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.SubmitTransactionResponse">SubmitTransactionResponse</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>hash</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.SubscribeBlocksRequest">SubscribeBlocksRequest</h3>
+        <p>Options to define data structure to be sent by SubscribeBlock stream:</p><p>- BlockInfo (block metadata): `BlockInfo`</p><p>- SubscribeBlocksRequest {}</p><p>- Marshaled Block (with transaction hashes): `Block`</p><p>- SubscribeBlocksRequest {</p><p>full_block = true</p><p>}</p><p>- Marshaled Block (with full transaction data): `Block`</p><p>- SubscribeBlocksRequest {</p><p>full_block = true</p><p>full_transactions = true</p><p>}</p><p>- Serialized Block acccording to bitcoin protocol encoding: `bytes`</p><p>- SubscribeBlocksRequest {</p><p>serialize_block = true</p><p>}</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>full_block</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>When full_block is true, a complete marshaled block is sent. See `Block`.
+Default is false, block metadata is sent. See `BlockInfo`. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>full_transactions</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>When full_transactions is true, provide full transaction info for a marshaled block.
+Default is false, only the transaction hashes are included for a marshaled block. See `TransactionData`. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>serialize_block</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>When serialize_block is true, blocks are serialized using bitcoin protocol encoding. 
+Default is false, block will be Marshaled (see `BlockInfo` and `BlockNotification`) </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.SubscribeTransactionsRequest">SubscribeTransactionsRequest</h3>
+        <p>Request to subscribe or unsubscribe from a stream of transactions</p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>subscribe</td>
+                  <td><a href="#pb.TransactionFilter">TransactionFilter</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>unsubscribe</td>
+                  <td><a href="#pb.TransactionFilter">TransactionFilter</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>include_mempool</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>When include_mempool is true, new unconfirmed transactions from mempool are
+included apart from the ones confirmed in a block. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>include_in_block</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>When include_in_block is true, transactions are included when they are confirmed.
+This notification is sent in addition to any requested mempool notifications. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>serialize_tx</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>When serialize_tx is true, transactions are serialized using bitcoin protocol encoding. 
+Default is false, transaction will be Marshaled (see `Transaction`, `MempoolTransaction` and `TransactionNotification`) </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.Transaction">Transaction</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>hash</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>The double sha256 hash of the encoded transaction.
+sha256(sha256(encoded_transaction)) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>version</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>The version of the transaction format. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>inputs</td>
+                  <td><a href="#pb.Transaction.Input">Transaction.Input</a></td>
+                  <td>repeated</td>
+                  <td><p>List of inputs </p></td>
+                </tr>
+              
+                <tr>
+                  <td>outputs</td>
+                  <td><a href="#pb.Transaction.Output">Transaction.Output</a></td>
+                  <td>repeated</td>
+                  <td><p>List of outputs </p></td>
+                </tr>
+              
+                <tr>
+                  <td>lock_time</td>
+                  <td><a href="#uint32">uint32</a></td>
+                  <td></td>
+                  <td><p>The block height or timestamp after which this transaction is allowed. 
+If value is greater than 500 million, it is assumed to be an epoch timestamp,
+otherwise it is treated as a block-height. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>size</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>The size of the transaction in bytes </p></td>
+                </tr>
+              
+                <tr>
+                  <td>timestamp</td>
+                  <td><a href="#int64">int64</a></td>
+                  <td></td>
+                  <td><p>When the transaction was included in a block, in epoch time. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>confirmations</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>Number of blocks including proof of the transaction, including the block it appeared. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>block_height</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>Number of the block containing the transaction. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>block_hash</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>Hash of the block the transaction was recorded in. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.Transaction.Input">Transaction.Input</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>index</td>
+                  <td><a href="#uint32">uint32</a></td>
+                  <td></td>
+                  <td><p>The number of the input, starting from zero. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>outpoint</td>
+                  <td><a href="#pb.Transaction.Input.Outpoint">Transaction.Input.Outpoint</a></td>
+                  <td></td>
+                  <td><p>The related outpoint </p></td>
+                </tr>
+              
+                <tr>
+                  <td>signature_script</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>The signature script used to redeem the origin transaction </p></td>
+                </tr>
+              
+                <tr>
+                  <td>sequence</td>
+                  <td><a href="#uint32">uint32</a></td>
+                  <td></td>
+                  <td><p>As of BIP-68, the sequence number is interpreted as a relative lock-time for the input. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>value</td>
+                  <td><a href="#int64">int64</a></td>
+                  <td></td>
+                  <td><p>Amount in satoshi </p></td>
+                </tr>
+              
+                <tr>
+                  <td>previous_script</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>The hash of the transaction containing the output to be spent. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>address</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The bitcoin addresses associated with this input. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.Transaction.Input.Outpoint">Transaction.Input.Outpoint</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>hash</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>The hash of the transaction containing the output to be spent. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>index</td>
+                  <td><a href="#uint32">uint32</a></td>
+                  <td></td>
+                  <td><p>The txout index of the outpoint. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.Transaction.Output">Transaction.Output</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>index</td>
+                  <td><a href="#uint32">uint32</a></td>
+                  <td></td>
+                  <td><p>The number of the output, starting from zero. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>value</td>
+                  <td><a href="#int64">int64</a></td>
+                  <td></td>
+                  <td><p>The number of satoshis to be transferred. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>pubkey_script</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>The public key script used to pay coins. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>address</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The bitcoin addresses associated with this output. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>script_class</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>The type of script. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>disassembled_script</td>
+                  <td><a href="#string">string</a></td>
+                  <td></td>
+                  <td><p>TODO-DOC? be more descriptive: disassembly of the script </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.TransactionFilter">TransactionFilter</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>addresses</td>
+                  <td><a href="#string">string</a></td>
+                  <td>repeated</td>
+                  <td><p>Filter by address(es) </p></td>
+                </tr>
+              
+                <tr>
+                  <td>outpoints</td>
+                  <td><a href="#pb.Transaction.Input.Outpoint">Transaction.Input.Outpoint</a></td>
+                  <td>repeated</td>
+                  <td><p>TODO-DOCS: ? Filter by output hash and index </p></td>
+                </tr>
+              
+                <tr>
+                  <td>data_elements</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td>repeated</td>
+                  <td><p>TODO-DOCS: ? Specify which transaction elements to return </p></td>
+                </tr>
+              
+                <tr>
+                  <td>all_transactions</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>Subscribed/Unsubscribe to everything. Other filters
+will be ignored. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.TransactionNotification">TransactionNotification</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>type</td>
+                  <td><a href="#pb.TransactionNotification.Type">TransactionNotification.Type</a></td>
+                  <td></td>
+                  <td><p>Whether or not the transaction has been included in a block </p></td>
+                </tr>
+              
+                <tr>
+                  <td>confirmed_transaction</td>
+                  <td><a href="#pb.Transaction">Transaction</a></td>
+                  <td></td>
+                  <td><p>A transaction included in a block. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>unconfirmed_transaction</td>
+                  <td><a href="#pb.MempoolTransaction">MempoolTransaction</a></td>
+                  <td></td>
+                  <td><p>A broadcasted transaction in mempool. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>serialized_transaction</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>Binary transaction, serialized using bitcoin protocol encoding. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+        <h3 id="pb.UnspentOutput">UnspentOutput</h3>
+        <p></p>
+
+        
+          <table class="field-table">
+            <thead>
+              <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+            </thead>
+            <tbody>
+              
+                <tr>
+                  <td>outpoint</td>
+                  <td><a href="#pb.Transaction.Input.Outpoint">Transaction.Input.Outpoint</a></td>
+                  <td></td>
+                  <td><p> </p></td>
+                </tr>
+              
+                <tr>
+                  <td>pubkey_script</td>
+                  <td><a href="#bytes">bytes</a></td>
+                  <td></td>
+                  <td><p>The public key script used to pay coins. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>value</td>
+                  <td><a href="#int64">int64</a></td>
+                  <td></td>
+                  <td><p>The amount in satoshis </p></td>
+                </tr>
+              
+                <tr>
+                  <td>is_coinbase</td>
+                  <td><a href="#bool">bool</a></td>
+                  <td></td>
+                  <td><p>Whether or not the input is a generation transaction, the result of mining. </p></td>
+                </tr>
+              
+                <tr>
+                  <td>block_height</td>
+                  <td><a href="#int32">int32</a></td>
+                  <td></td>
+                  <td><p>The block number containing the UXTO. </p></td>
+                </tr>
+              
+            </tbody>
+          </table>
+
+          
+
+        
+      
+
+      
+        <h3 id="pb.BlockNotification.Type">BlockNotification.Type</h3>
+        <p>State of the block in relation to the chain.</p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>CONNECTED</td>
+                <td>0</td>
+                <td><p></p></td>
+              </tr>
+            
+              <tr>
+                <td>DISCONNECTED</td>
+                <td>1</td>
+                <td><p></p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+        <h3 id="pb.GetBlockchainInfoResponse.BitcoinNet">GetBlockchainInfoResponse.BitcoinNet</h3>
+        <p>Bitcoin network types</p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>MAINNET</td>
+                <td>0</td>
+                <td><p>Live public network with monetary value.</p></td>
+              </tr>
+            
+              <tr>
+                <td>REGTEST</td>
+                <td>1</td>
+                <td><p>An isolated environment for automated testing.</p></td>
+              </tr>
+            
+              <tr>
+                <td>TESTNET3</td>
+                <td>2</td>
+                <td><p>A public environment where monetary value is agreed to be zero,
+and some checks for transaction conformity are disabled.</p></td>
+              </tr>
+            
+              <tr>
+                <td>SIMNET</td>
+                <td>3</td>
+                <td><p>Private testnets for large scale simulations (or stress testing),
+where a specified list of nodes is used, rather than node discovery.</p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+        <h3 id="pb.TransactionNotification.Type">TransactionNotification.Type</h3>
+        <p>State of the transaction acceptance.</p>
+        <table class="enum-table">
+          <thead>
+            <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+          </thead>
+          <tbody>
+            
+              <tr>
+                <td>UNCONFIRMED</td>
+                <td>0</td>
+                <td><p>A transction in mempool.</p></td>
+              </tr>
+            
+              <tr>
+                <td>CONFIRMED</td>
+                <td>1</td>
+                <td><p>A transaction in a block.</p></td>
+              </tr>
+            
+          </tbody>
+        </table>
+      
+
+      
+
+    
+
+    <h2 id="scalar-value-types">Scalar Value Types</h2>
+    <table class="scalar-value-types-table">
+      <thead>
+        <tr><td>.proto Type</td><td>Notes</td><td>C++</td><td>Java</td><td>Python</td><td>Go</td><td>C#</td><td>PHP</td><td>Ruby</td></tr>
+      </thead>
+      <tbody>
+        
+          <tr id="double">
+            <td>double</td>
+            <td></td>
+            <td>double</td>
+            <td>double</td>
+            <td>float</td>
+            <td>float64</td>
+            <td>double</td>
+            <td>float</td>
+            <td>Float</td>
+          </tr>
+        
+          <tr id="float">
+            <td>float</td>
+            <td></td>
+            <td>float</td>
+            <td>float</td>
+            <td>float</td>
+            <td>float32</td>
+            <td>float</td>
+            <td>float</td>
+            <td>Float</td>
+          </tr>
+        
+          <tr id="int32">
+            <td>int32</td>
+            <td>Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead.</td>
+            <td>int32</td>
+            <td>int</td>
+            <td>int</td>
+            <td>int32</td>
+            <td>int</td>
+            <td>integer</td>
+            <td>Bignum or Fixnum (as required)</td>
+          </tr>
+        
+          <tr id="int64">
+            <td>int64</td>
+            <td>Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead.</td>
+            <td>int64</td>
+            <td>long</td>
+            <td>int/long</td>
+            <td>int64</td>
+            <td>long</td>
+            <td>integer/string</td>
+            <td>Bignum</td>
+          </tr>
+        
+          <tr id="uint32">
+            <td>uint32</td>
+            <td>Uses variable-length encoding.</td>
+            <td>uint32</td>
+            <td>int</td>
+            <td>int/long</td>
+            <td>uint32</td>
+            <td>uint</td>
+            <td>integer</td>
+            <td>Bignum or Fixnum (as required)</td>
+          </tr>
+        
+          <tr id="uint64">
+            <td>uint64</td>
+            <td>Uses variable-length encoding.</td>
+            <td>uint64</td>
+            <td>long</td>
+            <td>int/long</td>
+            <td>uint64</td>
+            <td>ulong</td>
+            <td>integer/string</td>
+            <td>Bignum or Fixnum (as required)</td>
+          </tr>
+        
+          <tr id="sint32">
+            <td>sint32</td>
+            <td>Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s.</td>
+            <td>int32</td>
+            <td>int</td>
+            <td>int</td>
+            <td>int32</td>
+            <td>int</td>
+            <td>integer</td>
+            <td>Bignum or Fixnum (as required)</td>
+          </tr>
+        
+          <tr id="sint64">
+            <td>sint64</td>
+            <td>Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s.</td>
+            <td>int64</td>
+            <td>long</td>
+            <td>int/long</td>
+            <td>int64</td>
+            <td>long</td>
+            <td>integer/string</td>
+            <td>Bignum</td>
+          </tr>
+        
+          <tr id="fixed32">
+            <td>fixed32</td>
+            <td>Always four bytes. More efficient than uint32 if values are often greater than 2^28.</td>
+            <td>uint32</td>
+            <td>int</td>
+            <td>int</td>
+            <td>uint32</td>
+            <td>uint</td>
+            <td>integer</td>
+            <td>Bignum or Fixnum (as required)</td>
+          </tr>
+        
+          <tr id="fixed64">
+            <td>fixed64</td>
+            <td>Always eight bytes. More efficient than uint64 if values are often greater than 2^56.</td>
+            <td>uint64</td>
+            <td>long</td>
+            <td>int/long</td>
+            <td>uint64</td>
+            <td>ulong</td>
+            <td>integer/string</td>
+            <td>Bignum</td>
+          </tr>
+        
+          <tr id="sfixed32">
+            <td>sfixed32</td>
+            <td>Always four bytes.</td>
+            <td>int32</td>
+            <td>int</td>
+            <td>int</td>
+            <td>int32</td>
+            <td>int</td>
+            <td>integer</td>
+            <td>Bignum or Fixnum (as required)</td>
+          </tr>
+        
+          <tr id="sfixed64">
+            <td>sfixed64</td>
+            <td>Always eight bytes.</td>
+            <td>int64</td>
+            <td>long</td>
+            <td>int/long</td>
+            <td>int64</td>
+            <td>long</td>
+            <td>integer/string</td>
+            <td>Bignum</td>
+          </tr>
+        
+          <tr id="bool">
+            <td>bool</td>
+            <td></td>
+            <td>bool</td>
+            <td>boolean</td>
+            <td>boolean</td>
+            <td>bool</td>
+            <td>bool</td>
+            <td>boolean</td>
+            <td>TrueClass/FalseClass</td>
+          </tr>
+        
+          <tr id="string">
+            <td>string</td>
+            <td>A string must always contain UTF-8 encoded or 7-bit ASCII text.</td>
+            <td>string</td>
+            <td>String</td>
+            <td>str/unicode</td>
+            <td>string</td>
+            <td>string</td>
+            <td>string</td>
+            <td>String (UTF-8)</td>
+          </tr>
+        
+          <tr id="bytes">
+            <td>bytes</td>
+            <td>May contain any arbitrary sequence of bytes.</td>
+            <td>string</td>
+            <td>ByteString</td>
+            <td>str</td>
+            <td>[]byte</td>
+            <td>ByteString</td>
+            <td>string</td>
+            <td>String (ASCII-8BIT)</td>
+          </tr>
+        
+      </tbody>
+    </table>
+  </body>
+</html>
