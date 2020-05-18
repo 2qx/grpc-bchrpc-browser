@@ -57,7 +57,9 @@ describe("grpc-bchrpc-browser", () => {
         chai_1.assert.equal(hash, "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
     }));
     it("getBlockInfo for hash b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA=", () => __awaiter(void 0, void 0, void 0, function* () {
-        const hash = "b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA=";
+        const hexString = "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f";
+        const hashArray = Uint8Array.from(buffer_1.Buffer.from(hexString, 'hex')).reverse();
+        const hash = buffer_1.Buffer.from(hashArray).toString('base64'); // "b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA="
         const info = yield client.getBlockInfo({ hash: hash }, null);
         chai_1.assert.equal(info.getInfo().getHeight(), 0);
         const hashHex = buffer_1.Buffer.from(info.getInfo().getHash_asU8().reverse()).toString("hex");
@@ -26212,6 +26214,12 @@ class GrpcClient {
             });
         });
     }
+    /**
+     *
+     * @param includeMempoolAcceptance - If true, new unconfirmed transactions from mempool are included apart from the ones confirmed in a block.
+     * @param includeBlockAcceptance - If true, transactions are included when they are confirmed. This notification is sent in addition to any requested mempool notifications.
+     * @param includeSerializedTxn - If true, transactions are serialized using bitcoin protocol encoding. Default is false, transaction will be Marshaled.
+     */
     subscribeTransactions({ includeMempoolAcceptance, includeBlockAcceptance, includeSerializedTxn }) {
         return new Promise((resolve, reject) => {
             const req = new bchrpc.SubscribeTransactionsRequest();
