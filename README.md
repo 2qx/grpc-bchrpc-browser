@@ -5,22 +5,20 @@ A bchd rpc client for browsers using grpc/grpc-web
 This package provides a simple gRPC client for connecting web applications to 
 a [bchd](https://bchd.cash) full node.
 
-[A mobile friendly version](https://2qx.github.io/grpc-bchrpc-browser/) of this [project](https://github.com/2qx/grpc-bchrpc-browser). 
+[A mobile friendly version](https://2qx.github.io/grpc-bchrpc-browser/) of this [project](https://github.com/2qx/grpc-bchrpc-browser) README. 
 
 
 ## Getting Started
 
-For a quick example usage subscribing of transactions see `example/`
+For a quick [example usage subscribing of transactions see the console here](example/).
 
-Detailed documentation for the rpc protocol is a work in progress here:
+Detailed [RPC Documentation](docs_bchrpc/) for the rpc protocol is a work in progress.
 
-[RPC Documentation](docs_bchrpc/) 
-
-As a big-endian language, certain convenience parameters were added to the client,
+As a big-endian language, certain convenience parameters were added to the client wrapper,
  for ease of use. Also all parameters are are passed as an object, and any metadata needed
  for the connection is passed as a second argument. 
 
-[Client Documentation](docs/classes/_src_client_.grpcclient.html) which is generated using typedoc.
+[Client Documentation](docs/classes/_client_.grpcclient.html) which is generated using typedoc.
 
 [Mocha browser tests](test/) should provide some working examples.
 
@@ -36,15 +34,19 @@ than on-the-fly, a functionality which may be employed with the @improbable libr
 The motivation is toward lower maintenance, long-term stability and support by using 
 the google library, not that this thinking played out well with the framework formerly known as angular. 
 
+One notable limitation of the official grpc/grpc-web library is a lack of FETCH support.
+
 ## See also
 
-It's likely that these versions may be more what you're looking for in your project:
+- The [official documentation](https://github.com/gcash/bchd/tree/master/bchrpc/) for bchrpc.
+- The [reference implementation](https://github.com/gcash/bchd/tree/master/bchrpc/pb-js) from the bchd team.
+- Notes on the [limitations of multiplexing from a browser](https://github.com/gcash/bchd/blob/master/bchrpc/documentation/web.md)
 
-For an implementation with node compatibility & TypeScript 
-see: [grpc-bchrpc-web](https://github.com/simpleledgerinc/grpc-bchrpc-web)
+Alternative implementations of this project are built using the improbable-eng library here:
 
-For an implementation using a local gcash node from nodejs 
-see: [grpc-bchrpc-node](https://github.com/simpleledgerinc/grpc-bchrpc-node)
+- For the web: [grpc-bchrpc-web](https://github.com/simpleledgerinc/grpc-bchrpc-web)
+
+- Using a local gcash node from nodejs: [grpc-bchrpc-node](https://github.com/simpleledgerinc/grpc-bchrpc-node)
 
 
 ## Scripts
