@@ -74,22 +74,17 @@ export class GrpcClient {
     /**
     * Get a raw transaction
     * @param hash - the hash, in either a base64 encoded string or byte array, little-endian.
-    * @param hashHex - the hash as a hexadecimal encoded string, sill be overridden by hash if provided.
-    * @param reverseHex - Flag to reverse endian of hashHex, setting `true` will reverse a big-endian `hex` hash.
+    * @param hashHex - the hash as a big-endian hexadecimal encoded string, sill be overridden by hash if provided.
     * @param metadata - Optional parameters for grpcWeb client
     */
     public getRawTransaction(
-        { hash, hashHex, reverseHex }:
-            { hash?: string | Uint8Array; hashHex?: string, reverseHex?: boolean },
+        { hash, hashHex }:
+            { hash?: string | Uint8Array; hashHex?: string },
         metadata: grpcWeb.Metadata | null
     ): Promise<bchrpc.GetRawTransactionResponse> {
         const req = new bchrpc.GetRawTransactionRequest();
         if (hashHex) {
-            if (reverseHex) {
-                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
-            } else {
-                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))));
-            }
+            req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
         } else if (hash) {
             req.setHash(hash);
         } else {
@@ -106,22 +101,17 @@ export class GrpcClient {
     /**
     * Get a transaction
     * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
-    * @param hashHex - the hash as a hexadecimal encoded string, will be overridden by hash, if provided.
-    * @param reverseHex - Flag to reverse endian of hashHex, setting `true` will reverse a big-endian `hex` hash.
+    * @param hashHex - the hash as a big-endian hexadecimal encoded string, will be overridden by hash, if provided.
     * @param metadata - Optional parameters for grpcWeb client
     */
     public getTransaction(
-        { hash, hashHex, reverseHex }:
-            { hash?: string | Uint8Array; hashHex?: string, reverseHex?: boolean },
+        { hash, hashHex }:
+            { hash?: string | Uint8Array; hashHex?: string },
         metadata: grpcWeb.Metadata | null
     ): Promise<bchrpc.GetTransactionResponse> {
         const req = new bchrpc.GetTransactionRequest();
         if (hashHex) {
-            if (reverseHex) {
-                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
-            } else {
-                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))));
-            }
+            req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
         } else if (hash) {
             req.setHash(hash);
         } else {
@@ -141,18 +131,16 @@ export class GrpcClient {
     * @param nbFetch - Number of transactions return.
     * @param height - Filter to only return transactions after this block number.
     * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
-    * @param hashHex - the hash as a hexadecimal encoded string, will be overridden by `hash`, if provided.
-    * @param reverseHex - Flag to reverse endian of hashHex, setting `true` will reverse a big-endian `hex` hash.
+    * @param hashHex - the hash as a big-endian hexadecimal encoded string, will be overridden by `hash`, if provided.
     * @param metadata - Optional parameters for grpcWeb client
     */
-    public getAddressTransactions({ address, nbSkip, nbFetch, height, hashHex, reverseHex }:
+    public getAddressTransactions({ address, nbSkip, nbFetch, height, hashHex }:
         {
             address: string,
             nbSkip?: number,
             nbFetch?: number,
             height?: number,
-            hashHex?: string,
-            reverseHex?: boolean
+            hashHex?: string
         },
         metadata: grpcWeb.Metadata | null
     ): Promise<bchrpc.GetAddressTransactionsResponse> {
@@ -167,11 +155,7 @@ export class GrpcClient {
             req.setHeight(height);
         }
         if (hashHex) {
-            if (reverseHex) {
-                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
-            } else {
-                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))));
-            }
+            req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
         }
         req.setAddress(address);
         return new Promise((resolve, reject) => {
@@ -182,9 +166,9 @@ export class GrpcClient {
     }
 
     public getUnspentOutput(
-        { hash, vout, reversedHashOrder, includeMempool }:
+        { hash, hashHex, vout, includeMempool }:
             {
-                hash: string, vout: number, reversedHashOrder?: boolean,
+                hash?: string,hashHex?: string, vout: number, 
                 includeMempool?: boolean
             }
         , metadata: grpcWeb.Metadata | null
@@ -193,14 +177,41 @@ export class GrpcClient {
         if (includeMempool) {
             req.setIncludeMempool(true);
         }
-        if (reversedHashOrder) {
-            req.setHash(new Uint8Array(hash.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
-        } else {
-            req.setHash(new Uint8Array(hash.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))));
+        if (hashHex) {
+            req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
+        } else if (hash) {
+            req.setHash(hash);
         }
         req.setIndex(vout);
         return new Promise((resolve, reject) => {
             this.client.getUnspentOutput(req, metadata, (err, data) => {
+                if (err !== null) { reject(err); } else { resolve(data!); }
+            });
+        });
+    }
+
+    /**
+     * getMerkleProof
+     * 
+     * Retrieve merkle (SPV) proof that the given transaction is in the provided block.
+     * @param hash - the tx hash, in either a 'base64' encoded string or byte array, little-endian.
+     * @param hashHex - the tx hash as a big-endian 'hex' encoded string, will be overridden by hash if also provided.
+     */
+    public getMerkleProof(
+        { hash, hashHex }:
+            {
+                hash?: string, hashHex?: string
+            }
+        , metadata: grpcWeb.Metadata | null
+    ): Promise<bchrpc.GetMerkleProofResponse> {
+        const req = new bchrpc.GetMerkleProofRequest();
+        if (hashHex) {
+            req.setTransactionHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
+        } else if (hash) {
+            req.setTransactionHash(hash);
+        }
+        return new Promise((resolve, reject) => {
+            this.client.getMerkleProof(req, metadata, (err, data) => {
                 if (err !== null) { reject(err); } else { resolve(data!); }
             });
         });
@@ -228,21 +239,16 @@ export class GrpcClient {
      * 
      * Retrieve raw block from a hash
      * @param hash - the hash, in either a 'base64' encoded string or byte array, little-endian.
-     * @param hashHex - the hash as a 'hex' encoded string, will be overridden by hash if also provided.
-     * @param reverseHex - a flag to reverse endian of hashHex, setting `true` will reverse a big-endian hash.
+     * @param hashHex - the hash as a big-endian 'hex' encoded string, will be overridden by hash if also provided.
      */
     public getRawBlock(
-        { hash, hashHex, reverseHex }:
-            { hash?: string | Uint8Array, hashHex: string; reverseHex?: boolean },
+        { hash, hashHex }:
+            { hash?: string | Uint8Array, hashHex?: string },
         metadata: grpcWeb.Metadata | null
     ): Promise<bchrpc.GetRawBlockResponse> {
         const req = new bchrpc.GetRawBlockRequest();
         if (hashHex) {
-            if (reverseHex) {
-                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
-            } else {
-                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))));
-            }
+            req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
         } else if (hash) {
             req.setHash(hash);
         } else {
@@ -262,24 +268,19 @@ export class GrpcClient {
      * Retrieve block info given a block number or hash
      * @param index - the block number to be retrieved.
      * @param hash - the hash, in either a 'base64' encoded string or byte array, little-endian.
-     * @param hashHex - the hash as a 'hex' encoded string, will be overridden by hash if also provided.
-     * @param reverseHex - a flag to reverse endian of hashHex, setting `true` will reverse a big-endian hash.
+     * @param hashHex - the hash as a big-endian 'hex' encoded string, will be overridden by hash if also provided.
      * @param fullTransactions - a flag to return full transaction data, by defult `false` only transaction hashes are returned.
      */
     public getBlock(
-        { index, hash, hashHex, reverseHex, fullTransactions }:
-            { index?: number, hash?: string | Uint8Array, hashHex?: string, reverseHex?: boolean, fullTransactions?: boolean },
+        { index, hash, hashHex, fullTransactions }:
+            { index?: number, hash?: string | Uint8Array, hashHex?: string, fullTransactions?: boolean },
         metadata: grpcWeb.Metadata | null
     ): Promise<bchrpc.GetBlockResponse> {
         const req = new bchrpc.GetBlockRequest();
         if (index !== null && index !== undefined) {
             req.setHeight(index);
         } else if (hashHex) {
-            if (reverseHex) {
-                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
-            } else {
-                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))));
-            }
+            req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
         } else if (hash) {
             req.setHash(hash);
         } else {
@@ -299,27 +300,22 @@ export class GrpcClient {
      * getBlockInfo
      * 
      * Retrieve block info given a block number or hash
-     * @param index - the block number to be retrieved.
+     * @param height - the block number index to be retrieved.
      * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
-     * @param hashHex - the hash as a 'hex' encoded string, will be overridden a hash if provided.
-     * @param reverseHex - a flag to reverse endian of hashHex, for big-endian strings.
+     * @param hashHex - the hash as a big-endian 'hex' encoded string, will be overridden a hash if provided.
      */
     public getBlockInfo(
-        { index, hash, hashHex, reverseHex }:
-            { index?: number, hash?: string | Uint8Array, hashHex?: string, reverseHex?: boolean },
+        { height, hash, hashHex }:
+            { height?: number, hash?: string | Uint8Array, hashHex?: string },
         metadata: grpcWeb.Metadata | null
     ): Promise<bchrpc.GetBlockInfoResponse> {
         const req = new bchrpc.GetBlockInfoRequest();
-        if (index !== null && index !== undefined) { req.setHeight(index); } else if (hashHex) {
-            if (reverseHex) {
-                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
-            } else {
-                req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))));
-            }
+        if (height !== null && height !== undefined) { req.setHeight(height); } else if (hashHex) {
+            req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
         } else if (hash) {
             req.setHash(hash);
         } else {
-            throw Error("No index or hash provided for block");
+
         }
         return new Promise((resolve, reject) => {
             this.client.getBlockInfo(req, metadata, (err, response) => {

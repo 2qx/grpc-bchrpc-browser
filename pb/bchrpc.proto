@@ -3,8 +3,8 @@ syntax = "proto3";
 package pb;
 
 // Bitcoin Cash remote procedure calls is a protocol for communicating with a 
-// bitcoin cash node from some client.  It is a set of methods, developed 
-// for the bchd node, that can be exposed publicly via the command line options. 
+// bitcoin cash node from some client.  It is a set of procedure calls, initially
+// developed for bchd node, that can be exposed publicly via the command line options. 
 //
 // This service could be authenticated or unauthenticated.
 //
@@ -376,7 +376,7 @@ message GetUnspentOutputResponse {
     bytes pubkey_script = 2;
     // Amount in satoshi
     int64 value = 3;
-    // When is_coinbase is true, transaction was the first in a block, created by a miner to pay the block reward
+    // When is_coinbase is true, the transaction was the first in a block, created by a miner, and used to pay the block reward
     bool is_coinbase = 4;
     // The index number of the block containing the transaction creating the output
     int32 block_height = 5;
