@@ -93,8 +93,8 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| transaction_hash | [bytes](#bytes) |  |  |
-| transaction | [Transaction](#pb.Transaction) |  |  |
+| transaction_hash | [bytes](#bytes) |  | A transaction hash |
+| transaction | [Transaction](#pb.Transaction) |  | A marshaled transaction |
 
 
 
@@ -109,7 +109,7 @@ Metadata for identifying and validating a block
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hash | [bytes](#bytes) |  | The repeated sha256 hash of the six header fields encoded according the protocol. sha256(sha256(encoded_header)) |
+| hash | [bytes](#bytes) |  | The double sha256 hash of the six header fields in the first 80 bytes of the block, when encoded according the bitcoin protocol. sha256(sha256(encoded_header)) |
 | height | [int32](#int32) |  | The block number, an incremental index for each block mined. |
 | version | [int32](#int32) |  | A version number to track software/protocol upgrades. |
 | previous_block | [bytes](#bytes) |  | Hash of the previous block |
@@ -173,8 +173,8 @@ The paging and start_block parameters are not applied to
 | address | [string](#string) |  | The address to query transactions, in lowercase cashaddr format. The network prefix is optional (i.e. &#34;cashaddress:&#34;). |
 | nb_skip | [uint32](#uint32) |  | Skip some number of confirmed transactions. Does not affect results of unconfirmed transactions. |
 | nb_fetch | [uint32](#uint32) |  | Only fetch a specific number of transactions, at a time. |
-| hash | [bytes](#bytes) |  | Recommended: Only return transactions after a starting block identified by hash. |
-| height | [int32](#int32) |  | Recommended: Only return transactions after a starting block identified by block number. |
+| hash | [bytes](#bytes) |  | Only get transactions after (or within) a starting block identified by hash. |
+| height | [int32](#int32) |  | Only get transactions after (or within) a starting block identified by block number. |
 
 
 
@@ -300,7 +300,7 @@ The paging and start_block parameters are not applied to
 | ----- | ---- | ----- | ----------- |
 | hash | [bytes](#bytes) |  | The block hash as a byte array or base64 encoded string, little-endian. |
 | height | [int32](#int32) |  | The block number |
-| full_transactions | [bool](#bool) |  | Provide full transaction info instead of only hashes. |
+| full_transactions | [bool](#bool) |  | When full_transactions is true, full transactions are returned instead of just hashes. Default is false. |
 
 
 
@@ -342,11 +342,11 @@ The paging and start_block parameters are not applied to
 | ----- | ---- | ----- | ----------- |
 | bitcoin_net | [GetBlockchainInfoResponse.BitcoinNet](#pb.GetBlockchainInfoResponse.BitcoinNet) |  | Which network the node is operating on. |
 | best_height | [int32](#int32) |  | The current number of blocks on the longest chain. |
-| best_block_hash | [bytes](#bytes) |  | The hash of the block on the tip of the longest chain |
+| best_block_hash | [bytes](#bytes) |  | The hash of the best (tip) block in the most-work fully-validated chain. |
 | difficulty | [double](#double) |  | Threshold for adding new blocks. |
 | median_time | [int64](#int64) |  | Median time of the last 11 blocks. |
-| tx_index | [bool](#bool) |  | True if the node has full transaction index is enabled. |
-| addr_index | [bool](#bool) |  | True if the node has address index is enabled. |
+| tx_index | [bool](#bool) |  | When tx_index is true, the node has full transaction index is enabled. |
+| addr_index | [bool](#bool) |  | When addr_index is true, the node has address index is enabled. |
 
 
 
@@ -356,13 +356,13 @@ The paging and start_block parameters are not applied to
 <a name="pb.GetHeadersRequest"></a>
 
 ### GetHeadersRequest
-
+Request headers using a list of known block hashes
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| block_locator_hashes | [bytes](#bytes) | repeated |  |
-| stop_hash | [bytes](#bytes) |  |  |
+| block_locator_hashes | [bytes](#bytes) | repeated | A list of block hashes known to the client (most recent first) which is expodentially sparcer toward the genesis block (0). Common pratice is to include all of the last 10 blocks, and then 9 blocks for each order of magnitude thereafter. |
+| stop_hash | [bytes](#bytes) |  | hash of the latest desired block header; only blocks occuring before the stop will be returned. |
 
 
 
@@ -418,7 +418,7 @@ The paging and start_block parameters are not applied to
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| full_transactions | [bool](#bool) |  | When true, full transaction data is provided instead of just transaction hashes. |
+| full_transactions | [bool](#bool) |  | When `full_transactions` is true, full transaction data is provided instead of just transaction hashes. Default is false. |
 
 
 
@@ -464,7 +464,7 @@ The paging and start_block parameters are not applied to
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| transaction_hash | [bytes](#bytes) |  |  |
+| transaction_hash | [bytes](#bytes) |  | A transaction hash |
 
 
 
@@ -513,7 +513,7 @@ The paging and start_block parameters are not applied to
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | address | [string](#string) |  | The address to query transactions, in lowercase cashaddr format. The network prefix is optional (i.e. &#34;cashaddress:&#34;). |
-| nb_skip | [uint32](#uint32) |  | The number of confirmed transactions to skip starting with the oldest first. Does not affect results of unconfirmed transactions. |
+| nb_skip | [uint32](#uint32) |  | The number of confirmed transactions to skip starting with the oldest first. `nb_skip` does not affect results of unconfirmed transactions. |
 | nb_fetch | [uint32](#uint32) |  | The total number of transactions to be fetched. |
 | hash | [bytes](#bytes) |  | Recommended: Only return transactions after a starting block identified by hash. |
 | height | [int32](#int32) |  | Recommended: Only return transactions after a starting block identified by block number. |
@@ -531,7 +531,7 @@ The paging and start_block parameters are not applied to
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| confirmed_transactions | [bytes](#bytes) | repeated | Transactions that have been in a block. |
+| confirmed_transactions | [bytes](#bytes) | repeated | Transactions that have been included in a block. |
 | unconfirmed_transactions | [bytes](#bytes) | repeated | Transactions in mempool which have not been included in a block. |
 
 
@@ -563,7 +563,7 @@ The paging and start_block parameters are not applied to
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| block | [bytes](#bytes) |  | Raw block data |
+| block | [bytes](#bytes) |  | Raw block data (with header) serialized according the the block protocol |
 
 
 
@@ -638,7 +638,7 @@ Get a transaction from a transaction hash
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hash | [bytes](#bytes) |  |  |
+| hash | [bytes](#bytes) |  | The hash of the transaction. |
 | index | [uint32](#uint32) |  | The number of the output, starting from zero. |
 | include_mempool | [bool](#bool) |  | When include_mempool is true, unconfirmed transactions from mempool are returned. Default is false. |
 
@@ -658,8 +658,8 @@ Get a transaction from a transaction hash
 | outpoint | [Transaction.Input.Outpoint](#pb.Transaction.Input.Outpoint) |  | A reference to the related input |
 | pubkey_script | [bytes](#bytes) |  |  |
 | value | [int64](#int64) |  | Amount in satoshi |
-| is_coinbase | [bool](#bool) |  |  |
-| block_height | [int32](#int32) |  |  |
+| is_coinbase | [bool](#bool) |  | When is_coinbase is true, transaction was the first in a block, created by a miner to pay the block reward |
+| block_height | [int32](#int32) |  | The index number of the block containing the transaction creating the output |
 
 
 
@@ -675,7 +675,7 @@ Get a transaction from a transaction hash
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | transaction | [Transaction](#pb.Transaction) |  |  |
-| added_time | [int64](#int64) |  | When the transaction was witnessed by the node. |
+| added_time | [int64](#int64) |  | TODO-DOCS: ? When the transaction was witnessed by the node. |
 | added_height | [int32](#int32) |  | The block height at the time the transaction was added to the pool. |
 | fee | [int64](#int64) |  | The total fee in satoshi the transaction pays. |
 | fee_per_kb | [int64](#int64) |  | The fee in satoshi per kilobyte the transaction pays. |
@@ -781,7 +781,7 @@ Request to subscribe or unsubscribe from a stream of transactions
 | version | [int32](#int32) |  | The version of the transaction format. |
 | inputs | [Transaction.Input](#pb.Transaction.Input) | repeated | List of inputs |
 | outputs | [Transaction.Output](#pb.Transaction.Output) | repeated | List of outputs |
-| lock_time | [uint32](#uint32) |  | The block height or timestamp after which this transaction is allowed. If value is greater than 500 million, it is assumed to be an epoch timestamp, otherwise it is treated as a block-height. |
+| lock_time | [uint32](#uint32) |  | The block height or timestamp after which this transaction is allowed. If value is greater than 500 million, it is assumed to be an epoch timestamp, otherwise it is treated as a block-height. Default is zero, or lock. |
 | size | [int32](#int32) |  | The size of the transaction in bytes |
 | timestamp | [int64](#int64) |  | When the transaction was included in a block, in epoch time. |
 | confirmations | [int32](#int32) |  | Number of blocks including proof of the transaction, including the block it appeared. |
@@ -803,7 +803,7 @@ Request to subscribe or unsubscribe from a stream of transactions
 | ----- | ---- | ----- | ----------- |
 | index | [uint32](#uint32) |  | The number of the input, starting from zero. |
 | outpoint | [Transaction.Input.Outpoint](#pb.Transaction.Input.Outpoint) |  | The related outpoint |
-| signature_script | [bytes](#bytes) |  | The signature script used to redeem the origin transaction |
+| signature_script | [bytes](#bytes) |  | TODO-DOCS: ? The signature script used to redeem the origin transaction |
 | sequence | [uint32](#uint32) |  | As of BIP-68, the sequence number is interpreted as a relative lock-time for the input. |
 | value | [int64](#int64) |  | Amount in satoshi |
 | previous_script | [bytes](#bytes) |  | The hash of the transaction containing the output to be spent. |
@@ -859,7 +859,7 @@ Request to subscribe or unsubscribe from a stream of transactions
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | addresses | [string](#string) | repeated | Filter by address(es) |
-| outpoints | [Transaction.Input.Outpoint](#pb.Transaction.Input.Outpoint) | repeated | TODO-DOCS: ? Filter by output hash and index |
+| outpoints | [Transaction.Input.Outpoint](#pb.Transaction.Input.Outpoint) | repeated | Filter by output hash and index |
 | data_elements | [bytes](#bytes) | repeated | TODO-DOCS: ? Specify which transaction elements to return |
 | all_transactions | [bool](#bool) |  | Subscribed/Unsubscribe to everything. Other filters will be ignored. |
 
@@ -897,7 +897,7 @@ Request to subscribe or unsubscribe from a stream of transactions
 | outpoint | [Transaction.Input.Outpoint](#pb.Transaction.Input.Outpoint) |  |  |
 | pubkey_script | [bytes](#bytes) |  | The public key script used to pay coins. |
 | value | [int64](#int64) |  | The amount in satoshis |
-| is_coinbase | [bool](#bool) |  | Whether or not the input is a generation transaction, the result of mining. |
+| is_coinbase | [bool](#bool) |  | When is_coinbase is true, the output is the first in the block, a generation transaction, the result of mining. |
 | block_height | [int32](#int32) |  | The block number containing the UXTO. |
 
 
@@ -953,8 +953,8 @@ State of the transaction acceptance.
 
 ### bchrpc
 Bitcoin Cash remote procedure calls is a protocol for communicating with a 
-bitcoin cash node from some client.  It is a set of methods, developed 
-for the bchd node, that can be exposed publicly via the command line options. 
+bitcoin cash node from some client.  It is a set of procedure calls, initially
+developed for bchd node, that can be exposed publicly via the command line options. 
 
 This service could be authenticated or unauthenticated.
 
@@ -969,7 +969,7 @@ This service could be authenticated or unauthenticated.
 | GetBlockFilter | [GetBlockFilterRequest](#pb.GetBlockFilterRequest) | [GetBlockFilterResponse](#pb.GetBlockFilterResponse) | Get a block filter.
 
 **Requires CfIndex** |
-| GetHeaders | [GetHeadersRequest](#pb.GetHeadersRequest) | [GetHeadersResponse](#pb.GetHeadersResponse) | This RPC sends a block locator object to the server and the server responds with a batch of no more than 2000 headers. Upon parsing the block locator, if the server concludes there has been a fork, it will send headers starting at the fork point, or genesis if no blocks in the locator are in the best chain. If the locator is already at the tip no headers will be returned. |
+| GetHeaders | [GetHeadersRequest](#pb.GetHeadersRequest) | [GetHeadersResponse](#pb.GetHeadersResponse) | This RPC sends a block locator object to the server and the server responds with a batch of no more than 2000 headers. Upon parsing the block locator, if the server concludes there has been a fork, it will send headers starting at the fork point, or genesis if no blocks in the locator are in the best chain. If the locator is already at the tip no headers will be returned. see: bchd/bchrpc/documentation/wallet_operation.md |
 | GetTransaction | [GetTransactionRequest](#pb.GetTransactionRequest) | [GetTransactionResponse](#pb.GetTransactionResponse) | Get a transaction given its hash.
 
 **Requires TxIndex** |

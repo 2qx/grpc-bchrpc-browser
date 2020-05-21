@@ -400,7 +400,7 @@
       <p></p>
       
         <h3 id="pb.bchrpc">bchrpc</h3>
-        <p>Bitcoin Cash remote procedure calls is a protocol for communicating with a </p><p>bitcoin cash node from some client.  It is a set of methods, developed </p><p>for the bchd node, that can be exposed publicly via the command line options. </p><p>This service could be authenticated or unauthenticated.</p>
+        <p>Bitcoin Cash remote procedure calls is a protocol for communicating with a </p><p>bitcoin cash node from some client.  It is a set of procedure calls, initially</p><p>developed for bchd node, that can be exposed publicly via the command line options. </p><p>This service could be authenticated or unauthenticated.</p>
         <table class="enum-table">
           <thead>
             <tr><td>Method Name</td><td>Request Type</td><td>Response Type</td><td>Description</td></tr>
@@ -468,7 +468,8 @@ block hash and height.</p></td>
 a batch of no more than 2000 headers. Upon parsing the block locator, if the server
 concludes there has been a fork, it will send headers starting at the fork point,
 or genesis if no blocks in the locator are in the best chain. If the locator is
-already at the tip no headers will be returned.</p></td>
+already at the tip no headers will be returned.
+see: bchd/bchrpc/documentation/wallet_operation.md</p></td>
               </tr>
             
               <tr>
@@ -627,14 +628,14 @@ or blocks being disconnected.</p></td>
                   <td>transaction_hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>A transaction hash </p></td>
                 </tr>
               
                 <tr>
                   <td>transaction</td>
                   <td><a href="#pb.Transaction">Transaction</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>A marshaled transaction </p></td>
                 </tr>
               
             </tbody>
@@ -658,7 +659,8 @@ or blocks being disconnected.</p></td>
                   <td>hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>The repeated sha256 hash of the six header fields encoded according the protocol.
+                  <td><p>The double sha256 hash of the six header fields in the first 80 bytes
+of the block, when encoded according the bitcoin protocol.
 sha256(sha256(encoded_header)) </p></td>
                 </tr>
               
@@ -836,14 +838,14 @@ Does not affect results of unconfirmed transactions. </p></td>
                   <td>hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>Recommended: Only return transactions after a starting block identified by hash. </p></td>
+                  <td><p>Only get transactions after (or within) a starting block identified by hash. </p></td>
                 </tr>
               
                 <tr>
                   <td>height</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p>Recommended: Only return transactions after a starting block identified by block number. </p></td>
+                  <td><p>Only get transactions after (or within) a starting block identified by block number. </p></td>
                 </tr>
               
             </tbody>
@@ -1078,7 +1080,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>full_transactions</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>Provide full transaction info instead of only hashes. </p></td>
+                  <td><p>When full_transactions is true, full transactions are returned instead of just hashes. Default is false. </p></td>
                 </tr>
               
             </tbody>
@@ -1147,7 +1149,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>best_block_hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>The hash of the block on the tip of the longest chain </p></td>
+                  <td><p>The hash of the best (tip) block in the most-work fully-validated chain. </p></td>
                 </tr>
               
                 <tr>
@@ -1168,14 +1170,14 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>tx_index</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>True if the node has full transaction index is enabled. </p></td>
+                  <td><p>When tx_index is true, the node has full transaction index is enabled. </p></td>
                 </tr>
               
                 <tr>
                   <td>addr_index</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>True if the node has address index is enabled. </p></td>
+                  <td><p>When addr_index is true, the node has address index is enabled. </p></td>
                 </tr>
               
             </tbody>
@@ -1186,7 +1188,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
         
       
         <h3 id="pb.GetHeadersRequest">GetHeadersRequest</h3>
-        <p></p>
+        <p>Request headers using a list of known block hashes</p>
 
         
           <table class="field-table">
@@ -1199,14 +1201,16 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>block_locator_hashes</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
+                  <td><p>A list of block hashes known to the client (most recent first) which is expodentially 
+sparcer toward the genesis block (0).
+Common pratice is to include all of the last 10 blocks, and then 9 blocks for each order of magnitude thereafter. </p></td>
                 </tr>
               
                 <tr>
                   <td>stop_hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>hash of the latest desired block header; only blocks occuring before the stop will be returned. </p></td>
                 </tr>
               
             </tbody>
@@ -1292,7 +1296,8 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>full_transactions</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>When true, full transaction data is provided instead of just transaction hashes. </p></td>
+                  <td><p>When `full_transactions` is true, full transaction data is provided 
+instead of just transaction hashes. Default is false. </p></td>
                 </tr>
               
             </tbody>
@@ -1371,7 +1376,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>transaction_hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>A transaction hash </p></td>
                 </tr>
               
             </tbody>
@@ -1442,7 +1447,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td><a href="#uint32">uint32</a></td>
                   <td></td>
                   <td><p>The number of confirmed transactions to skip starting with the oldest first.
-Does not affect results of unconfirmed transactions. </p></td>
+`nb_skip` does not affect results of unconfirmed transactions. </p></td>
                 </tr>
               
                 <tr>
@@ -1487,7 +1492,7 @@ Does not affect results of unconfirmed transactions. </p></td>
                   <td>confirmed_transactions</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td>repeated</td>
-                  <td><p>Transactions that have been in a block. </p></td>
+                  <td><p>Transactions that have been included in a block. </p></td>
                 </tr>
               
                 <tr>
@@ -1549,7 +1554,7 @@ Does not affect results of unconfirmed transactions. </p></td>
                   <td>block</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>Raw block data </p></td>
+                  <td><p>Raw block data (with header) serialized according the the block protocol </p></td>
                 </tr>
               
             </tbody>
@@ -1669,7 +1674,7 @@ Does not affect results of unconfirmed transactions. </p></td>
                   <td>hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The hash of the transaction. </p></td>
                 </tr>
               
                 <tr>
@@ -1728,14 +1733,14 @@ Does not affect results of unconfirmed transactions. </p></td>
                   <td>is_coinbase</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>When is_coinbase is true, transaction was the first in a block, created by a miner to pay the block reward </p></td>
                 </tr>
               
                 <tr>
                   <td>block_height</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>The index number of the block containing the transaction creating the output </p></td>
                 </tr>
               
             </tbody>
@@ -1766,7 +1771,7 @@ Does not affect results of unconfirmed transactions. </p></td>
                   <td>added_time</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p>When the transaction was witnessed by the node. </p></td>
+                  <td><p>TODO-DOCS: ? When the transaction was witnessed by the node. </p></td>
                 </tr>
               
                 <tr>
@@ -1993,7 +1998,7 @@ sha256(sha256(encoded_transaction)) </p></td>
                   <td></td>
                   <td><p>The block height or timestamp after which this transaction is allowed. 
 If value is greater than 500 million, it is assumed to be an epoch timestamp,
-otherwise it is treated as a block-height. </p></td>
+otherwise it is treated as a block-height. Default is zero, or lock. </p></td>
                 </tr>
               
                 <tr>
@@ -2066,7 +2071,7 @@ otherwise it is treated as a block-height. </p></td>
                   <td>signature_script</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>The signature script used to redeem the origin transaction </p></td>
+                  <td><p>TODO-DOCS: ? The signature script used to redeem the origin transaction </p></td>
                 </tr>
               
                 <tr>
@@ -2215,7 +2220,7 @@ otherwise it is treated as a block-height. </p></td>
                   <td>outpoints</td>
                   <td><a href="#pb.Transaction.Input.Outpoint">Transaction.Input.Outpoint</a></td>
                   <td>repeated</td>
-                  <td><p>TODO-DOCS: ? Filter by output hash and index </p></td>
+                  <td><p>Filter by output hash and index </p></td>
                 </tr>
               
                 <tr>
@@ -2320,7 +2325,7 @@ will be ignored. </p></td>
                   <td>is_coinbase</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>Whether or not the input is a generation transaction, the result of mining. </p></td>
+                  <td><p>When is_coinbase is true, the output is the first in the block, a generation transaction, the result of mining. </p></td>
                 </tr>
               
                 <tr>

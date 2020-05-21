@@ -40,6 +40,7 @@ service bchrpc {
     // concludes there has been a fork, it will send headers starting at the fork point,
     // or genesis if no blocks in the locator are in the best chain. If the locator is
     // already at the tip no headers will be returned.
+    // see: bchd/bchrpc/documentation/wallet_operation.md
     rpc GetHeaders(GetHeadersRequest) returns (GetHeadersResponse) {}
 
     // Get a transaction given its hash.
@@ -117,7 +118,8 @@ message GetMempoolInfoResponse {
 }
 
 message GetMempoolRequest {
-    // When true, full transaction data is provided instead of just transaction hashes.
+    // When `full_transactions` is true, full transaction data is provided 
+    // instead of just transaction hashes. Default is false.
     bool full_transactions = 1;
 }
 
@@ -159,15 +161,15 @@ message GetBlockchainInfoResponse {
 
     // The current number of blocks on the longest chain.
     int32 best_height = 2;
-    // The hash of the block on the tip of the longest chain
+    // The hash of the best (tip) block in the most-work fully-validated chain.
     bytes best_block_hash = 3;
     // Threshold for adding new blocks.
     double difficulty = 4;
     // Median time of the last 11 blocks.
     int64 median_time = 5;
-    // True if the node has full transaction index is enabled.
+    // When tx_index is true, the node has full transaction index is enabled.
     bool tx_index = 6;
-    // True if the node has address index is enabled.
+    // When addr_index is true, the node has address index is enabled.
     bool addr_index =7;
 }
 
@@ -191,7 +193,7 @@ message GetBlockRequest {
         // The block number
         int32 height = 2;
     }
-    // Provide full transaction info instead of only hashes.
+    // When full_transactions is true, full transactions are returned instead of just hashes. Default is false.
     bool full_transactions = 3;
 }
 message GetBlockResponse {
@@ -208,7 +210,7 @@ message GetRawBlockRequest {
     }
 }
 message GetRawBlockResponse {
-    // Raw block data 
+    // Raw block data (with header) serialized according the the block protocol
     bytes block = 1;
 }
 
@@ -225,8 +227,13 @@ message GetBlockFilterResponse {
     bytes filter = 1;
 }
 
+// Request headers using a list of known block hashes
 message GetHeadersRequest {
+    // A list of block hashes known to the client (most recent first) which is expodentially 
+    // sparcer toward the genesis block (0).
+    // Common pratice is to include all of the last 10 blocks, and then 9 blocks for each order of magnitude thereafter.
     repeated bytes block_locator_hashes = 1;
+    // hash of the latest desired block header; only blocks occuring before the stop will be returned.
     bytes stop_hash = 2;
 }
 message GetHeadersResponse {
@@ -285,9 +292,9 @@ message GetAddressTransactionsRequest {
 
 
     oneof start_block {
-        // Recommended: Only return transactions after a starting block identified by hash.
+        // Only get transactions after (or within) a starting block identified by hash.
         bytes hash = 4;
-        // Recommended: Only return transactions after a starting block identified by block number.
+        // Only get transactions after (or within) a starting block identified by block number.
         int32 height = 5;
     }
 }
@@ -323,7 +330,7 @@ message GetRawAddressTransactionsRequest {
     string address = 1;
 
     // The number of confirmed transactions to skip starting with the oldest first.
-    // Does not affect results of unconfirmed transactions.
+    // `nb_skip` does not affect results of unconfirmed transactions.
     uint32 nb_skip = 2;
     // The total number of transactions to be fetched.
     uint32 nb_fetch = 3;
@@ -336,7 +343,7 @@ message GetRawAddressTransactionsRequest {
     }
 }
 message GetRawAddressTransactionsResponse {
-    // Transactions that have been in a block.
+    // Transactions that have been included in a block.
     repeated bytes confirmed_transactions = 1;
     // Transactions in mempool which have not been included in a block.
     repeated bytes unconfirmed_transactions = 2;
@@ -355,6 +362,7 @@ message GetAddressUnspentOutputsResponse {
 }
 
 message GetUnspentOutputRequest {
+    // The hash of the transaction.
     bytes hash = 1;
     // The number of the output, starting from zero.
     uint32 index = 2;
@@ -368,12 +376,14 @@ message GetUnspentOutputResponse {
     bytes pubkey_script = 2;
     // Amount in satoshi
     int64 value = 3;
-
+    // When is_coinbase is true, transaction was the first in a block, created by a miner to pay the block reward
     bool is_coinbase = 4;
+    // The index number of the block containing the transaction creating the output
     int32 block_height = 5;
 }
 
 message GetMerkleProofRequest {
+    // A transaction hash
     bytes transaction_hash = 1;
 }
 message GetMerkleProofResponse {
@@ -495,7 +505,8 @@ message BlockInfo {
 
     // Identification.
     
-    // The repeated sha256 hash of the six header fields encoded according the protocol.
+    // The double sha256 hash of the six header fields in the first 80 bytes
+    // of the block, when encoded according the bitcoin protocol.
     // sha256(sha256(encoded_header))
     bytes hash = 1;
     // The block number, an incremental index for each block mined.
@@ -533,9 +544,10 @@ message BlockInfo {
 
 message Block {
     message TransactionData {
-        // Either one of the two following is provided, depending on the request.
         oneof txids_or_txs {
+            // A transaction hash
             bytes transaction_hash = 1;
+            // A marshaled transaction
             Transaction transaction = 2;
         }
     }
@@ -558,7 +570,7 @@ message Transaction {
         
         // The related outpoint
         Outpoint outpoint = 2;
-        // The signature script used to redeem the origin transaction
+        //  TODO-DOCS: ? The signature script used to redeem the origin transaction
         bytes signature_script = 3;
         // As of BIP-68, the sequence number is interpreted as a relative lock-time for the input.
         uint32 sequence = 4;
@@ -595,7 +607,7 @@ message Transaction {
     repeated Output outputs = 4;
     // The block height or timestamp after which this transaction is allowed. 
     // If value is greater than 500 million, it is assumed to be an epoch timestamp,
-    // otherwise it is treated as a block-height.
+    // otherwise it is treated as a block-height. Default is zero, or lock.
     uint32 lock_time = 5;
 
     // Metadata
@@ -615,7 +627,7 @@ message Transaction {
 message MempoolTransaction {
     Transaction transaction = 1;
 
-    // When the transaction was witnessed by the node.
+    // TODO-DOCS: ? When the transaction was witnessed by the node.
     int64 added_time = 2;
     // The block height at the time the transaction was added to the pool.
     int32 added_height = 3;
@@ -633,7 +645,7 @@ message UnspentOutput {
     bytes pubkey_script = 2;
     // The amount in satoshis 
     int64 value = 3;
-    // Whether or not the input is a generation transaction, the result of mining.
+    // When is_coinbase is true, the output is the first in the block, a generation transaction, the result of mining.
     bool is_coinbase = 4;
     // The block number containing the UXTO.
     int32 block_height = 5;
@@ -644,7 +656,7 @@ message TransactionFilter {
     // Filter by address(es)
     repeated string addresses = 1;
 
-    // TODO-DOCS: ? Filter by output hash and index
+    // Filter by output hash and index
     repeated Transaction.Input.Outpoint outpoints = 2;
 
     // TODO-DOCS: ? Specify which transaction elements to return
