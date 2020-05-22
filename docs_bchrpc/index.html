@@ -530,7 +530,7 @@ limit, and from block options.
                 <td>GetMerkleProof</td>
                 <td><a href="#pb.GetMerkleProofRequest">GetMerkleProofRequest</a></td>
                 <td><a href="#pb.GetMerkleProofResponse">GetMerkleProofResponse</a></td>
-                <td><p>Returns a merkle (SPV) proof that the given transaction is in the provided block.
+                <td><p>Returns a Merkle (SPV) proof that the given transaction is in the provided block.
 
 **Requires TxIndex***</p></td>
               </tr>
@@ -628,14 +628,14 @@ or blocks being disconnected.</p></td>
                   <td>transaction_hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>A transaction hash </p></td>
+                  <td><p>A transaction hash. </p></td>
                 </tr>
               
                 <tr>
                   <td>transaction</td>
                   <td><a href="#pb.Transaction">Transaction</a></td>
                   <td></td>
-                  <td><p>A marshaled transaction </p></td>
+                  <td><p>A marshaled transaction. </p></td>
                 </tr>
               
             </tbody>
@@ -689,7 +689,7 @@ sha256(sha256(encoded_header)) </p></td>
                   <td>merkle_root</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>The root of the merkle tree built from all transactions in the block. </p></td>
+                  <td><p>The root of the Merkle Tree built from all transactions in the block. </p></td>
                 </tr>
               
                 <tr>
@@ -703,7 +703,7 @@ sha256(sha256(encoded_header)) </p></td>
                   <td>bits</td>
                   <td><a href="#uint32">uint32</a></td>
                   <td></td>
-                  <td><p>Difficulty in Compressed Target Format </p></td>
+                  <td><p>Difficulty in Compressed Target Format. </p></td>
                 </tr>
               
                 <tr>
@@ -725,28 +725,28 @@ result in a computed block hash below the difficulty target at the time. </p></t
                   <td>difficulty</td>
                   <td><a href="#double">double</a></td>
                   <td></td>
-                  <td><p>Difficulty target at time of creation </p></td>
+                  <td><p>Difficulty target at time of creation. </p></td>
                 </tr>
               
                 <tr>
                   <td>next_block_hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>Hash of the next block </p></td>
+                  <td><p>Hash of the next block in this chain. </p></td>
                 </tr>
               
                 <tr>
                   <td>size</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p>Size of the block in bytes </p></td>
+                  <td><p>Size of the block in bytes. </p></td>
                 </tr>
               
                 <tr>
                   <td>median_time</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p>The median block time of the latest 11 block timestamps </p></td>
+                  <td><p>The median block time of the latest 11 block timestamps. </p></td>
                 </tr>
               
             </tbody>
@@ -802,7 +802,7 @@ result in a computed block hash below the difficulty target at the time. </p></t
         
       
         <h3 id="pb.GetAddressTransactionsRequest">GetAddressTransactionsRequest</h3>
-        <p>GetAddressTransactionsRequest obtains transactions related to a specific address</p><p>RECOMMENDED:</p><p>Parameters have been provided to query without creating </p><p>performance issues on the node or client.</p><p>- The number of transactions to skip and fetch allow for iterating</p><p>over a large set of transactions, if necessary.</p><p>- A starting block parameter (either `hash` or `height`) </p><p>may then be used to filter results to those occuring</p><p>after a certain time.</p><p>This approach will reduce network traffic and response processing </p><p>for the client, as well as reduce workload on the node.</p><p>The paging and start_block parameters are not applied to </p><p>unconfirmed transactions.</p>
+        <p>GetAddressTransactionsRequest obtains transactions related to a specific address.</p><p>RECOMMENDED:</p><p>Parameters have been provided to query without creating </p><p>performance issues on the node or client.</p><p>- The number of transactions to skip and fetch allow for iterating</p><p>over a large set of transactions, if necessary.</p><p>- A starting block parameter (either `hash` or `height`) </p><p>may then be used to filter results to those occuring</p><p>after a certain time.</p><p>This approach will reduce network traffic and response processing </p><p>for the client, as well as reduce workload on the node.</p><p>The paging and start_block parameters are not applied to </p><p>unconfirmed transactions.</p>
 
         
           <table class="field-table">
@@ -908,7 +908,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>include_mempool</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>When include_mempool is true, unconfirmed transactions from mempool are returned. Default is false. </p></td>
+                  <td><p>When `include_mempool` is true, unconfirmed transactions from mempool are returned. Default is false. </p></td>
                 </tr>
               
             </tbody>
@@ -932,7 +932,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>outputs</td>
                   <td><a href="#pb.UnspentOutput">UnspentOutput</a></td>
                   <td>repeated</td>
-                  <td><p>List of unspent outputs </p></td>
+                  <td><p>List of unspent outputs. </p></td>
                 </tr>
               
             </tbody>
@@ -963,7 +963,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>height</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p>The block number </p></td>
+                  <td><p>The block number. </p></td>
                 </tr>
               
             </tbody>
@@ -1073,14 +1073,14 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>height</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p>The block number </p></td>
+                  <td><p>The block number. </p></td>
                 </tr>
               
                 <tr>
                   <td>full_transactions</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>When full_transactions is true, full transactions are returned instead of just hashes. Default is false. </p></td>
+                  <td><p>When `full_transactions` is true, full transactions are returned instead of just hashes. Default is false. </p></td>
                 </tr>
               
             </tbody>
@@ -1104,7 +1104,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>block</td>
                   <td><a href="#pb.Block">Block</a></td>
                   <td></td>
-                  <td><p>A marshaled block </p></td>
+                  <td><p>A marshaled block. </p></td>
                 </tr>
               
             </tbody>
@@ -1170,14 +1170,14 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>tx_index</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>When tx_index is true, the node has full transaction index is enabled. </p></td>
+                  <td><p>When `tx_index` is true, the node has full transaction index enabled . </p></td>
                 </tr>
               
                 <tr>
                   <td>addr_index</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>When addr_index is true, the node has address index is enabled. </p></td>
+                  <td><p>When `addr_index` is true, the node has address index enabled and may be used with call related by address. </p></td>
                 </tr>
               
             </tbody>
@@ -1188,7 +1188,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
         
       
         <h3 id="pb.GetHeadersRequest">GetHeadersRequest</h3>
-        <p>Request headers using a list of known block hashes</p>
+        <p>Request headers using a list of known block hashes.</p>
 
         
           <table class="field-table">
@@ -1234,7 +1234,7 @@ Common pratice is to include all of the last 10 blocks, and then 9 blocks for ea
                   <td>headers</td>
                   <td><a href="#pb.BlockInfo">BlockInfo</a></td>
                   <td>repeated</td>
-                  <td><p>List of block headers </p></td>
+                  <td><p>List of block headers. </p></td>
                 </tr>
               
             </tbody>
@@ -1376,7 +1376,7 @@ instead of just transaction hashes. Default is false. </p></td>
                   <td>transaction_hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>A transaction hash </p></td>
+                  <td><p>A transaction hash. </p></td>
                 </tr>
               
             </tbody>
@@ -1425,7 +1425,7 @@ instead of just transaction hashes. Default is false. </p></td>
         
       
         <h3 id="pb.GetRawAddressTransactionsRequest">GetRawAddressTransactionsRequest</h3>
-        <p>Get encoded transactions related to a specific address</p><p>RECOMMENDED:</p><p>Parameters have been provided to query without creating </p><p>performance issues on the node or client.</p><p>- The number of transactions to skip and fetch allow for iterating</p><p>over a large set of transactions, if necessary.</p><p>- A starting block parameter (either `hash` or `height`) </p><p>may then be used to filter results to those occuring</p><p>after a certain time.</p><p>This approach will reduce network traffic and response processing </p><p>for the client, as well as reduce workload on the node.</p><p>The paging and start_block parameters are not applied to </p><p>unconfirmed transactions.</p>
+        <p>Get encoded transactions related to a specific address.</p><p>RECOMMENDED:</p><p>Parameters have been provided to query without creating </p><p>performance issues on the node or client.</p><p>- The number of transactions to skip and fetch allow for iterating</p><p>over a large set of transactions, if necessary.</p><p>- A starting block parameter (either `hash` or `height`) </p><p>may then be used to filter results to those occuring</p><p>after a certain time.</p><p>This approach will reduce network traffic and response processing </p><p>for the client, as well as reduce workload on the node.</p><p>The paging and start_block parameters are not applied to </p><p>unconfirmed transactions.</p>
 
         
           <table class="field-table">
@@ -1530,7 +1530,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>height</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p>The block number </p></td>
+                  <td><p>The block number. </p></td>
                 </tr>
               
             </tbody>
@@ -1554,7 +1554,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>block</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>Raw block data (with header) serialized according the the block protocol </p></td>
+                  <td><p>Raw block data (with header) serialized according the the block protocol. </p></td>
                 </tr>
               
             </tbody>
@@ -1565,7 +1565,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
         
       
         <h3 id="pb.GetRawTransactionRequest">GetRawTransactionRequest</h3>
-        <p>Get an encoded transaction from a transaction hash</p>
+        <p>Get an encoded transaction from a transaction hash.</p>
 
         
           <table class="field-table">
@@ -1578,7 +1578,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>A transaction hash </p></td>
+                  <td><p>A transaction hash. </p></td>
                 </tr>
               
             </tbody>
@@ -1602,7 +1602,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>transaction</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>Raw transaction in bytes </p></td>
+                  <td><p>Raw transaction in bytes. </p></td>
                 </tr>
               
             </tbody>
@@ -1613,7 +1613,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
         
       
         <h3 id="pb.GetTransactionRequest">GetTransactionRequest</h3>
-        <p>Get a transaction from a transaction hash</p>
+        <p>Get a transaction from a transaction hash.</p>
 
         
           <table class="field-table">
@@ -1626,7 +1626,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>A transaction hash </p></td>
+                  <td><p>A transaction hash. </p></td>
                 </tr>
               
             </tbody>
@@ -1650,7 +1650,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>transaction</td>
                   <td><a href="#pb.Transaction">Transaction</a></td>
                   <td></td>
-                  <td><p>A marshaled transaction </p></td>
+                  <td><p>A marshaled transaction. </p></td>
                 </tr>
               
             </tbody>
@@ -1712,35 +1712,35 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>outpoint</td>
                   <td><a href="#pb.Transaction.Input.Outpoint">Transaction.Input.Outpoint</a></td>
                   <td></td>
-                  <td><p>A reference to the related input </p></td>
+                  <td><p>A reference to the related input. </p></td>
                 </tr>
               
                 <tr>
                   <td>pubkey_script</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>TODO-DOCS ? : </p></td>
                 </tr>
               
                 <tr>
                   <td>value</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p>Amount in satoshi </p></td>
+                  <td><p>Amount in satoshi. </p></td>
                 </tr>
               
                 <tr>
                   <td>is_coinbase</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>When is_coinbase is true, transaction was the first in a block, created by a miner to pay the block reward </p></td>
+                  <td><p>When is_coinbase is true, the transaction was the first in a block, created by a miner, and used to pay the block reward </p></td>
                 </tr>
               
                 <tr>
                   <td>block_height</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p>The index number of the block containing the transaction creating the output </p></td>
+                  <td><p>The index number of the block containing the transaction creating the output. </p></td>
                 </tr>
               
             </tbody>
@@ -1823,7 +1823,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>transaction</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>The encoded transaction </p></td>
+                  <td><p>The encoded transaction. </p></td>
                 </tr>
               
             </tbody>
@@ -1879,7 +1879,7 @@ Default is false, block metadata is sent. See `BlockInfo`. </p></td>
                   <td>full_transactions</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>When full_transactions is true, provide full transaction info for a marshaled block.
+                  <td><p>When `full_transactions` is true, provide full transaction info for a marshaled block.
 Default is false, only the transaction hashes are included for a marshaled block. See `TransactionData`. </p></td>
                 </tr>
               
@@ -1899,7 +1899,7 @@ Default is false, block will be Marshaled (see `BlockInfo` and `BlockNotificatio
         
       
         <h3 id="pb.SubscribeTransactionsRequest">SubscribeTransactionsRequest</h3>
-        <p>Request to subscribe or unsubscribe from a stream of transactions</p>
+        <p>Request to subscribe or unsubscribe from a stream of transactions.</p>
 
         
           <table class="field-table">
@@ -1912,14 +1912,14 @@ Default is false, block will be Marshaled (see `BlockInfo` and `BlockNotificatio
                   <td>subscribe</td>
                   <td><a href="#pb.TransactionFilter">TransactionFilter</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Subscribe to a filter. add items to a filter </p></td>
                 </tr>
               
                 <tr>
                   <td>unsubscribe</td>
                   <td><a href="#pb.TransactionFilter">TransactionFilter</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Unsubscribe to a filter, remove items from a filter </p></td>
                 </tr>
               
                 <tr>
@@ -1989,7 +1989,7 @@ sha256(sha256(encoded_transaction)) </p></td>
                   <td>outputs</td>
                   <td><a href="#pb.Transaction.Output">Transaction.Output</a></td>
                   <td>repeated</td>
-                  <td><p>List of outputs </p></td>
+                  <td><p>List of outputs. </p></td>
                 </tr>
               
                 <tr>
@@ -2005,7 +2005,7 @@ otherwise it is treated as a block-height. Default is zero, or lock. </p></td>
                   <td>size</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p>The size of the transaction in bytes </p></td>
+                  <td><p>The size of the transaction in bytes. </p></td>
                 </tr>
               
                 <tr>
@@ -2064,14 +2064,14 @@ otherwise it is treated as a block-height. Default is zero, or lock. </p></td>
                   <td>outpoint</td>
                   <td><a href="#pb.Transaction.Input.Outpoint">Transaction.Input.Outpoint</a></td>
                   <td></td>
-                  <td><p>The related outpoint </p></td>
+                  <td><p>The related outpoint. </p></td>
                 </tr>
               
                 <tr>
                   <td>signature_script</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>TODO-DOCS: ? The signature script used to redeem the origin transaction </p></td>
+                  <td><p>TODO-DOCS: ? The signature script used to redeem the origin transaction. </p></td>
                 </tr>
               
                 <tr>
@@ -2085,7 +2085,7 @@ otherwise it is treated as a block-height. Default is zero, or lock. </p></td>
                   <td>value</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p>Amount in satoshi </p></td>
+                  <td><p>Amount in satoshi. </p></td>
                 </tr>
               
                 <tr>
@@ -2130,7 +2130,7 @@ otherwise it is treated as a block-height. Default is zero, or lock. </p></td>
                   <td>index</td>
                   <td><a href="#uint32">uint32</a></td>
                   <td></td>
-                  <td><p>The txout index of the outpoint. </p></td>
+                  <td><p>The index of the UXTO outpoint. </p></td>
                 </tr>
               
             </tbody>
@@ -2189,7 +2189,7 @@ otherwise it is treated as a block-height. Default is zero, or lock. </p></td>
                   <td>disassembled_script</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>TODO-DOC? be more descriptive: disassembly of the script </p></td>
+                  <td><p>TODO-DOCS ?: The script expressed in Bitcoin Cash Script. </p></td>
                 </tr>
               
             </tbody>
@@ -2220,21 +2220,21 @@ otherwise it is treated as a block-height. Default is zero, or lock. </p></td>
                   <td>outpoints</td>
                   <td><a href="#pb.Transaction.Input.Outpoint">Transaction.Input.Outpoint</a></td>
                   <td>repeated</td>
-                  <td><p>Filter by output hash and index </p></td>
+                  <td><p>Filter by output hash and index. </p></td>
                 </tr>
               
                 <tr>
                   <td>data_elements</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td>repeated</td>
-                  <td><p>TODO-DOCS: ? Specify which transaction elements to return </p></td>
+                  <td><p>TODO-DOCS: ? Specify which transaction elements to return. </p></td>
                 </tr>
               
                 <tr>
                   <td>all_transactions</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>Subscribed/Unsubscribe to everything. Other filters
+                  <td><p>Subscribe/Unsubscribe to everything. Other filters
 will be ignored. </p></td>
                 </tr>
               
@@ -2259,7 +2259,7 @@ will be ignored. </p></td>
                   <td>type</td>
                   <td><a href="#pb.TransactionNotification.Type">TransactionNotification.Type</a></td>
                   <td></td>
-                  <td><p>Whether or not the transaction has been included in a block </p></td>
+                  <td><p>Whether or not the transaction has been included in a block. </p></td>
                 </tr>
               
                 <tr>

@@ -93,8 +93,8 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| transaction_hash | [bytes](#bytes) |  | A transaction hash |
-| transaction | [Transaction](#pb.Transaction) |  | A marshaled transaction |
+| transaction_hash | [bytes](#bytes) |  | A transaction hash. |
+| transaction | [Transaction](#pb.Transaction) |  | A marshaled transaction. |
 
 
 
@@ -113,15 +113,15 @@ Metadata for identifying and validating a block
 | height | [int32](#int32) |  | The block number, an incremental index for each block mined. |
 | version | [int32](#int32) |  | A version number to track software/protocol upgrades. |
 | previous_block | [bytes](#bytes) |  | Hash of the previous block |
-| merkle_root | [bytes](#bytes) |  | The root of the merkle tree built from all transactions in the block. |
+| merkle_root | [bytes](#bytes) |  | The root of the Merkle Tree built from all transactions in the block. |
 | timestamp | [int64](#int64) |  | When mining of the block started, expressed in seconds since 1970-01-01. |
-| bits | [uint32](#uint32) |  | Difficulty in Compressed Target Format |
+| bits | [uint32](#uint32) |  | Difficulty in Compressed Target Format. |
 | nonce | [uint32](#uint32) |  | A random value that was generated during block mining which happend to result in a computed block hash below the difficulty target at the time. |
 | confirmations | [int32](#int32) |  | Number of blocks in a chain, including the block itself upon creation. |
-| difficulty | [double](#double) |  | Difficulty target at time of creation |
-| next_block_hash | [bytes](#bytes) |  | Hash of the next block |
-| size | [int32](#int32) |  | Size of the block in bytes |
-| median_time | [int64](#int64) |  | The median block time of the latest 11 block timestamps |
+| difficulty | [double](#double) |  | Difficulty target at time of creation. |
+| next_block_hash | [bytes](#bytes) |  | Hash of the next block in this chain. |
+| size | [int32](#int32) |  | Size of the block in bytes. |
+| median_time | [int64](#int64) |  | The median block time of the latest 11 block timestamps. |
 
 
 
@@ -149,7 +149,7 @@ Metadata for identifying and validating a block
 <a name="pb.GetAddressTransactionsRequest"></a>
 
 ### GetAddressTransactionsRequest
-GetAddressTransactionsRequest obtains transactions related to a specific address
+GetAddressTransactionsRequest obtains transactions related to a specific address.
 
 RECOMMENDED:
 Parameters have been provided to query without creating 
@@ -206,7 +206,7 @@ The paging and start_block parameters are not applied to
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | address | [string](#string) |  | The address to query transactions, in lowercase cashaddr format. The network prefix is optional (i.e. &#34;cashaddress:&#34;). |
-| include_mempool | [bool](#bool) |  | When include_mempool is true, unconfirmed transactions from mempool are returned. Default is false. |
+| include_mempool | [bool](#bool) |  | When `include_mempool` is true, unconfirmed transactions from mempool are returned. Default is false. |
 
 
 
@@ -221,7 +221,7 @@ The paging and start_block parameters are not applied to
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| outputs | [UnspentOutput](#pb.UnspentOutput) | repeated | List of unspent outputs |
+| outputs | [UnspentOutput](#pb.UnspentOutput) | repeated | List of unspent outputs. |
 
 
 
@@ -237,7 +237,7 @@ The paging and start_block parameters are not applied to
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | hash | [bytes](#bytes) |  | The block hash as a byte array or base64 encoded string, little-endian. |
-| height | [int32](#int32) |  | The block number |
+| height | [int32](#int32) |  | The block number. |
 
 
 
@@ -299,8 +299,8 @@ The paging and start_block parameters are not applied to
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | hash | [bytes](#bytes) |  | The block hash as a byte array or base64 encoded string, little-endian. |
-| height | [int32](#int32) |  | The block number |
-| full_transactions | [bool](#bool) |  | When full_transactions is true, full transactions are returned instead of just hashes. Default is false. |
+| height | [int32](#int32) |  | The block number. |
+| full_transactions | [bool](#bool) |  | When `full_transactions` is true, full transactions are returned instead of just hashes. Default is false. |
 
 
 
@@ -315,7 +315,7 @@ The paging and start_block parameters are not applied to
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| block | [Block](#pb.Block) |  | A marshaled block |
+| block | [Block](#pb.Block) |  | A marshaled block. |
 
 
 
@@ -345,8 +345,8 @@ The paging and start_block parameters are not applied to
 | best_block_hash | [bytes](#bytes) |  | The hash of the best (tip) block in the most-work fully-validated chain. |
 | difficulty | [double](#double) |  | Threshold for adding new blocks. |
 | median_time | [int64](#int64) |  | Median time of the last 11 blocks. |
-| tx_index | [bool](#bool) |  | When tx_index is true, the node has full transaction index is enabled. |
-| addr_index | [bool](#bool) |  | When addr_index is true, the node has address index is enabled. |
+| tx_index | [bool](#bool) |  | When `tx_index` is true, the node has full transaction index enabled . |
+| addr_index | [bool](#bool) |  | When `addr_index` is true, the node has address index enabled and may be used with call related by address. |
 
 
 
@@ -356,7 +356,7 @@ The paging and start_block parameters are not applied to
 <a name="pb.GetHeadersRequest"></a>
 
 ### GetHeadersRequest
-Request headers using a list of known block hashes
+Request headers using a list of known block hashes.
 
 
 | Field | Type | Label | Description |
@@ -377,7 +377,7 @@ Request headers using a list of known block hashes
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| headers | [BlockInfo](#pb.BlockInfo) | repeated | List of block headers |
+| headers | [BlockInfo](#pb.BlockInfo) | repeated | List of block headers. |
 
 
 
@@ -464,7 +464,7 @@ Request headers using a list of known block hashes
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| transaction_hash | [bytes](#bytes) |  | A transaction hash |
+| transaction_hash | [bytes](#bytes) |  | A transaction hash. |
 
 
 
@@ -491,7 +491,7 @@ Request headers using a list of known block hashes
 <a name="pb.GetRawAddressTransactionsRequest"></a>
 
 ### GetRawAddressTransactionsRequest
-Get encoded transactions related to a specific address
+Get encoded transactions related to a specific address.
 
 RECOMMENDED:
 Parameters have been provided to query without creating 
@@ -548,7 +548,7 @@ The paging and start_block parameters are not applied to
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | hash | [bytes](#bytes) |  | The block hash as a byte array or base64 encoded string, little-endian. |
-| height | [int32](#int32) |  | The block number |
+| height | [int32](#int32) |  | The block number. |
 
 
 
@@ -563,7 +563,7 @@ The paging and start_block parameters are not applied to
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| block | [bytes](#bytes) |  | Raw block data (with header) serialized according the the block protocol |
+| block | [bytes](#bytes) |  | Raw block data (with header) serialized according the the block protocol. |
 
 
 
@@ -573,12 +573,12 @@ The paging and start_block parameters are not applied to
 <a name="pb.GetRawTransactionRequest"></a>
 
 ### GetRawTransactionRequest
-Get an encoded transaction from a transaction hash
+Get an encoded transaction from a transaction hash.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hash | [bytes](#bytes) |  | A transaction hash |
+| hash | [bytes](#bytes) |  | A transaction hash. |
 
 
 
@@ -593,7 +593,7 @@ Get an encoded transaction from a transaction hash
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| transaction | [bytes](#bytes) |  | Raw transaction in bytes |
+| transaction | [bytes](#bytes) |  | Raw transaction in bytes. |
 
 
 
@@ -603,12 +603,12 @@ Get an encoded transaction from a transaction hash
 <a name="pb.GetTransactionRequest"></a>
 
 ### GetTransactionRequest
-Get a transaction from a transaction hash
+Get a transaction from a transaction hash.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hash | [bytes](#bytes) |  | A transaction hash |
+| hash | [bytes](#bytes) |  | A transaction hash. |
 
 
 
@@ -623,7 +623,7 @@ Get a transaction from a transaction hash
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| transaction | [Transaction](#pb.Transaction) |  | A marshaled transaction |
+| transaction | [Transaction](#pb.Transaction) |  | A marshaled transaction. |
 
 
 
@@ -655,11 +655,11 @@ Get a transaction from a transaction hash
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| outpoint | [Transaction.Input.Outpoint](#pb.Transaction.Input.Outpoint) |  | A reference to the related input |
-| pubkey_script | [bytes](#bytes) |  |  |
-| value | [int64](#int64) |  | Amount in satoshi |
-| is_coinbase | [bool](#bool) |  | When is_coinbase is true, transaction was the first in a block, created by a miner to pay the block reward |
-| block_height | [int32](#int32) |  | The index number of the block containing the transaction creating the output |
+| outpoint | [Transaction.Input.Outpoint](#pb.Transaction.Input.Outpoint) |  | A reference to the related input. |
+| pubkey_script | [bytes](#bytes) |  | TODO-DOCS ? : |
+| value | [int64](#int64) |  | Amount in satoshi. |
+| is_coinbase | [bool](#bool) |  | When is_coinbase is true, the transaction was the first in a block, created by a miner, and used to pay the block reward |
+| block_height | [int32](#int32) |  | The index number of the block containing the transaction creating the output. |
 
 
 
@@ -694,7 +694,7 @@ Get a transaction from a transaction hash
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| transaction | [bytes](#bytes) |  | The encoded transaction |
+| transaction | [bytes](#bytes) |  | The encoded transaction. |
 
 
 
@@ -742,7 +742,7 @@ Options to define data structure to be sent by SubscribeBlock stream:
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | full_block | [bool](#bool) |  | When full_block is true, a complete marshaled block is sent. See `Block`. Default is false, block metadata is sent. See `BlockInfo`. |
-| full_transactions | [bool](#bool) |  | When full_transactions is true, provide full transaction info for a marshaled block. Default is false, only the transaction hashes are included for a marshaled block. See `TransactionData`. |
+| full_transactions | [bool](#bool) |  | When `full_transactions` is true, provide full transaction info for a marshaled block. Default is false, only the transaction hashes are included for a marshaled block. See `TransactionData`. |
 | serialize_block | [bool](#bool) |  | When serialize_block is true, blocks are serialized using bitcoin protocol encoding. Default is false, block will be Marshaled (see `BlockInfo` and `BlockNotification`) |
 
 
@@ -753,13 +753,13 @@ Options to define data structure to be sent by SubscribeBlock stream:
 <a name="pb.SubscribeTransactionsRequest"></a>
 
 ### SubscribeTransactionsRequest
-Request to subscribe or unsubscribe from a stream of transactions
+Request to subscribe or unsubscribe from a stream of transactions.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| subscribe | [TransactionFilter](#pb.TransactionFilter) |  |  |
-| unsubscribe | [TransactionFilter](#pb.TransactionFilter) |  |  |
+| subscribe | [TransactionFilter](#pb.TransactionFilter) |  | Subscribe to a filter. add items to a filter |
+| unsubscribe | [TransactionFilter](#pb.TransactionFilter) |  | Unsubscribe to a filter, remove items from a filter |
 | include_mempool | [bool](#bool) |  | When include_mempool is true, new unconfirmed transactions from mempool are included apart from the ones confirmed in a block. |
 | include_in_block | [bool](#bool) |  | When include_in_block is true, transactions are included when they are confirmed. This notification is sent in addition to any requested mempool notifications. |
 | serialize_tx | [bool](#bool) |  | When serialize_tx is true, transactions are serialized using bitcoin protocol encoding. Default is false, transaction will be Marshaled (see `Transaction`, `MempoolTransaction` and `TransactionNotification`) |
@@ -780,9 +780,9 @@ Request to subscribe or unsubscribe from a stream of transactions
 | hash | [bytes](#bytes) |  | The double sha256 hash of the encoded transaction. sha256(sha256(encoded_transaction)) |
 | version | [int32](#int32) |  | The version of the transaction format. |
 | inputs | [Transaction.Input](#pb.Transaction.Input) | repeated | List of inputs |
-| outputs | [Transaction.Output](#pb.Transaction.Output) | repeated | List of outputs |
+| outputs | [Transaction.Output](#pb.Transaction.Output) | repeated | List of outputs. |
 | lock_time | [uint32](#uint32) |  | The block height or timestamp after which this transaction is allowed. If value is greater than 500 million, it is assumed to be an epoch timestamp, otherwise it is treated as a block-height. Default is zero, or lock. |
-| size | [int32](#int32) |  | The size of the transaction in bytes |
+| size | [int32](#int32) |  | The size of the transaction in bytes. |
 | timestamp | [int64](#int64) |  | When the transaction was included in a block, in epoch time. |
 | confirmations | [int32](#int32) |  | Number of blocks including proof of the transaction, including the block it appeared. |
 | block_height | [int32](#int32) |  | Number of the block containing the transaction. |
@@ -802,10 +802,10 @@ Request to subscribe or unsubscribe from a stream of transactions
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | index | [uint32](#uint32) |  | The number of the input, starting from zero. |
-| outpoint | [Transaction.Input.Outpoint](#pb.Transaction.Input.Outpoint) |  | The related outpoint |
-| signature_script | [bytes](#bytes) |  | TODO-DOCS: ? The signature script used to redeem the origin transaction |
+| outpoint | [Transaction.Input.Outpoint](#pb.Transaction.Input.Outpoint) |  | The related outpoint. |
+| signature_script | [bytes](#bytes) |  | TODO-DOCS: ? The signature script used to redeem the origin transaction. |
 | sequence | [uint32](#uint32) |  | As of BIP-68, the sequence number is interpreted as a relative lock-time for the input. |
-| value | [int64](#int64) |  | Amount in satoshi |
+| value | [int64](#int64) |  | Amount in satoshi. |
 | previous_script | [bytes](#bytes) |  | The hash of the transaction containing the output to be spent. |
 | address | [string](#string) |  | The bitcoin addresses associated with this input. |
 
@@ -823,7 +823,7 @@ Request to subscribe or unsubscribe from a stream of transactions
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | hash | [bytes](#bytes) |  | The hash of the transaction containing the output to be spent. |
-| index | [uint32](#uint32) |  | The txout index of the outpoint. |
+| index | [uint32](#uint32) |  | The index of the UXTO outpoint. |
 
 
 
@@ -843,7 +843,7 @@ Request to subscribe or unsubscribe from a stream of transactions
 | pubkey_script | [bytes](#bytes) |  | The public key script used to pay coins. |
 | address | [string](#string) |  | The bitcoin addresses associated with this output. |
 | script_class | [string](#string) |  | The type of script. |
-| disassembled_script | [string](#string) |  | TODO-DOC? be more descriptive: disassembly of the script |
+| disassembled_script | [string](#string) |  | TODO-DOCS ?: The script expressed in Bitcoin Cash Script. |
 
 
 
@@ -859,9 +859,9 @@ Request to subscribe or unsubscribe from a stream of transactions
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | addresses | [string](#string) | repeated | Filter by address(es) |
-| outpoints | [Transaction.Input.Outpoint](#pb.Transaction.Input.Outpoint) | repeated | Filter by output hash and index |
-| data_elements | [bytes](#bytes) | repeated | TODO-DOCS: ? Specify which transaction elements to return |
-| all_transactions | [bool](#bool) |  | Subscribed/Unsubscribe to everything. Other filters will be ignored. |
+| outpoints | [Transaction.Input.Outpoint](#pb.Transaction.Input.Outpoint) | repeated | Filter by output hash and index. |
+| data_elements | [bytes](#bytes) | repeated | TODO-DOCS: ? Specify which transaction elements to return. |
+| all_transactions | [bool](#bool) |  | Subscribe/Unsubscribe to everything. Other filters will be ignored. |
 
 
 
@@ -876,7 +876,7 @@ Request to subscribe or unsubscribe from a stream of transactions
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| type | [TransactionNotification.Type](#pb.TransactionNotification.Type) |  | Whether or not the transaction has been included in a block |
+| type | [TransactionNotification.Type](#pb.TransactionNotification.Type) |  | Whether or not the transaction has been included in a block. |
 | confirmed_transaction | [Transaction](#pb.Transaction) |  | A transaction included in a block. |
 | unconfirmed_transaction | [MempoolTransaction](#pb.MempoolTransaction) |  | A broadcasted transaction in mempool. |
 | serialized_transaction | [bytes](#bytes) |  | Binary transaction, serialized using bitcoin protocol encoding. |
@@ -986,7 +986,7 @@ This service could be authenticated or unauthenticated.
 
 **Requires AddressIndex** |
 | GetUnspentOutput | [GetUnspentOutputRequest](#pb.GetUnspentOutputRequest) | [GetUnspentOutputResponse](#pb.GetUnspentOutputResponse) | Looks up the unspent output in the utxo set and returns the utxo metadata or not found. |
-| GetMerkleProof | [GetMerkleProofRequest](#pb.GetMerkleProofRequest) | [GetMerkleProofResponse](#pb.GetMerkleProofResponse) | Returns a merkle (SPV) proof that the given transaction is in the provided block.
+| GetMerkleProof | [GetMerkleProofRequest](#pb.GetMerkleProofRequest) | [GetMerkleProofResponse](#pb.GetMerkleProofResponse) | Returns a Merkle (SPV) proof that the given transaction is in the provided block.
 
 **Requires TxIndex*** |
 | SubmitTransaction | [SubmitTransactionRequest](#pb.SubmitTransactionRequest) | [SubmitTransactionResponse](#pb.SubmitTransactionResponse) | Submit a transaction to all connected peers. |

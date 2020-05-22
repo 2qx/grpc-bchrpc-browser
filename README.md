@@ -45,8 +45,7 @@ One notable limitation of the official grpc/grpc-web library is a lack of FETCH 
 Alternative implementations of this project are built using the improbable-eng library here:
 
 - For the web: [grpc-bchrpc-web](https://github.com/simpleledgerinc/grpc-bchrpc-web)
-
-- Using a local gcash node from nodejs: [grpc-bchrpc-node](https://github.com/simpleledgerinc/grpc-bchrpc-node)
+- Using a local bchd node from nodejs: [grpc-bchrpc-node](https://github.com/simpleledgerinc/grpc-bchrpc-node)
 
 
 ## Scripts
@@ -71,7 +70,7 @@ Tests can be run either from console or in a browser.  The test modules and java
 
 If for some reason you need to update the gcash proto files yourself to add some future functionality use:
 
-**Important** an [installed](https://github.com/protocolbuffers/protobuf/releases/latest) version of `protoc`  
+**Important:** an [installed](https://github.com/protocolbuffers/protobuf/releases/latest) version of `protoc`  
  is required to run `pb-build`. 
 
     npm run pb-clean     # remove old definitions
