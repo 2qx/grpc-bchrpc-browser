@@ -479,9 +479,9 @@ Request headers using a list of known block hashes.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| block | [BlockInfo](#pb.BlockInfo) |  |  |
-| hashes | [bytes](#bytes) | repeated |  |
-| flags | [bytes](#bytes) |  |  |
+| block | [BlockInfo](#pb.BlockInfo) |  | Block header information for the corresponding transaction |
+| hashes | [bytes](#bytes) | repeated | A list containing the transaction hash, the adjacent leaf transaction hash and the hashes of the highest nodes in the merkle tree not built with the transaction. Proof hashes are ordered following transaction order, or left to right on the merkle tree |
+| flags | [bytes](#bytes) |  | Binary representing the location of the matching transaction in the full merkle tree, starting with the root (`1`) at position/level 0, where `1` corresponds to a left branch and `01` is a right branch. |
 
 
 
@@ -675,7 +675,7 @@ Get a transaction from a transaction hash.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | transaction | [Transaction](#pb.Transaction) |  |  |
-| added_time | [int64](#int64) |  | TODO-DOCS: ? When the transaction was witnessed by the node. |
+| added_time | [int64](#int64) |  | When the transaction was witnessed by the node. |
 | added_height | [int32](#int32) |  | The block height at the time the transaction was added to the pool. |
 | fee | [int64](#int64) |  | The total fee in satoshi the transaction pays. |
 | fee_per_kb | [int64](#int64) |  | The fee in satoshi per kilobyte the transaction pays. |

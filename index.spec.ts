@@ -8,9 +8,8 @@ import { GrpcClient } from "./index";
 //
 // These libraries are only used for testing and should not be exported in the final module.
 //
-import { XMLHttpRequest }  from "xhr2";           
-import { Crypto } from "@peculiar/webcrypto";    
-
+import { XMLHttpRequest } from "xhr2";
+import { Crypto } from "@peculiar/webcrypto";
 
 const mainnet = new GrpcClient(
     {
@@ -29,36 +28,121 @@ const badClient = new GrpcClient(
 );
 
 
-declare var global:any;
+declare var global: any;
 /*
    If running within nodejs, import these substitutes for core libraries
 */
 if (typeof window === 'undefined') {
     global.XMLHttpRequest = XMLHttpRequest;
     global.crypto = new Crypto();
+    global.atob = function (str: string) {
+        return Buffer.from(str, 'base64').toString('binary');
+    }
+    global.btoa = function (str: any) {
+        var buffer;
+        if (str instanceof Buffer) {
+            buffer = str;
+        } else {
+            buffer = Buffer.from(str.toString(), 'binary');
+        }
+        return buffer.toString('base64');
+    }
 }
 
-const sha256sha256 = async (a:Uint8Array) => {
-    return crypto.subtle.digest('SHA-256',await crypto.subtle.digest('SHA-256',a))
+function unpack(packed: Uint8Array) {
+    var values = "";
+    for (var i = 0; i < packed.length; i++) {
+        values += packed.toString();
+    }
+    return values;
 }
 
-// const hashPair = async (a:Uint8Array, b: Uint8Array) => {
-//     return sha256sha256(new Uint8Array([...a,...b]))
-//   }
-  
-//   const getRandomTx = (arr:Uint8Array) => {
-//     return arr[Math.floor(Math.random()*arr.length)]
-//   }
-  
-//   const merkleProofRoot = (root: Uint8Array, proof: Uint8Array[], tx:Uint8Array) => {
-//     return proof.reduce((root, [tx]) => {hashPair(root,tx), tx})
-//   }
 
+const sha256sha256 = async (ab: Uint8Array) => {
+    return await crypto.subtle.digest('SHA-256', await crypto.subtle.digest('SHA-256', ab))
+}
 
-/* Converting hex to base64 in browser
-* hex = "ddedac7bb45ca77e0d6faac54214dda353fb8d4e6f10ae8f0cf09b1cef47ccdf"
-* arr = new Uint8Array(hex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))).reverse()
-* btoa(String.fromCharCode.apply(null, arr));
+const hashPair = async (a: string | Uint8Array, b: string | Uint8Array ) => {
+    // If an argument is missing, assume it is a starting hash and return it
+    if (!a) {return b};
+    if (!b) {return a};
+
+    // Convert base64 strings to Uint8Arrays
+    a = (typeof a === 'string') ? Uint8Array.from(Buffer.from(a, 'base64')) : a;
+    b = (typeof b === 'string') ? Uint8Array.from(Buffer.from(b, 'base64')) : b;
+    
+    return await new Uint8Array(
+        await sha256sha256(
+            new Uint8Array(
+                [...a, ...b]
+            )
+        )
+    )
+}
+
+const cat = (a: string, b: string) => {
+    if (!a) {
+        return b;
+    }
+    if (!b) {
+        return a;
+    }
+    return a + b;
+}
+
+const expandFlags = (b: Uint8Array) => {
+    return Array.from(b)
+        .reverse()
+        .map(x => x.toString(2).padStart(8, '0'))
+        .join("")
+        .replace(/\b0+/g, '')
+        .split("")
+        .map(x => parseInt(x))
+        .reverse();
+}
+
+const getMerkleRootFromProof = async (proof: (string | Uint8Array)[], flags: number[], fn: any) => {
+
+    // proofCur tracks where in the list of proofs the next one is pulled from
+    // count the number of zeros to get the index of the transaction hash in the proof array
+    let proofCur = flags.filter(x => x == 0).length;
+
+    // accumulator is the root of the proof walked so far
+    let accumulator = null
+    for (let i = flags.length - 1; i >= 0;) {
+        // If the previous leaf was on the right side, combine it with the hash on the left 
+        if (flags[i] === 0) {
+            proofCur--;
+            accumulator = await fn(proof.splice(proofCur, 1).pop(), accumulator)
+            flags.pop() // remove the flag indicating that the previous node was on the right
+            i--
+            flags.pop() // remove the node flag
+            i--
+        }
+        // Otherwise, combine it with the leaf to the right
+        else {
+            accumulator = await fn(accumulator, proof.splice(proofCur, 1).pop())
+            flags.pop() // remove the node flag
+            i--
+        }
+    }
+    return accumulator
+}
+
+const hexToU8 = (hashHex: string) => {
+    return new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)))
+}
+
+const base64toU8 = (b64: string) => {
+    return Uint8Array.from(Buffer.from(b64, 'base64'))
+}
+
+/* Converting hex to2 base64 in browser
+ hex = "8bfac391128cf866bef84490fcb9c246aabac39e6a787e53190bf95f44eb67c4"
+ hexToBase64 =  (hex) => {
+ arr = new Uint8Array(hex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))).reverse()
+ return btoa(String.fromCharCode.apply(null, arr));
+ }
 */
 
 describe("grpc-bchrpc-browser", () => {
@@ -87,7 +171,7 @@ describe("grpc-bchrpc-browser", () => {
 
     it("getBlockInfo for hex hash 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f", async () => {
         const hashHex = "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f";
-        const info = await mainnet.getBlockInfo({hashHex: hashHex}, null);
+        const info = await mainnet.getBlockInfo({ hashHex: hashHex }, null);
         assert.equal(info.getInfo()!.getHeight(), 0);
         const hash = Buffer.from(info.getInfo()!.getHash_asU8().reverse()).toString("hex");
         assert.equal(hash, "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
@@ -97,7 +181,7 @@ describe("grpc-bchrpc-browser", () => {
         const hexString = "00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048"
         const hashArray = Uint8Array.from(Buffer.from(hexString, 'hex')).reverse();
         const hash = Buffer.from(hashArray).toString('base64') // "b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA="
-        const info = await mainnet.getBlockInfo({hash: hash}, null);
+        const info = await mainnet.getBlockInfo({ hash: hash }, null);
         assert.equal(info.getInfo()!.getHeight(), 1);
         const hashHex = Buffer.from(info.getInfo()!.getHash_asU8().reverse()).toString("hex");
         assert.equal(hashHex, "00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048");
@@ -112,24 +196,98 @@ describe("grpc-bchrpc-browser", () => {
         const res = await mainnet.getRawTransaction({ hash: hash }, null);
         const hash_one = await crypto.subtle.digest('SHA-256', res.getTransaction_asU8());
         const hash_two = await crypto.subtle.digest('SHA-256', hash_one);
+        const hash_hash = await sha256sha256(res.getTransaction_asU8());
+        assert.equal(hash_hash, hash_hash, "check double sha function");
         const hash_two_u8 = new Uint8Array(hash_two);
         assert.equal(hash, Buffer.from(hash_two_u8).toString('base64'), "check that raw transaction matches it's hash");
     });
 
     it("getRawBlock should return a block with a valid block header", async () => {
         const block_hash = "SGDrGL8bFiDjfpSQ/IpCdRRBb9dRWauGaI6agwAAAAA="
-        const block = await mainnet.getRawBlock({hash:block_hash}, null);
-        const hash_one = await crypto.subtle.digest('SHA-256', block.getBlock_asU8().slice(0,80));
+        const block = await mainnet.getRawBlock({ hash: block_hash }, null);
+        const hash_one = await crypto.subtle.digest('SHA-256', block.getBlock_asU8().slice(0, 80));
         const hash_two = await crypto.subtle.digest('SHA-256', hash_one);
         const hash_two_u8 = new Uint8Array(hash_two);
         assert.equal(block_hash, Buffer.from(hash_two_u8).toString('base64'), "check that the header matches the query");
     });
 
-    it("GetMerkleProof for a block", async () => {
-        const txHex = "11556da6ee3cb1d14727b3a8f4b37093b6fecd2bc7d577a02b4e98b7be58a7e8";
-        const proof = await mainnet.getMerkleProof({hashHex:txHex}, null);
-        const merkle_root = await (await mainnet.getBlockInfo({hashHex: await proof.getBlock()?.getHash_asB64()}, null)).getInfo()?.getMerkleRoot()
-        // TODO
+    it("check merkle tree walk function", async () => {
+
+        let block15000 = new Map<number, string[]>();
+        block15000.set(11111, ["A", "B", "CD", "EFGH", "IJ"])
+        block15000.set(111101, ["A", "B", "CD", "EFGH", "IJ"])
+        block15000.set(111011, ["AB", "C", "D", "EFGH", "IJ"])
+        block15000.set(1110101, ["AB", "C", "D", "EFGH", "IJ"])
+        block15000.set(110111, ["ABCD", "E", "F", "GH", "IJ"])
+        block15000.set(1101101, ["ABCD", "E", "F", "GH", "IJ"])
+        block15000.set(1101011, ["ABCD", "EF", "G", "H", "IJ"])
+        block15000.set(11010101, ["ABCD", "EF", "G", "H", "IJ"])
+        block15000.set(101111, ["ABCDEFGH", "I", "J"])
+        block15000.set(1011101, ["ABCDEFGH", "I", "J"])
+        block15000.forEach(async (value: string[], key: number) => {
+            let flagArray = String(key).split("").map(x => parseInt(x))
+            assert.isTrue(String("ABCDEFGHIJ") === String(await getMerkleRootFromProof(value, flagArray, cat)))
+        });
+    });
+
+    it("Should hash littleEndian sha256(sha256(ab)) from hex", async () => {
+        // These are little endian hex strings
+        const a = hexToU8("e1af205960ae338a37174b407ee71067c3cd7f04d48a5cec7e13f6eccb61dcbc")     
+        const b = hexToU8("a314970cd7c647d1cc0a477e1a2122b98205b6924b73001b8dab20ee81c2f4f7")     
+        const ab_u8 = hexToU8("a4a2774e14677eaf13a5e8d5f793618ee3b9763ebbd99ac20894b2cea5aa17b7")
+        const hashPairResult = await hashPair(a, b)
+        assert.deepEqual(ab_u8, hashPairResult);
+    })
+
+    it("Should hash littleEndian sha256(sha256(ab)) from Uint8", async () => {
+        const a = base64toU8("4a8gWWCuM4o3F0tAfucQZ8PNfwTUilzsfhP27Mth3Lw="); // A
+        const b = base64toU8("oxSXDNfGR9HMCkd+GiEiuYIFtpJLcwAbjasg7oHC9Pc="); // B
+        const ab = base64toU8("pKJ3ThRnfq8TpejV95NhjuO5dj672ZrCCJSyzqWqF7c="); // AB
+        const ab_result = await hashPair(a, b)
+        assert.deepEqual(ab, ab_result);
+        assert.deepEqual(hexToU8("e1af205960ae338a37174b407ee71067c3cd7f04d48a5cec7e13f6eccb61dcbc"), a)
+    });
+
+    it("Should get root from Uint8 hashes", async () => {
+        const ab = base64toU8("pKJ3ThRnfq8TpejV95NhjuO5dj672ZrCCJSyzqWqF7c="); // AB
+        const c = base64toU8("sI653OBFKhsZcMTSnoi97gdmmipdGwhYbX/6F7Lj9rU="); // C
+        const d = base64toU8("lYuelK6ppIW6SUxQ+zGSVYBX98rtlwXUsRNp8HHxBkI="); // D
+        const efgh = base64toU8("i+FfwqsR7z4HlWjUOysJ7VpWkPsT7LEDL3qrmSOKGEc="); // EFGH
+        const ij = base64toU8("6CczGx/nomifvCPRTNITF8aZWWy8oiIYKkiTIuzh+nQ="); // IJ
+        const abcdefghij = base64toU8("sVLspDZIUPNCTHrCszfWBsXKCj+W8VVPjbM9L28TC74="); // Merkle Root
+        const abcdefghij_result = await hashPair(
+            await hashPair(
+                await hashPair(
+                    ab,
+                    await hashPair(
+                        c,
+                        await hashPair(d, "")
+                    )
+                ),
+                efgh
+            ),
+            ij
+        )
+        assert.deepEqual(abcdefghij, abcdefghij_result);
+    })
+
+    it("build merkle root from provided proof", async () => {
+
+        // "f4d9e94ca7e03f6b114d1e699b4ff9f331c0b251b0e9f26a5b96aff33ee0ce1c";
+        // const hash = "4a8gWWCuM4o3F0tAfucQZ8PNfwTUilzsfhP27Mth3Lw="; // A
+        // const hash = "oxSXDNfGR9HMCkd+GiEiuYIFtpJLcwAbjasg7oHC9Pc="; // B
+        // const hash = "sI653OBFKhsZcMTSnoi97gdmmipdGwhYbX/6F7Lj9rU="; // C
+        const hash = "lYuelK6ppIW6SUxQ+zGSVYBX98rtlwXUsRNp8HHxBkI="; // D
+        // const hash = "2Xohz0b9WvsL+epCN7xL9chOi0fTjR7uK761wPihxiU="; // G
+        // const hash = "kOAzGd3J1I2jirObLzfApa9a/HNvb/Kp2LhlPg/rMI0="; // I
+        // const hash = "hCUYQqTA8OGI4cK/ZD7DehQC3YaiWpq1AEYzRn0W4xM="; // J
+        const proof = await mainnet.getMerkleProof({ hash: hash }, null);
+        const merkle_flag_U8 = await proof.getFlags_asU8();
+        const merkle_flag_array = expandFlags(merkle_flag_U8);
+        const merkle_hashes = await proof.getHashesList();
+        const merkle_check = await getMerkleRootFromProof(merkle_hashes, merkle_flag_array, hashPair)
+        const root = await proof.getBlock()?.getMerkleRoot()!;
+        assert.deepEqual(root, merkle_check, "the build merkle root should match root on block header");
     });
 
     it("getTransaction returns the transaction", async () => {
@@ -139,21 +297,21 @@ describe("grpc-bchrpc-browser", () => {
         assert.equal(res.getTransaction()?.getVersion(), 2);
         assert.equal(res.getTransaction()?.getLockTime(), 0);
         const inputs = res.getTransaction()?.getInputsList()!;
-        assert.equal(inputs[0].getAddress(),"qrhvcy5xlegs858fjqf8ssl6a4f7wpstaqlsy4gusz", "check the first input address");
+        assert.equal(inputs[0].getAddress(), "qrhvcy5xlegs858fjqf8ssl6a4f7wpstaqlsy4gusz", "check the first input address");
         assert.equal(inputs[0].getValue(), 546, "check value");
-        assert.equal(inputs[1].getAddress(),"qrhvcy5xlegs858fjqf8ssl6a4f7wpstaqlsy4gusz", "check the second input address");
+        assert.equal(inputs[1].getAddress(), "qrhvcy5xlegs858fjqf8ssl6a4f7wpstaqlsy4gusz", "check the second input address");
         assert.equal(inputs[1].getValue(), 8089, "check value");
         const outputs = res.getTransaction()?.getOutputsList()!;
-        assert.equal(outputs[0].getScriptClass(),"datacarrier", "check the script class");
-        assert.equal(outputs[0].getDisassembledScript(),"OP_RETURN 534c5000 41 47454e45534953 4e465431204368696c64 4d79204e465431204368696c64   00  0000000000000001", "jSLPAGENESISNFT1 ChildMy NFT1 ChildLLL");
-        assert.equal(outputs[1].getAddress(),"qrhvcy5xlegs858fjqf8ssl6a4f7wpstaqlsy4gusz", "check the second output address");
-        assert.equal(outputs[2].getAddress(),"qrhvcy5xlegs858fjqf8ssl6a4f7wpstaqlsy4gusz", "check the third output address");
+        assert.equal(outputs[0].getScriptClass(), "datacarrier", "check the script class");
+        assert.equal(outputs[0].getDisassembledScript(), "OP_RETURN 534c5000 41 47454e45534953 4e465431204368696c64 4d79204e465431204368696c64   00  0000000000000001", "jSLPAGENESISNFT1 ChildMy NFT1 ChildLLL");
+        assert.equal(outputs[1].getAddress(), "qrhvcy5xlegs858fjqf8ssl6a4f7wpstaqlsy4gusz", "check the second output address");
+        assert.equal(outputs[2].getAddress(), "qrhvcy5xlegs858fjqf8ssl6a4f7wpstaqlsy4gusz", "check the third output address");
     });
-    
+
     it("getAddressTransactions for an address", async () => {
         const exampleAddress = "bitcoincash:qregyd3kcklc58fd6r8epfwulpvd9f4mr5gxg8n8y7";
         const firstTxid = "5248906d6ac8425f287727797307d7305291f57d30406cb627e6573bbb77a344";
-        const res = await mainnet.getAddressTransactions({address: exampleAddress, height: 0}, null);
+        const res = await mainnet.getAddressTransactions({ address: exampleAddress, height: 0 }, null);
         const txns = res.getConfirmedTransactionsList();
         assert.equal(txns.length >= 3, true);
         const tx1 = txns.filter((t) => Buffer.from(t.getHash_asU8().reverse()).toString("hex") === firstTxid)[0];
@@ -172,14 +330,14 @@ describe("grpc-bchrpc-browser", () => {
 
     it("getAddressUtxos should get UTXOs", async () => {
         const eaterAddress = "bitcoincash:qp6e6enhpy0fwwu7nkvlr8rgl06ru0c9lywalz8st5"; // 1BitcoinEaterAddressDontSendf59kuE
-        const confirmedRes = await mainnet.getAddressUtxos({address: eaterAddress, includeMempool: false}, null);
+        const confirmedRes = await mainnet.getAddressUtxos({ address: eaterAddress, includeMempool: false }, null);
         const confirmedTxns = await confirmedRes.getOutputsList();
-        const unconfirmedRes = await mainnet.getAddressUtxos({address: eaterAddress, includeMempool: true}, null);
+        const unconfirmedRes = await mainnet.getAddressUtxos({ address: eaterAddress, includeMempool: true }, null);
         const unconfirmedTxns = await unconfirmedRes.getOutputsList();
-        
-        const confirmedValueArray =  await Promise.all(confirmedTxns.map(async x => { return x.getValue()}));
+
+        const confirmedValueArray = await Promise.all(confirmedTxns.map(async x => { return x.getValue() }));
         const confirmedValue = confirmedValueArray.reduce((a, b) => a + b, 0);
-        const unconfirmedValueArray =  await Promise.all(unconfirmedTxns.map(async x => { return x.getValue()}));
+        const unconfirmedValueArray = await Promise.all(unconfirmedTxns.map(async x => { return x.getValue() }));
         const unconfirmedValue = unconfirmedValueArray.reduce((a, b) => a + b, 0) - confirmedValue
         assert.isAtLeast(confirmedValue, 1313538732, "Value is greater than 1313538732")
         assert.equal(unconfirmedValue, 0, "Assume there are no unconfirmed transactions")
@@ -188,7 +346,7 @@ describe("grpc-bchrpc-browser", () => {
     it("submitTransaction should broadcast", async () => {
         const txnHex = "010000000552df9fd3f9bf1f13993e8b7e5b42530394ed644f0df4c0fdd32cf531acc75505030000006a47304402201039b25fa81feb74d8dd0eb25ae065e8baf3c944d7728f77fb68fa0c9b67d2c2022013f0bc158946826791c58dcd5187da1b2dfb3dd36227880e6d3830fe91327ea7c1210383c67be45a2bef59274c29341dd55592973d0b0f14c7810a353fbdff62f613defeffffff34e29914bd556e3a3818342ceff2ae526ef96bf3c3d09777df9f655be52931cf100300006a473044022034070971b4a27f279560a2f8b735ee3324d0dea54999bc24f851a7c6d500a1a102200b09402cf061a15f8ec88f606d8a864f9cc0e86c50ea78c9ce282337bdce19af4121020414832a8304904eec02ae00997ece267f234908d06633d75a8a4e1e4350e172ffffffff34e29914bd556e3a3818342ceff2ae526ef96bf3c3d09777df9f655be52931cf0f0300006a473044022071c84830f0da6abf35f93abebf2a8f3415cbeb3e9d967321a6944bbb6b6ec6aa022006bbfd5019fbc3d516dea6dde5f1d78c4e5428e6f305f00964efde70490ed2374121020414832a8304904eec02ae00997ece267f234908d06633d75a8a4e1e4350e172ffffffff34e29914bd556e3a3818342ceff2ae526ef96bf3c3d09777df9f655be52931cf0e0300006b483045022100ba0e0e300047c23f0e1bf5b83c240f8ad8da99c8021177b75329e30432953855022024d7ddffe1b8ad31d6f0a7955d7ae4d915ab40b31c367f9ed6e0400bc9ba69a94121020414832a8304904eec02ae00997ece267f234908d06633d75a8a4e1e4350e172ffffffff34e29914bd556e3a3818342ceff2ae526ef96bf3c3d09777df9f655be52931cf0d0300006b4830450221009d35b7f99e55486d4d5ee7208dc4c34c157e68f55a4fc7b7765c86b8d9af296f022058d754701593829d0ed4a5ea8881737ae185c7ead271b748e4eb76b92386261d4121020414832a8304904eec02ae00997ece267f234908d06633d75a8a4e1e4350e172ffffffff040000000000000000496a04534c500001010453454e4420c4b0d62156b3fa5c8f3436079b5394f7edc1bef5dc1cd2f9d0c4d46f82cca47908000000000000000108000000000000000408000000000000005a22020000000000001976a914d20919767967b6305778ef2c8680e1bab9f9070588ac22020000000000001976a914750689c893d2b2a0e805b8b356283126d7d1e5c088ac22020000000000001976a9149af63d01b056c5b3e0a1d6f74e46ba0543a579bd88ac00000000";
         try {
-            await mainnet.submitTransaction({txnHex}, null);
+            await mainnet.submitTransaction({ txnHex }, null);
         } catch (err) {
             assert.equal(err.message, "tx rejected: transaction already exists");
         }

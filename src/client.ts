@@ -168,7 +168,7 @@ export class GrpcClient {
     public getUnspentOutput(
         { hash, hashHex, vout, includeMempool }:
             {
-                hash?: string,hashHex?: string, vout: number, 
+                hash?: string | Uint8Array, hashHex?: string, vout: number, 
                 includeMempool?: boolean
             }
         , metadata: grpcWeb.Metadata | null
@@ -200,7 +200,7 @@ export class GrpcClient {
     public getMerkleProof(
         { hash, hashHex }:
             {
-                hash?: string, hashHex?: string
+                hash?: string | Uint8Array, hashHex?: string
             }
         , metadata: grpcWeb.Metadata | null
     ): Promise<bchrpc.GetMerkleProofResponse> {

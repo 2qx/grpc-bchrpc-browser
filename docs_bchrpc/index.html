@@ -1400,21 +1400,24 @@ instead of just transaction hashes. Default is false. </p></td>
                   <td>block</td>
                   <td><a href="#pb.BlockInfo">BlockInfo</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Block header information for the corresponding transaction </p></td>
                 </tr>
               
                 <tr>
                   <td>hashes</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
+                  <td><p>A list containing the transaction hash, the adjacent leaf transaction hash 
+and the hashes of the highest nodes in the merkle tree not built with the transaction.
+Proof hashes are ordered following transaction order, or left to right on the merkle tree </p></td>
                 </tr>
               
                 <tr>
                   <td>flags</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Binary representing the location of the matching transaction in the full merkle tree,
+starting with the root (`1`) at position/level 0, where `1` corresponds to a left branch and `01` is a right branch. </p></td>
                 </tr>
               
             </tbody>
@@ -1771,7 +1774,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>added_time</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p>TODO-DOCS: ? When the transaction was witnessed by the node. </p></td>
+                  <td><p>When the transaction was witnessed by the node. </p></td>
                 </tr>
               
                 <tr>
