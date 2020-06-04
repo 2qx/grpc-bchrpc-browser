@@ -3,6 +3,7 @@ import * as grpcWeb from "grpc-web";
 import * as bchrpc from "../pb/bchrpc_pb";
 import * as bchrpc_pb_service from "../pb/BchrpcServiceClientPb";
 
+
 export class GrpcClient {
     public client: bchrpc_pb_service.bchrpcClient;
 
@@ -84,7 +85,7 @@ export class GrpcClient {
     ): Promise<bchrpc.GetRawTransactionResponse> {
         const req = new bchrpc.GetRawTransactionRequest();
         if (hashHex) {
-            req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
+            req.setHash(this.hexToU8(hashHex).reverse());
         } else if (hash) {
             req.setHash(hash);
         } else {
@@ -111,7 +112,7 @@ export class GrpcClient {
     ): Promise<bchrpc.GetTransactionResponse> {
         const req = new bchrpc.GetTransactionRequest();
         if (hashHex) {
-            req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
+            req.setHash(this.hexToU8(hashHex).reverse());
         } else if (hash) {
             req.setHash(hash);
         } else {
@@ -155,7 +156,7 @@ export class GrpcClient {
             req.setHeight(height);
         }
         if (hashHex) {
-            req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
+            req.setHash(this.hexToU8(hashHex).reverse());
         }
         req.setAddress(address);
         return new Promise((resolve, reject) => {
@@ -178,7 +179,7 @@ export class GrpcClient {
             req.setIncludeMempool(true);
         }
         if (hashHex) {
-            req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
+            req.setHash(this.hexToU8(hashHex).reverse());
         } else if (hash) {
             req.setHash(hash);
         }
@@ -206,7 +207,7 @@ export class GrpcClient {
     ): Promise<bchrpc.GetMerkleProofResponse> {
         const req = new bchrpc.GetMerkleProofRequest();
         if (hashHex) {
-            req.setTransactionHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
+            req.setTransactionHash(this.hexToU8(hashHex).reverse());
         } else if (hash) {
             req.setTransactionHash(hash);
         }
@@ -248,7 +249,7 @@ export class GrpcClient {
     ): Promise<bchrpc.GetRawBlockResponse> {
         const req = new bchrpc.GetRawBlockRequest();
         if (hashHex) {
-            req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
+            req.setHash(this.hexToU8(hashHex).reverse());
         } else if (hash) {
             req.setHash(hash);
         } else {
@@ -280,7 +281,7 @@ export class GrpcClient {
         if (index !== null && index !== undefined) {
             req.setHeight(index);
         } else if (hashHex) {
-            req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
+            req.setHash(this.hexToU8(hashHex).reverse());
         } else if (hash) {
             req.setHash(hash);
         } else {
@@ -311,7 +312,7 @@ export class GrpcClient {
     ): Promise<bchrpc.GetBlockInfoResponse> {
         const req = new bchrpc.GetBlockInfoRequest();
         if (height !== null && height !== undefined) { req.setHeight(height); } else if (hashHex) {
-            req.setHash(new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16))).reverse());
+            req.setHash(this.hexToU8(hashHex).reverse());
         } else if (hash) {
             req.setHash(hash);
         } else {
@@ -402,5 +403,115 @@ export class GrpcClient {
                 if (err !== null) { reject(err); } else { resolve(response!); }
             });
         });
+    }
+
+    public async verifyTransaction({txnHash, txnHashHex, merkleRoot, merkleRootHex}: 
+        { txnHash?: string | Uint8Array, txnHashHex?: string, merkleRoot?: string | Uint8Array, merkleRootHex?: string  }
+        ) : Promise<boolean>{
+            let tx:string | Uint8Array,  localMerkleRoot: string| Uint8Array
+            if(txnHashHex){
+                tx = this.hexToU8(txnHashHex)
+            }else if (txnHash){
+                tx = txnHash
+            }else {
+                throw Error("Most provide a transaction id for verification");
+            }
+            if(merkleRootHex){
+                localMerkleRoot = this.hexToU8(merkleRootHex)
+            }else if (merkleRoot){
+                localMerkleRoot = merkleRoot
+            }else {
+                throw Error("Most provide a locally validated merkle root for verification");
+            } 
+            const proof = await this.getMerkleProof({hash:tx}, null)        
+            const merkleFlags = this.expandMerkleFlags(await proof.getFlags_asU8());
+            const merkleHashes = await proof.getHashesList();
+            const merkleCheckPromise = this.getMerkleRootFromProof(merkleHashes, merkleFlags, this.hashPair)
+            return this.compareUint8Array(await merkleCheckPromise, localMerkleRoot)
+    }
+
+
+    public sha256sha256 = async (ab: Uint8Array): Promise<ArrayBuffer> => {
+        try {
+            const data = await crypto.subtle.digest('SHA-256', await crypto.subtle.digest('SHA-256', ab))
+            return data
+          } catch (error) {
+            throw error
+          }
+    }
+    
+    public hashPair = async (a: string | Uint8Array, b: string | Uint8Array) => {
+        // If an argument is missing, assume it is a starting hash and return it
+        if (!a) { return b };
+        if (!b) { return a };
+    
+        // Convert base64 strings to Uint8Arrays
+        a = (typeof a === 'string') ? Uint8Array.from(Buffer.from(a, 'base64')) : a;
+        b = (typeof b === 'string') ? Uint8Array.from(Buffer.from(b, 'base64')) : b;
+    
+        return await new Uint8Array(
+            await this.sha256sha256(
+                new Uint8Array(
+                    [...a, ...b]
+                )
+            )
+        )
+    }
+        
+    public expandMerkleFlags = (b: Uint8Array) => {
+        return Array.from(b)
+            .reverse()
+            .map(x => x.toString(2).padStart(8, '0'))
+            .join("")
+            .replace(/\b0+/g, '')
+            .split("")
+            .map(x => parseInt(x))
+            .reverse();
+    }
+    
+    public compareUint8Array(a:string|Uint8Array, b:string|Uint8Array) {
+        // Convert base64 strings to Uint8Arrays
+        a = (typeof a === 'string') ? Uint8Array.from(Buffer.from(a, 'base64')) : a;
+        b = (typeof b === 'string') ? Uint8Array.from(Buffer.from(b, 'base64')) : b;
+        for (let i = a.length; -1 < i; i -= 1) {
+          if ((a[i] !== b[i])) return false;
+        }
+        return true;
+      }
+
+    public getMerkleRootFromProof = async (proof: (string | Uint8Array)[], flags: number[], fn: any) => {
+    
+        // proofCur tracks where in the list of proofs the next one is pulled from
+        // count the number of zeros to get the index of the transaction hash in the proof array
+        let proofCur = flags.filter(x => x == 0).length;
+    
+        // accumulator is the root of the proof walked so far
+        let accumulator = null
+        for (let i = flags.length - 1; i >= 0;) {
+            // If the previous leaf was on the right side, combine it with the hash on the left 
+            if (flags[i] === 0) {
+                proofCur--;
+                accumulator = await fn(proof.splice(proofCur, 1).pop(), accumulator)
+                flags.pop() // remove the flag indicating that the previous node was on the right
+                i--
+                flags.pop() // remove the node flag
+                i--
+            }
+            // Otherwise, combine it with the leaf to the right
+            else {
+                accumulator = await fn(accumulator, proof.splice(proofCur, 1).pop())
+                flags.pop() // remove the node flag
+                i--
+            }
+        }
+        return accumulator
+    }
+    
+    public hexToU8 = (hashHex: string) => {
+        return new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)))
+    }
+    
+    public base64toU8 = (b64: string) => {
+        return Uint8Array.from(Buffer.from(b64, 'base64'))
     }
 }

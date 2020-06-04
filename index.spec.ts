@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import { assert } from "chai";
+import { assert, expect } from "chai";
 import { UnspentOutput, Transaction, GetBlockchainInfoResponse } from "./pb/bchrpc_pb";
 import { GrpcClient } from "./index";
 
@@ -13,7 +13,8 @@ import { Crypto } from "@peculiar/webcrypto";
 
 const mainnet = new GrpcClient(
     {
-        url: "https://bchd.fountainhead.cash",
+        //url: "https://bchd.fountainhead.cash",
+        url: "https://bchd.sploit.cash",
         testnet: false,
         options: {}
     }
@@ -27,6 +28,12 @@ const badClient = new GrpcClient(
     }
 );
 
+const cat = (a: string, b: string) => {
+    // If an argument is missing, assume it is a starting hash and return it
+    if (!a) { return b; }
+    if (!b) { return a; }
+    return a + b;
+}
 
 declare var global: any;
 /*
@@ -49,101 +56,6 @@ if (typeof window === 'undefined') {
     }
 }
 
-function unpack(packed: Uint8Array) {
-    var values = "";
-    for (var i = 0; i < packed.length; i++) {
-        values += packed.toString();
-    }
-    return values;
-}
-
-
-const sha256sha256 = async (ab: Uint8Array) => {
-    return await crypto.subtle.digest('SHA-256', await crypto.subtle.digest('SHA-256', ab))
-}
-
-const hashPair = async (a: string | Uint8Array, b: string | Uint8Array ) => {
-    // If an argument is missing, assume it is a starting hash and return it
-    if (!a) {return b};
-    if (!b) {return a};
-
-    // Convert base64 strings to Uint8Arrays
-    a = (typeof a === 'string') ? Uint8Array.from(Buffer.from(a, 'base64')) : a;
-    b = (typeof b === 'string') ? Uint8Array.from(Buffer.from(b, 'base64')) : b;
-    
-    return await new Uint8Array(
-        await sha256sha256(
-            new Uint8Array(
-                [...a, ...b]
-            )
-        )
-    )
-}
-
-const cat = (a: string, b: string) => {
-    if (!a) {
-        return b;
-    }
-    if (!b) {
-        return a;
-    }
-    return a + b;
-}
-
-const expandFlags = (b: Uint8Array) => {
-    return Array.from(b)
-        .reverse()
-        .map(x => x.toString(2).padStart(8, '0'))
-        .join("")
-        .replace(/\b0+/g, '')
-        .split("")
-        .map(x => parseInt(x))
-        .reverse();
-}
-
-const getMerkleRootFromProof = async (proof: (string | Uint8Array)[], flags: number[], fn: any) => {
-
-    // proofCur tracks where in the list of proofs the next one is pulled from
-    // count the number of zeros to get the index of the transaction hash in the proof array
-    let proofCur = flags.filter(x => x == 0).length;
-
-    // accumulator is the root of the proof walked so far
-    let accumulator = null
-    for (let i = flags.length - 1; i >= 0;) {
-        // If the previous leaf was on the right side, combine it with the hash on the left 
-        if (flags[i] === 0) {
-            proofCur--;
-            accumulator = await fn(proof.splice(proofCur, 1).pop(), accumulator)
-            flags.pop() // remove the flag indicating that the previous node was on the right
-            i--
-            flags.pop() // remove the node flag
-            i--
-        }
-        // Otherwise, combine it with the leaf to the right
-        else {
-            accumulator = await fn(accumulator, proof.splice(proofCur, 1).pop())
-            flags.pop() // remove the node flag
-            i--
-        }
-    }
-    return accumulator
-}
-
-const hexToU8 = (hashHex: string) => {
-    return new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)))
-}
-
-const base64toU8 = (b64: string) => {
-    return Uint8Array.from(Buffer.from(b64, 'base64'))
-}
-
-/* Converting hex to2 base64 in browser
- hex = "8bfac391128cf866bef84490fcb9c246aabac39e6a787e53190bf95f44eb67c4"
- hexToBase64 =  (hex) => {
- arr = new Uint8Array(hex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16))).reverse()
- return btoa(String.fromCharCode.apply(null, arr));
- }
-*/
 
 describe("grpc-bchrpc-browser", () => {
 
@@ -194,24 +106,31 @@ describe("grpc-bchrpc-browser", () => {
         const txArray = Uint8Array.from(Buffer.from(txHex, 'hex')).reverse();
         const hash = Buffer.from(txArray).toString('base64') // 
         const res = await mainnet.getRawTransaction({ hash: hash }, null);
-        const hash_one = await crypto.subtle.digest('SHA-256', res.getTransaction_asU8());
-        const hash_two = await crypto.subtle.digest('SHA-256', hash_one);
-        const hash_hash = await sha256sha256(res.getTransaction_asU8());
-        assert.equal(hash_hash, hash_hash, "check double sha function");
-        const hash_two_u8 = new Uint8Array(hash_two);
-        assert.equal(hash, Buffer.from(hash_two_u8).toString('base64'), "check that raw transaction matches it's hash");
+        const hashOne = await crypto.subtle.digest('SHA-256', res.getTransaction_asU8());
+        const hashTwo = await crypto.subtle.digest('SHA-256', hashOne);
+        const hashHash = await mainnet.sha256sha256(res.getTransaction_asU8());
+        assert.equal(hashHash, hashHash, "check double sha function");
+        const hashTwo_u8 = new Uint8Array(hashTwo);
+        assert.equal(hash, Buffer.from(hashTwo_u8).toString('base64'), "check that raw transaction matches it's hash");
     });
+
+        // 66faf1d89f76a1039e367462fc489ccb4003e5c6df05b3d6c9ca5e686569d724 a coinbase transaction
+    // 
+    // it("getRawTransaction without a transaction should throw error", async () => {
+        
+    //     await expect( mainnet.getRawTransaction({  }, null)).to.throw(new Error('No hash provided for transaction'));
+    // });
 
     it("getRawBlock should return a block with a valid block header", async () => {
-        const block_hash = "SGDrGL8bFiDjfpSQ/IpCdRRBb9dRWauGaI6agwAAAAA="
-        const block = await mainnet.getRawBlock({ hash: block_hash }, null);
-        const hash_one = await crypto.subtle.digest('SHA-256', block.getBlock_asU8().slice(0, 80));
-        const hash_two = await crypto.subtle.digest('SHA-256', hash_one);
-        const hash_two_u8 = new Uint8Array(hash_two);
-        assert.equal(block_hash, Buffer.from(hash_two_u8).toString('base64'), "check that the header matches the query");
+        const blockHash = "SGDrGL8bFiDjfpSQ/IpCdRRBb9dRWauGaI6agwAAAAA="
+        const block = await mainnet.getRawBlock({ hash: blockHash }, null);
+        const hashOne = await crypto.subtle.digest('SHA-256', block.getBlock_asU8().slice(0, 80));
+        const hashTwo = await crypto.subtle.digest('SHA-256', hashOne);
+        const hashTwo_u8 = new Uint8Array(hashTwo);
+        assert.equal(blockHash, Buffer.from(hashTwo_u8).toString('base64'), "check that the header matches the query");
     });
 
-    it("check merkle tree walk function", async () => {
+    it("getMerkleRootFromProof should build merkle tree", async () => {
 
         let block15000 = new Map<number, string[]>();
         block15000.set(11111, ["A", "B", "CD", "EFGH", "IJ"])
@@ -226,42 +145,42 @@ describe("grpc-bchrpc-browser", () => {
         block15000.set(1011101, ["ABCDEFGH", "I", "J"])
         block15000.forEach(async (value: string[], key: number) => {
             let flagArray = String(key).split("").map(x => parseInt(x))
-            assert.isTrue(String("ABCDEFGHIJ") === String(await getMerkleRootFromProof(value, flagArray, cat)))
+            assert.isTrue(String("ABCDEFGHIJ") === String(await mainnet.getMerkleRootFromProof(value, flagArray, cat)))
         });
     });
 
-    it("Should hash littleEndian sha256(sha256(ab)) from hex", async () => {
+    it("hashPair returns sha256(sha256(ab)) from hex", async () => {
         // These are little endian hex strings
-        const a = hexToU8("e1af205960ae338a37174b407ee71067c3cd7f04d48a5cec7e13f6eccb61dcbc")     
-        const b = hexToU8("a314970cd7c647d1cc0a477e1a2122b98205b6924b73001b8dab20ee81c2f4f7")     
-        const ab_u8 = hexToU8("a4a2774e14677eaf13a5e8d5f793618ee3b9763ebbd99ac20894b2cea5aa17b7")
-        const hashPairResult = await hashPair(a, b)
+        const a = mainnet.hexToU8("e1af205960ae338a37174b407ee71067c3cd7f04d48a5cec7e13f6eccb61dcbc")
+        const b = mainnet.hexToU8("a314970cd7c647d1cc0a477e1a2122b98205b6924b73001b8dab20ee81c2f4f7")
+        const ab_u8 = mainnet.hexToU8("a4a2774e14677eaf13a5e8d5f793618ee3b9763ebbd99ac20894b2cea5aa17b7")
+        const hashPairResult = await mainnet.hashPair(a, b)
         assert.deepEqual(ab_u8, hashPairResult);
     })
 
-    it("Should hash littleEndian sha256(sha256(ab)) from Uint8", async () => {
-        const a = base64toU8("4a8gWWCuM4o3F0tAfucQZ8PNfwTUilzsfhP27Mth3Lw="); // A
-        const b = base64toU8("oxSXDNfGR9HMCkd+GiEiuYIFtpJLcwAbjasg7oHC9Pc="); // B
-        const ab = base64toU8("pKJ3ThRnfq8TpejV95NhjuO5dj672ZrCCJSyzqWqF7c="); // AB
-        const ab_result = await hashPair(a, b)
-        assert.deepEqual(ab, ab_result);
-        assert.deepEqual(hexToU8("e1af205960ae338a37174b407ee71067c3cd7f04d48a5cec7e13f6eccb61dcbc"), a)
+    it("hashPair returns sha256(sha256(ab)) from Uint8", async () => {
+        const a = mainnet.base64toU8("4a8gWWCuM4o3F0tAfucQZ8PNfwTUilzsfhP27Mth3Lw="); // A
+        const b = mainnet.base64toU8("oxSXDNfGR9HMCkd+GiEiuYIFtpJLcwAbjasg7oHC9Pc="); // B
+        const ab = mainnet.base64toU8("pKJ3ThRnfq8TpejV95NhjuO5dj672ZrCCJSyzqWqF7c="); // AB
+        const abResult = await mainnet.hashPair(a, b)
+        assert.deepEqual(ab, abResult);
+        assert.deepEqual(mainnet.hexToU8("e1af205960ae338a37174b407ee71067c3cd7f04d48a5cec7e13f6eccb61dcbc"), a)
     });
 
-    it("Should get root from Uint8 hashes", async () => {
-        const ab = base64toU8("pKJ3ThRnfq8TpejV95NhjuO5dj672ZrCCJSyzqWqF7c="); // AB
-        const c = base64toU8("sI653OBFKhsZcMTSnoi97gdmmipdGwhYbX/6F7Lj9rU="); // C
-        const d = base64toU8("lYuelK6ppIW6SUxQ+zGSVYBX98rtlwXUsRNp8HHxBkI="); // D
-        const efgh = base64toU8("i+FfwqsR7z4HlWjUOysJ7VpWkPsT7LEDL3qrmSOKGEc="); // EFGH
-        const ij = base64toU8("6CczGx/nomifvCPRTNITF8aZWWy8oiIYKkiTIuzh+nQ="); // IJ
-        const abcdefghij = base64toU8("sVLspDZIUPNCTHrCszfWBsXKCj+W8VVPjbM9L28TC74="); // Merkle Root
-        const abcdefghij_result = await hashPair(
-            await hashPair(
-                await hashPair(
+    it("hashPair returns calculates merkle root", async () => {
+        const ab = mainnet.base64toU8("pKJ3ThRnfq8TpejV95NhjuO5dj672ZrCCJSyzqWqF7c="); // AB
+        const c = mainnet.base64toU8("sI653OBFKhsZcMTSnoi97gdmmipdGwhYbX/6F7Lj9rU="); // C
+        const d = mainnet.base64toU8("lYuelK6ppIW6SUxQ+zGSVYBX98rtlwXUsRNp8HHxBkI="); // D
+        const efgh = mainnet.base64toU8("i+FfwqsR7z4HlWjUOysJ7VpWkPsT7LEDL3qrmSOKGEc="); // EFGH
+        const ij = mainnet.base64toU8("6CczGx/nomifvCPRTNITF8aZWWy8oiIYKkiTIuzh+nQ="); // IJ
+        const abcdefghij = mainnet.base64toU8("sVLspDZIUPNCTHrCszfWBsXKCj+W8VVPjbM9L28TC74="); // Merkle Root
+        const abcdefghij_result = await mainnet.hashPair(
+            await mainnet.hashPair(
+                await mainnet.hashPair(
                     ab,
-                    await hashPair(
+                    await mainnet.hashPair(
                         c,
-                        await hashPair(d, "")
+                        await mainnet.hashPair(d, "")
                     )
                 ),
                 efgh
@@ -281,13 +200,10 @@ describe("grpc-bchrpc-browser", () => {
         // const hash = "2Xohz0b9WvsL+epCN7xL9chOi0fTjR7uK761wPihxiU="; // G
         // const hash = "kOAzGd3J1I2jirObLzfApa9a/HNvb/Kp2LhlPg/rMI0="; // I
         // const hash = "hCUYQqTA8OGI4cK/ZD7DehQC3YaiWpq1AEYzRn0W4xM="; // J
-        const proof = await mainnet.getMerkleProof({ hash: hash }, null);
-        const merkle_flag_U8 = await proof.getFlags_asU8();
-        const merkle_flag_array = expandFlags(merkle_flag_U8);
-        const merkle_hashes = await proof.getHashesList();
-        const merkle_check = await getMerkleRootFromProof(merkle_hashes, merkle_flag_array, hashPair)
-        const root = await proof.getBlock()?.getMerkleRoot()!;
-        assert.deepEqual(root, merkle_check, "the build merkle root should match root on block header");
+        const localMerkleRoot = "sVLspDZIUPNCTHrCszfWBsXKCj+W8VVPjbM9L28TC74=";
+        const proofIsValid = await mainnet.verifyTransaction({ txnHash: hash,  merkleRoot:localMerkleRoot})
+
+        assert.isTrue(proofIsValid, "the root of the calculated merkle tree should match merkle root provided");
     });
 
     it("getTransaction returns the transaction", async () => {
