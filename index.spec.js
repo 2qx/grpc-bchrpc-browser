@@ -112,11 +112,14 @@ describe("grpc-bchrpc-browser", () => {
         const hashTwo_u8 = new Uint8Array(hashTwo);
         chai_1.assert.equal(hash, buffer_1.Buffer.from(hashTwo_u8).toString('base64'), "check that raw transaction matches it's hash");
     }));
-    // 66faf1d89f76a1039e367462fc489ccb4003e5c6df05b3d6c9ca5e686569d724 a coinbase transaction
-    // 
-    // it("getRawTransaction without a transaction should throw error", async () => {
-    //     await expect( mainnet.getRawTransaction({  }, null)).to.throw(new Error('No hash provided for transaction'));
-    // });
+    it("getRawTransaction without a transaction should throw error", () => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            yield mainnet.getRawTransaction({}, null);
+        }
+        catch (err) {
+            chai_1.assert.equal(err.message, "No hash provided for transaction");
+        }
+    }));
     it("getRawBlock should return a block with a valid block header", () => __awaiter(void 0, void 0, void 0, function* () {
         const blockHash = "SGDrGL8bFiDjfpSQ/IpCdRRBb9dRWauGaI6agwAAAAA=";
         const block = yield mainnet.getRawBlock({ hash: blockHash }, null);
