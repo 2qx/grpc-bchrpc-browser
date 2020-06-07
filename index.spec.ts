@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import { assert, expect } from "chai";
+import { assert } from "chai";
 import { UnspentOutput, Transaction, GetBlockchainInfoResponse } from "./pb/bchrpc_pb";
 import { GrpcClient } from "./index";
 
@@ -88,6 +88,7 @@ describe("grpc-bchrpc-browser", () => {
         const hash = Buffer.from(info.getInfo()!.getHash_asU8().reverse()).toString("hex");
         assert.equal(hash, "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
     });
+    
 
     it("getBlockInfo for hash b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA=", async () => {
         const hexString = "00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048"
@@ -97,6 +98,12 @@ describe("grpc-bchrpc-browser", () => {
         assert.equal(info.getInfo()!.getHeight(), 1);
         const hashHex = Buffer.from(info.getInfo()!.getHash_asU8().reverse()).toString("hex");
         assert.equal(hashHex, "00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048");
+    });
+
+    it("getHeaders from first block", async () => {
+        const locatorHashes = ["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="]
+        const resp = await mainnet.getHeaders({ blockLocatorHashes: locatorHashes }, null);
+        assert.equal(resp.getHeadersList().length, 2000, "2000 block headers were returned");
     });
 
     // 66faf1d89f76a1039e367462fc489ccb4003e5c6df05b3d6c9ca5e686569d724 a coinbase transaction

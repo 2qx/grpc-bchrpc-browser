@@ -5,6 +5,7 @@ import * as bchrpc_pb_service from "../pb/BchrpcServiceClientPb";
 
 
 export class GrpcClient {
+
     public client: bchrpc_pb_service.bchrpcClient;
 
     /**
@@ -125,6 +126,33 @@ export class GrpcClient {
         });
     }
 
+
+    /**
+    * Get block header information
+    * @param blockLocatorHashes - Sparse list of hashes known to the client.
+    * @param stopHash -Last block hash to return.
+    */
+    public getHeaders({ blockLocatorHashes, stopHash }:
+        {
+            blockLocatorHashes?: (string | Uint8Array)[],
+            stopHash?: string
+        },
+        metadata: grpcWeb.Metadata | null
+    ): Promise<bchrpc.GetHeadersResponse> {
+        const req = new bchrpc.GetHeadersRequest();
+        if (blockLocatorHashes) {
+            req.setBlockLocatorHashesList(blockLocatorHashes);
+        }
+        if (stopHash) {
+            req.setStopHash(stopHash);
+        }
+        return new Promise((resolve, reject) => {
+            this.client.getHeaders(req, metadata, (err: grpcWeb.Error, response: bchrpc.GetHeadersResponse) => {
+                if (err !== null) { reject(err); } else { resolve(response!); }
+            });
+        });
+    }
+
     /**
     * Get transactions related to a particular address
     * @param address - Bitcoin cash address in casharr format.
@@ -169,7 +197,7 @@ export class GrpcClient {
     public getUnspentOutput(
         { hash, hashHex, vout, includeMempool }:
             {
-                hash?: string | Uint8Array, hashHex?: string, vout: number, 
+                hash?: string | Uint8Array, hashHex?: string, vout: number,
                 includeMempool?: boolean
             }
         , metadata: grpcWeb.Metadata | null
@@ -405,29 +433,29 @@ export class GrpcClient {
         });
     }
 
-    public async verifyTransaction({txnHash, txnHashHex, merkleRoot, merkleRootHex}: 
-        { txnHash?: string | Uint8Array, txnHashHex?: string, merkleRoot?: string | Uint8Array, merkleRootHex?: string  }
-        ) : Promise<boolean>{
-            let tx:string | Uint8Array,  localMerkleRoot: string| Uint8Array
-            if(txnHashHex){
-                tx = this.hexToU8(txnHashHex)
-            }else if (txnHash){
-                tx = txnHash
-            }else {
-                throw Error("Most provide a transaction id for verification");
-            }
-            if(merkleRootHex){
-                localMerkleRoot = this.hexToU8(merkleRootHex)
-            }else if (merkleRoot){
-                localMerkleRoot = merkleRoot
-            }else {
-                throw Error("Most provide a locally validated merkle root for verification");
-            } 
-            const proof = await this.getMerkleProof({hash:tx}, null)        
-            const merkleFlags = this.expandMerkleFlags(await proof.getFlags_asU8());
-            const merkleHashes = await proof.getHashesList();
-            const merkleCheckPromise = this.getMerkleRootFromProof(merkleHashes, merkleFlags, this.hashPair)
-            return this.compareUint8Array(await merkleCheckPromise, localMerkleRoot)
+    public async verifyTransaction({ txnHash, txnHashHex, merkleRoot, merkleRootHex }:
+        { txnHash?: string | Uint8Array, txnHashHex?: string, merkleRoot?: string | Uint8Array, merkleRootHex?: string }
+    ): Promise<boolean> {
+        let tx: string | Uint8Array, localMerkleRoot: string | Uint8Array
+        if (txnHashHex) {
+            tx = this.hexToU8(txnHashHex)
+        } else if (txnHash) {
+            tx = txnHash
+        } else {
+            throw Error("Most provide a transaction id for verification");
+        }
+        if (merkleRootHex) {
+            localMerkleRoot = this.hexToU8(merkleRootHex)
+        } else if (merkleRoot) {
+            localMerkleRoot = merkleRoot
+        } else {
+            throw Error("Most provide a locally validated merkle root for verification");
+        }
+        const proof = await this.getMerkleProof({ hash: tx }, null)
+        const merkleFlags = this.expandMerkleFlags(await proof.getFlags_asU8());
+        const merkleHashes = await proof.getHashesList();
+        const merkleCheckPromise = this.getMerkleRootFromProof(merkleHashes, merkleFlags, this.hashPair)
+        return this.compareUint8Array(await merkleCheckPromise, localMerkleRoot)
     }
 
 
@@ -435,20 +463,20 @@ export class GrpcClient {
         try {
             const data = await crypto.subtle.digest('SHA-256', await crypto.subtle.digest('SHA-256', ab))
             return data
-          } catch (error) {
+        } catch (error) {
             throw error
-          }
+        }
     }
-    
+
     public hashPair = async (a: string | Uint8Array, b: string | Uint8Array) => {
         // If an argument is missing, assume it is a starting hash and return it
         if (!a) { return b };
         if (!b) { return a };
-    
+
         // Convert base64 strings to Uint8Arrays
         a = (typeof a === 'string') ? Uint8Array.from(Buffer.from(a, 'base64')) : a;
         b = (typeof b === 'string') ? Uint8Array.from(Buffer.from(b, 'base64')) : b;
-    
+
         return await new Uint8Array(
             await this.sha256sha256(
                 new Uint8Array(
@@ -457,7 +485,7 @@ export class GrpcClient {
             )
         )
     }
-        
+
     public expandMerkleFlags = (b: Uint8Array) => {
         return Array.from(b)
             .reverse()
@@ -468,23 +496,23 @@ export class GrpcClient {
             .map(x => parseInt(x))
             .reverse();
     }
-    
-    public compareUint8Array(a:string|Uint8Array, b:string|Uint8Array) {
+
+    public compareUint8Array(a: string | Uint8Array, b: string | Uint8Array) {
         // Convert base64 strings to Uint8Arrays
         a = (typeof a === 'string') ? Uint8Array.from(Buffer.from(a, 'base64')) : a;
         b = (typeof b === 'string') ? Uint8Array.from(Buffer.from(b, 'base64')) : b;
         for (let i = a.length; -1 < i; i -= 1) {
-          if ((a[i] !== b[i])) return false;
+            if ((a[i] !== b[i])) return false;
         }
         return true;
-      }
+    }
 
     public getMerkleRootFromProof = async (proof: (string | Uint8Array)[], flags: number[], fn: any) => {
-    
+
         // proofCur tracks where in the list of proofs the next one is pulled from
         // count the number of zeros to get the index of the transaction hash in the proof array
         let proofCur = flags.filter(x => x == 0).length;
-    
+
         // accumulator is the root of the proof walked so far
         let accumulator = null
         for (let i = flags.length - 1; i >= 0;) {
@@ -506,11 +534,11 @@ export class GrpcClient {
         }
         return accumulator
     }
-    
+
     public hexToU8 = (hashHex: string) => {
         return new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)))
     }
-    
+
     public base64toU8 = (b64: string) => {
         return Uint8Array.from(Buffer.from(b64, 'base64'))
     }

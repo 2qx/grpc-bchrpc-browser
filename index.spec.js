@@ -98,6 +98,11 @@ describe("grpc-bchrpc-browser", () => {
         const hashHex = buffer_1.Buffer.from(info.getInfo().getHash_asU8().reverse()).toString("hex");
         chai_1.assert.equal(hashHex, "00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048");
     }));
+    it("getHeaders from first block", () => __awaiter(void 0, void 0, void 0, function* () {
+        const locatorHashes = ["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="];
+        const resp = yield mainnet.getHeaders({ blockLocatorHashes: locatorHashes }, null);
+        chai_1.assert.equal(resp.getHeadersList().length, 2000, "2000 block headers were returned");
+    }));
     // 66faf1d89f76a1039e367462fc489ccb4003e5c6df05b3d6c9ca5e686569d724 a coinbase transaction
     // 
     it("getRawTransaction returns a serialized raw tx with matching hash", () => __awaiter(void 0, void 0, void 0, function* () {
