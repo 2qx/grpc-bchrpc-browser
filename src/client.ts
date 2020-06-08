@@ -433,6 +433,23 @@ export class GrpcClient {
         });
     }
 
+    public async verifyBlock({block, hash}:{block?:bchrpc.BlockInfo, hash: string | Uint8Array}){
+        hash = (typeof hash === 'string') ? Uint8Array.from(Buffer.from(hash, 'base64')) : hash;
+        if(!block){
+            return false
+        }
+        const header = new Uint8Array([
+            ...this._numberTo4ByteLEArray(block.getVersion()),
+            ...block.getPreviousBlock_asU8(),
+            ...block.getMerkleRoot_asU8(),
+            ...this._numberTo4ByteLEArray(block.getTimestamp()),
+            ...this._numberTo4ByteLEArray(block.getBits()),
+            ...this._numberTo4ByteLEArray(block.getNonce())
+        ])
+        const hashComputed = await this.hash(header)
+        return this.compareUint8Array(hashComputed, hash)
+    }
+
     public async verifyTransaction({ txnHash, txnHashHex, merkleRoot, merkleRootHex }:
         { txnHash?: string | Uint8Array, txnHashHex?: string, merkleRoot?: string | Uint8Array, merkleRootHex?: string }
     ): Promise<boolean> {
@@ -466,6 +483,17 @@ export class GrpcClient {
         } catch (error) {
             throw error
         }
+    }
+
+    public hash = async(a: string| Uint8Array) => {
+        a = (typeof a === 'string') ? Uint8Array.from(Buffer.from(a, 'base64')) : a;
+        return await new Uint8Array(
+            await this.sha256sha256(
+                new Uint8Array(
+                    [...a]
+                )
+            )
+        )
     }
 
     public hashPair = async (a: string | Uint8Array, b: string | Uint8Array) => {
@@ -534,6 +562,18 @@ export class GrpcClient {
         }
         return accumulator
     }
+
+    private _numberTo4ByteLEArray = (num:number) => {
+        var byteArray = [0, 0, 0, 0];
+    
+        for ( var index = 0; index < byteArray.length; index ++ ) {
+            var byte = num & 0xff;
+            byteArray [ index ] = byte;
+            num = (num - byte) / 256 ;
+        }
+    
+        return byteArray;
+    };
 
     public hexToU8 = (hashHex: string) => {
         return new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)))

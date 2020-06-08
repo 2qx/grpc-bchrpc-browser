@@ -133,10 +133,15 @@ describe("grpc-bchrpc-browser", () => {
     it("getRawBlock should return a block with a valid block header", async () => {
         const blockHash = "SGDrGL8bFiDjfpSQ/IpCdRRBb9dRWauGaI6agwAAAAA="
         const block = await mainnet.getRawBlock({ hash: blockHash }, null);
-        const hashOne = await crypto.subtle.digest('SHA-256', block.getBlock_asU8().slice(0, 80));
-        const hashTwo = await crypto.subtle.digest('SHA-256', hashOne);
-        const hashTwo_u8 = new Uint8Array(hashTwo);
-        assert.equal(blockHash, Buffer.from(hashTwo_u8).toString('base64'), "check that the header matches the query");
+        const blockHashVerify = await mainnet.sha256sha256(block.getBlock_asU8().slice(0, 80));
+        assert.equal(blockHash, Buffer.from(blockHashVerify).toString('base64'), "check that the header matches the block hash");
+    });
+
+    it("verifyBlock should validate a marshaled block", async () => {
+        const blockHash = "SGDrGL8bFiDjfpSQ/IpCdRRBb9dRWauGaI6agwAAAAA="
+        const block = await (await mainnet.getBlockInfo({ hash: blockHash }, null)).getInfo();
+        const hashIsValid = await mainnet.verifyBlock({block:block, hash:blockHash})
+        assert.isTrue(hashIsValid, "the hash of the block data matches the block hash");
     });
 
     it("getMerkleRootFromProof should build merkle tree", async () => {
@@ -199,7 +204,7 @@ describe("grpc-bchrpc-browser", () => {
         assert.deepEqual(abcdefghij, abcdefghij_result);
     })
 
-    it("build merkle root from provided proof", async () => {
+    it("verifyTransaction should build merkle root from provided proof", async () => {
 
         // "f4d9e94ca7e03f6b114d1e699b4ff9f331c0b251b0e9f26a5b96aff33ee0ce1c";
         // const hash = "4a8gWWCuM4o3F0tAfucQZ8PNfwTUilzsfhP27Mth3Lw="; // A

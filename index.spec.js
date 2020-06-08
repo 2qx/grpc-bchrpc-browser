@@ -128,10 +128,14 @@ describe("grpc-bchrpc-browser", () => {
     it("getRawBlock should return a block with a valid block header", () => __awaiter(void 0, void 0, void 0, function* () {
         const blockHash = "SGDrGL8bFiDjfpSQ/IpCdRRBb9dRWauGaI6agwAAAAA=";
         const block = yield mainnet.getRawBlock({ hash: blockHash }, null);
-        const hashOne = yield crypto.subtle.digest('SHA-256', block.getBlock_asU8().slice(0, 80));
-        const hashTwo = yield crypto.subtle.digest('SHA-256', hashOne);
-        const hashTwo_u8 = new Uint8Array(hashTwo);
-        chai_1.assert.equal(blockHash, buffer_1.Buffer.from(hashTwo_u8).toString('base64'), "check that the header matches the query");
+        const blockHashVerify = yield mainnet.sha256sha256(block.getBlock_asU8().slice(0, 80));
+        chai_1.assert.equal(blockHash, buffer_1.Buffer.from(blockHashVerify).toString('base64'), "check that the header matches the block hash");
+    }));
+    it("verifyBlock should validate a marshaled block", () => __awaiter(void 0, void 0, void 0, function* () {
+        const blockHash = "SGDrGL8bFiDjfpSQ/IpCdRRBb9dRWauGaI6agwAAAAA=";
+        const block = yield (yield mainnet.getBlockInfo({ hash: blockHash }, null)).getInfo();
+        const hashIsValid = yield mainnet.verifyBlock({ block: block, hash: blockHash });
+        chai_1.assert.isTrue(hashIsValid, "the hash of the block data matches the block hash");
     }));
     it("getMerkleRootFromProof should build merkle tree", () => __awaiter(void 0, void 0, void 0, function* () {
         let block15000 = new Map();

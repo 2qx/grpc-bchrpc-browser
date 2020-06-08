@@ -141,10 +141,14 @@ describe("grpc-bchrpc-browser", () => {
     it("getRawBlock should return a block with a valid block header", () => __awaiter(void 0, void 0, void 0, function* () {
         const blockHash = "SGDrGL8bFiDjfpSQ/IpCdRRBb9dRWauGaI6agwAAAAA=";
         const block = yield mainnet.getRawBlock({ hash: blockHash }, null);
-        const hashOne = yield crypto.subtle.digest('SHA-256', block.getBlock_asU8().slice(0, 80));
-        const hashTwo = yield crypto.subtle.digest('SHA-256', hashOne);
-        const hashTwo_u8 = new Uint8Array(hashTwo);
-        chai_1.assert.equal(blockHash, buffer_1.Buffer.from(hashTwo_u8).toString('base64'), "check that the header matches the query");
+        const blockHashVerify = yield mainnet.sha256sha256(block.getBlock_asU8().slice(0, 80));
+        chai_1.assert.equal(blockHash, buffer_1.Buffer.from(blockHashVerify).toString('base64'), "check that the header matches the block hash");
+    }));
+    it("verifyBlock should validate a marshaled block", () => __awaiter(void 0, void 0, void 0, function* () {
+        const blockHash = "SGDrGL8bFiDjfpSQ/IpCdRRBb9dRWauGaI6agwAAAAA=";
+        const block = yield (yield mainnet.getBlockInfo({ hash: blockHash }, null)).getInfo();
+        const hashIsValid = yield mainnet.verifyBlock({ block: block, hash: blockHash });
+        chai_1.assert.isTrue(hashIsValid, "the hash of the block data matches the block hash");
     }));
     it("getMerkleRootFromProof should build merkle tree", () => __awaiter(void 0, void 0, void 0, function* () {
         let block15000 = new Map();
@@ -61184,6 +61188,10 @@ class GrpcClient {
                 throw error;
             }
         });
+        this.hash = (a) => __awaiter(this, void 0, void 0, function* () {
+            a = (typeof a === 'string') ? Uint8Array.from(buffer_1.Buffer.from(a, 'base64')) : a;
+            return yield new Uint8Array(yield this.sha256sha256(new Uint8Array([...a])));
+        });
         this.hashPair = (a, b) => __awaiter(this, void 0, void 0, function* () {
             // If an argument is missing, assume it is a starting hash and return it
             if (!a) {
@@ -61234,6 +61242,15 @@ class GrpcClient {
             }
             return accumulator;
         });
+        this._numberTo4ByteLEArray = (num) => {
+            var byteArray = [0, 0, 0, 0];
+            for (var index = 0; index < byteArray.length; index++) {
+                var byte = num & 0xff;
+                byteArray[index] = byte;
+                num = (num - byte) / 256;
+            }
+            return byteArray;
+        };
         this.hexToU8 = (hashHex) => {
             return new Uint8Array(hashHex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
         };
@@ -61650,6 +61667,24 @@ class GrpcClient {
                     resolve(response);
                 }
             });
+        });
+    }
+    verifyBlock({ block, hash }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            hash = (typeof hash === 'string') ? Uint8Array.from(buffer_1.Buffer.from(hash, 'base64')) : hash;
+            if (!block) {
+                return false;
+            }
+            const header = new Uint8Array([
+                ...this._numberTo4ByteLEArray(block.getVersion()),
+                ...block.getPreviousBlock_asU8(),
+                ...block.getMerkleRoot_asU8(),
+                ...this._numberTo4ByteLEArray(block.getTimestamp()),
+                ...this._numberTo4ByteLEArray(block.getBits()),
+                ...this._numberTo4ByteLEArray(block.getNonce())
+            ]);
+            const hashComputed = yield this.hash(header);
+            return this.compareUint8Array(hashComputed, hash);
         });
     }
     verifyTransaction({ txnHash, txnHashHex, merkleRoot, merkleRootHex }) {
