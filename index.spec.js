@@ -180,7 +180,7 @@ describe("grpc-bchrpc-browser", () => {
         const abcdefghij_result = yield mainnet.hashPair(yield mainnet.hashPair(yield mainnet.hashPair(ab, yield mainnet.hashPair(c, yield mainnet.hashPair(d, ""))), efgh), ij);
         chai_1.assert.deepEqual(abcdefghij, abcdefghij_result);
     }));
-    it("build merkle root from provided proof", () => __awaiter(void 0, void 0, void 0, function* () {
+    it("verifyTransaction should build merkle root from provided proof", () => __awaiter(void 0, void 0, void 0, function* () {
         // "f4d9e94ca7e03f6b114d1e699b4ff9f331c0b251b0e9f26a5b96aff33ee0ce1c";
         // const hash = "4a8gWWCuM4o3F0tAfucQZ8PNfwTUilzsfhP27Mth3Lw="; // A
         // const hash = "oxSXDNfGR9HMCkd+GiEiuYIFtpJLcwAbjasg7oHC9Pc="; // B
