@@ -252,7 +252,7 @@ The paging and start_block parameters are not applied to
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| filter | [bytes](#bytes) |  |  |
+| filter | [bytes](#bytes) |  | The |
 
 
 
@@ -966,7 +966,7 @@ This service could be authenticated or unauthenticated.
 | GetBlockInfo | [GetBlockInfoRequest](#pb.GetBlockInfoRequest) | [GetBlockInfoResponse](#pb.GetBlockInfoResponse) | Get info about the given block. |
 | GetBlock | [GetBlockRequest](#pb.GetBlockRequest) | [GetBlockResponse](#pb.GetBlockResponse) | Get a block. |
 | GetRawBlock | [GetRawBlockRequest](#pb.GetRawBlockRequest) | [GetRawBlockResponse](#pb.GetRawBlockResponse) | Get a serialized block. |
-| GetBlockFilter | [GetBlockFilterRequest](#pb.GetBlockFilterRequest) | [GetBlockFilterResponse](#pb.GetBlockFilterResponse) | Get a block filter.
+| GetBlockFilter | [GetBlockFilterRequest](#pb.GetBlockFilterRequest) | [GetBlockFilterResponse](#pb.GetBlockFilterResponse) | Get the committed filter (cf) index by transaction hash as a Golomb-coded set.
 
 **Requires CfIndex** |
 | GetHeaders | [GetHeadersRequest](#pb.GetHeadersRequest) | [GetHeadersResponse](#pb.GetHeadersResponse) | This RPC sends a block locator object to the server and the server responds with a batch of no more than 2000 headers. Upon parsing the block locator, if the server concludes there has been a fork, it will send headers starting at the fork point, or genesis if no blocks in the locator are in the best chain. If the locator is already at the tip no headers will be returned. see: bchd/bchrpc/documentation/wallet_operation.md |

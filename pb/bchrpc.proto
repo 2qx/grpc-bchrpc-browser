@@ -30,7 +30,7 @@ service bchrpc {
     // Get a serialized block.
     rpc GetRawBlock(GetRawBlockRequest) returns (GetRawBlockResponse) {}
 
-    // Get a block filter.
+    // Get the committed filter (cf) index by transaction hash as a Golomb-coded set.
     //
     // **Requires CfIndex**
     rpc GetBlockFilter(GetBlockFilterRequest) returns (GetBlockFilterResponse) {}
@@ -224,6 +224,7 @@ message GetBlockFilterRequest {
 }
 
 message GetBlockFilterResponse {
+    // The 
     bytes filter = 1;
 }
 
@@ -568,6 +569,7 @@ message Block {
 }
 
 message Transaction {
+
     message Input {
         message Outpoint {
             // The hash of the transaction containing the output to be spent.
@@ -591,6 +593,7 @@ message Transaction {
         // The bitcoin addresses associated with this input.
         string address = 7;
     }
+
     message Output {
         // The number of the output, starting from zero.
         uint32 index = 1;
