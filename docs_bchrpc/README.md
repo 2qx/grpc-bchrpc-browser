@@ -252,7 +252,7 @@ The paging and start_block parameters are not applied to
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| filter | [bytes](#bytes) |  | The |
+| filter | [bytes](#bytes) |  | The Golomb-coded set of transactions in the block. |
 
 
 

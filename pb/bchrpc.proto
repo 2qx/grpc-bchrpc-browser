@@ -224,7 +224,7 @@ message GetBlockFilterRequest {
 }
 
 message GetBlockFilterResponse {
-    // The 
+    // The Golomb-coded set of transactions in the block. 
     bytes filter = 1;
 }
 
