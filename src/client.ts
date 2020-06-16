@@ -16,9 +16,11 @@ export class GrpcClient {
     */
     constructor({ url, testnet = false, options }:
         { url?: string; testnet?: boolean; options: null | { [index: string]: string; } }) {
-        if (!url && !testnet) {
-            url = "bchd.fountainhead.cash:443";
-            url = "https://bchd.greyh.at:8335";
+        if (typeof url == 'string') {
+            url = url
+        } else if (!url && !testnet) {
+            url = "https://bchd.fountainhead.cash:443";
+            //url = "https://bchd.greyh.at:8335";
 
         } else if (!url) {
             url = "https://bchd-testnet.greyh.at:18335";
@@ -433,9 +435,9 @@ export class GrpcClient {
         });
     }
 
-    public async verifyBlock({block, hash}:{block?:bchrpc.BlockInfo, hash: string | Uint8Array}){
+    public async verifyBlock({ block, hash }: { block?: bchrpc.BlockInfo, hash: string | Uint8Array }) {
         hash = (typeof hash === 'string') ? Uint8Array.from(Buffer.from(hash, 'base64')) : hash;
-        if(!block){
+        if (!block) {
             return false
         }
         const header = new Uint8Array([
@@ -478,14 +480,13 @@ export class GrpcClient {
 
     public sha256sha256 = async (ab: Uint8Array): Promise<ArrayBuffer> => {
         try {
-            const data = await crypto.subtle.digest('SHA-256', await crypto.subtle.digest('SHA-256', ab))
-            return data
+            return await crypto.subtle.digest('SHA-256', await crypto.subtle.digest('SHA-256', ab))
         } catch (error) {
             throw error
         }
     }
 
-    public hash = async(a: string| Uint8Array) => {
+    public hash = async (a: string | Uint8Array) => {
         a = (typeof a === 'string') ? Uint8Array.from(Buffer.from(a, 'base64')) : a;
         return await new Uint8Array(
             await this.sha256sha256(
@@ -563,15 +564,15 @@ export class GrpcClient {
         return accumulator
     }
 
-    private _numberTo4ByteLEArray = (num:number) => {
+    private _numberTo4ByteLEArray = (num: number) => {
         var byteArray = [0, 0, 0, 0];
-    
-        for ( var index = 0; index < byteArray.length; index ++ ) {
+
+        for (var index = 0; index < byteArray.length; index++) {
             var byte = num & 0xff;
-            byteArray [ index ] = byte;
-            num = (num - byte) / 256 ;
+            byteArray[index] = byte;
+            num = (num - byte) / 256;
         }
-    
+
         return byteArray;
     };
 

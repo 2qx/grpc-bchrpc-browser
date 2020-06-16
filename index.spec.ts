@@ -13,7 +13,6 @@ import { Crypto } from "@peculiar/webcrypto";
 
 const mainnet = new GrpcClient(
     {
-        //url: "https://bchd.fountainhead.cash",
         url: "https://bchd.sploit.cash",
         testnet: false,
         options: {}
