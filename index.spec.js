@@ -21,7 +21,6 @@ const index_1 = require("./index");
 const xhr2_1 = require("xhr2");
 const webcrypto_1 = require("@peculiar/webcrypto");
 const mainnet = new index_1.GrpcClient({
-    //url: "https://bchd.fountainhead.cash",
     url: "https://bchd.sploit.cash",
     testnet: false,
     options: {}
@@ -31,8 +30,11 @@ const badClient = new index_1.GrpcClient({
     testnet: false,
     options: {}
 });
+/*
+    This is a simple function to pass to the merkle-tree walker
+*/
 const cat = (a, b) => {
-    // If an argument is missing, assume it is a starting hash and return it
+    // If an argument is missing, assume it is a starting point and return it
     if (!a) {
         return b;
     }
@@ -42,7 +44,7 @@ const cat = (a, b) => {
     return a + b;
 };
 /*
-   If running within nodejs, import these substitutes for core libraries
+   If running within nodejs, import these substitutes for core web libraries
 */
 if (typeof window === 'undefined') {
     global.XMLHttpRequest = xhr2_1.XMLHttpRequest;
@@ -91,7 +93,7 @@ describe("grpc-bchrpc-browser", () => {
     }));
     it("getBlockInfo for hash b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA=", () => __awaiter(void 0, void 0, void 0, function* () {
         const hexString = "00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048";
-        const hashArray = Uint8Array.from(buffer_1.Buffer.from(hexString, 'hex')).reverse();
+        const hashArray = mainnet.hexToU8(hexString).reverse();
         const hash = buffer_1.Buffer.from(hashArray).toString('base64'); // "b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA="
         const info = yield mainnet.getBlockInfo({ hash: hash }, null);
         chai_1.assert.equal(info.getInfo().getHeight(), 1);
@@ -107,7 +109,7 @@ describe("grpc-bchrpc-browser", () => {
     // 
     it("getRawTransaction returns a serialized raw tx with matching hash", () => __awaiter(void 0, void 0, void 0, function* () {
         const txHex = "11556da6ee3cb1d14727b3a8f4b37093b6fecd2bc7d577a02b4e98b7be58a7e8";
-        const txArray = Uint8Array.from(buffer_1.Buffer.from(txHex, 'hex')).reverse();
+        const txArray = mainnet.hexToU8(txHex).reverse();
         const hash = buffer_1.Buffer.from(txArray).toString('base64'); // 
         const res = yield mainnet.getRawTransaction({ hash: hash }, null);
         const hashOne = yield crypto.subtle.digest('SHA-256', res.getTransaction_asU8());
@@ -250,5 +252,7 @@ describe("grpc-bchrpc-browser", () => {
             chai_1.assert.equal(err.message, "tx rejected: transaction already exists");
         }
     }));
+    // P = 19
+    // M = 784931
 });
 //# sourceMappingURL=index.spec.js.map

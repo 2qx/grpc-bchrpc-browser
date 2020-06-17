@@ -13,7 +13,7 @@ import { Crypto } from "@peculiar/webcrypto";
 
 const mainnet = new GrpcClient(
     {
-        url: "https://bchd.sploit.cash",
+        url: "https://bchd.fountainhead.cash:443",
         testnet: false,
         options: {}
     }
@@ -27,8 +27,11 @@ const badClient = new GrpcClient(
     }
 );
 
+/*
+    This is a simple function to pass to the merkle-tree walker
+*/
 const cat = (a: string, b: string) => {
-    // If an argument is missing, assume it is a starting hash and return it
+    // If an argument is missing, assume it is a starting point and return it
     if (!a) { return b; }
     if (!b) { return a; }
     return a + b;
@@ -36,7 +39,7 @@ const cat = (a: string, b: string) => {
 
 declare var global: any;
 /*
-   If running within nodejs, import these substitutes for core libraries
+   If running within nodejs, import these substitutes for core web libraries
 */
 if (typeof window === 'undefined') {
     global.XMLHttpRequest = XMLHttpRequest;
@@ -91,7 +94,7 @@ describe("grpc-bchrpc-browser", () => {
 
     it("getBlockInfo for hash b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA=", async () => {
         const hexString = "00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048"
-        const hashArray = Uint8Array.from(Buffer.from(hexString, 'hex')).reverse();
+        const hashArray = mainnet.hexToU8(hexString).reverse();
         const hash = Buffer.from(hashArray).toString('base64') // "b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA="
         const info = await mainnet.getBlockInfo({ hash: hash }, null);
         assert.equal(info.getInfo()!.getHeight(), 1);
@@ -109,7 +112,7 @@ describe("grpc-bchrpc-browser", () => {
     // 
     it("getRawTransaction returns a serialized raw tx with matching hash", async () => {
         const txHex = "11556da6ee3cb1d14727b3a8f4b37093b6fecd2bc7d577a02b4e98b7be58a7e8";
-        const txArray = Uint8Array.from(Buffer.from(txHex, 'hex')).reverse();
+        const txArray = mainnet.hexToU8(txHex).reverse();
         const hash = Buffer.from(txArray).toString('base64') // 
         const res = await mainnet.getRawTransaction({ hash: hash }, null);
         const hashOne = await crypto.subtle.digest('SHA-256', res.getTransaction_asU8());
@@ -280,4 +283,8 @@ describe("grpc-bchrpc-browser", () => {
             assert.equal(err.message, "tx rejected: transaction already exists");
         }
     });
+
+    // P = 19
+
+    // M = 784931
 });

@@ -1,4 +1,3 @@
-import { Buffer } from "buffer";
 import * as grpcWeb from "grpc-web";
 import * as bchrpc from "../pb/bchrpc_pb";
 import * as bchrpc_pb_service from "../pb/BchrpcServiceClientPb";
@@ -413,19 +412,17 @@ export class GrpcClient {
     }
 
     public submitTransaction(
-        { txnBuf, txnHex, txn }: { txnBuf?: Buffer, txnHex?: string, txn?: Uint8Array },
+        { txnHex, txn }: { txnHex?: string, txn?: Uint8Array },
         metadata: grpcWeb.Metadata | null
     ): Promise<bchrpc.SubmitTransactionResponse> {
         let tx: string | Uint8Array;
         const req = new bchrpc.SubmitTransactionRequest();
-        if (txnBuf) {
-            tx = txnBuf.toString("base64");
-        } else if (txnHex) {
-            tx = Buffer.from(txnHex, "hex").toString("base64");
+        if (txnHex) {
+            tx = this.hexToU8(txnHex);
         } else if (txn) {
             tx = txn;
         } else {
-            throw Error("Most provide either Hex string, Buffer, or Uint8Array");
+            throw Error("Most provide either Hex string or Uint8Array");
         }
         req.setTransaction(tx);
         return new Promise((resolve, reject) => {
@@ -436,7 +433,7 @@ export class GrpcClient {
     }
 
     public async verifyBlock({ block, hash }: { block?: bchrpc.BlockInfo, hash: string | Uint8Array }) {
-        hash = (typeof hash === 'string') ? Uint8Array.from(Buffer.from(hash, 'base64')) : hash;
+        hash = (typeof hash === 'string') ? this.base64toU8(hash) : hash;
         if (!block) {
             return false
         }
@@ -487,7 +484,7 @@ export class GrpcClient {
     }
 
     public hash = async (a: string | Uint8Array) => {
-        a = (typeof a === 'string') ? Uint8Array.from(Buffer.from(a, 'base64')) : a;
+        a = (typeof a === 'string') ? this.base64toU8(a) : a;
         return await new Uint8Array(
             await this.sha256sha256(
                 new Uint8Array(
@@ -503,8 +500,8 @@ export class GrpcClient {
         if (!b) { return a };
 
         // Convert base64 strings to Uint8Arrays
-        a = (typeof a === 'string') ? Uint8Array.from(Buffer.from(a, 'base64')) : a;
-        b = (typeof b === 'string') ? Uint8Array.from(Buffer.from(b, 'base64')) : b;
+        a = (typeof a === 'string') ? this.base64toU8(a) : a;
+        b = (typeof b === 'string') ? this.base64toU8(b) : b;
 
         return await new Uint8Array(
             await this.sha256sha256(
@@ -528,8 +525,8 @@ export class GrpcClient {
 
     public compareUint8Array(a: string | Uint8Array, b: string | Uint8Array) {
         // Convert base64 strings to Uint8Arrays
-        a = (typeof a === 'string') ? Uint8Array.from(Buffer.from(a, 'base64')) : a;
-        b = (typeof b === 'string') ? Uint8Array.from(Buffer.from(b, 'base64')) : b;
+        a = (typeof a === 'string') ? this.base64toU8(a) : a;
+        b = (typeof b === 'string') ? this.base64toU8(b) : b;
         for (let i = a.length; -1 < i; i -= 1) {
             if ((a[i] !== b[i])) return false;
         }
@@ -580,7 +577,19 @@ export class GrpcClient {
         return new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)))
     }
 
-    public base64toU8 = (b64: string) => {
-        return Uint8Array.from(Buffer.from(b64, 'base64'))
+    public hexToBase64(hashHex: string) {
+        return btoa(hashHex.match(/\w{2}/g)!.map(function(a) {
+            return String.fromCharCode(parseInt(a, 16));
+        }).join(""));
     }
+
+    // TODO base64toHex 5 in test ?
+
+    public base64toU8 = (b64: string) => {
+        return new Uint8Array(atob(b64).split("").map((c) => c.charCodeAt(0)))
+    }
+
+    // TODO u8toHex, ? in test ?
+    // TODO u8toBase64, 5 in test ?
+
 }

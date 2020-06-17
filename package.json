@@ -1,8 +1,13 @@
 {
     "name": "grpc-bchrpc-browser",
-    "version": "0.0.1",
+    "version": "0.0.4",
     "description": "BCHD gRPC client for browsers",
     "main": "index.js",
+    "files": [
+        "dist/*.d.ts",
+        "dist/*.js",
+        "pb/"
+    ],
     "scripts": {
         "build": "tsc && mkdirp dist && browserify index.js --standalone bchrpc > dist/bchrpc.js && uglifyjs dist/bchrpc.js > dist/bchrpc.min.js && browserify index.spec.js --standalone test > test/index.spec.mjs",
         "build:docs": "npx typedoc --mode modules --excludeExternals src/client.ts",
@@ -13,7 +18,7 @@
         "pb-grpcui-install": "go get github.com/fullstorydev/grpcui && go install github.com/fullstorydev/grpcui/cmd/grpcui",
         "pb-grpcui": "grpcui -proto pb/bchrpc.proto bchd.fountainhead.cash:443",
         "pb-update": "echo the proto file in this project is forked ATM # wget https://raw.githubusercontent.com/gcash/bchd/master/bchrpc/bchrpc.proto -O pb/bchrpc.proto",
-        "test": "nyc mocha --timeout=3000 '*.spec.js'",
+        "test": "nyc mocha --timeout=9000 '*.spec.js'",
         "test:browser": "live-server --port=9000 test/"
     },
     "repository": {
@@ -29,6 +34,7 @@
         "@peculiar/webcrypto": "^1.1.1",
         "@types/chai": "^4.2.11",
         "@types/crypto-js": "^3.1.46",
+        "@types/google-protobuf": "^3.7.1",
         "@types/mocha": "^5.2.7",
         "browserify": "^16.5.1",
         "buffer": "^5.5.0",
@@ -47,9 +53,7 @@
         "xhr2": "^0.2.0"
     },
     "dependencies": {
-        "@types/google-protobuf": "^3.7.1",
         "google-protobuf": "^3.6.1",
-        "grpc": "^1.15.0",
         "grpc-web": "^1.0.7"
     },
     "keywords": [
@@ -57,6 +61,6 @@
         "bitcoin cash",
         "grpc"
     ],
-    "author": "",
+    "author": "2qx",
     "license": "ISC"
 }

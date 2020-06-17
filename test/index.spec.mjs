@@ -34,7 +34,6 @@ const index_1 = require("./index");
 const xhr2_1 = require("xhr2");
 const webcrypto_1 = require("@peculiar/webcrypto");
 const mainnet = new index_1.GrpcClient({
-    //url: "https://bchd.fountainhead.cash",
     url: "https://bchd.sploit.cash",
     testnet: false,
     options: {}
@@ -44,8 +43,11 @@ const badClient = new index_1.GrpcClient({
     testnet: false,
     options: {}
 });
+/*
+    This is a simple function to pass to the merkle-tree walker
+*/
 const cat = (a, b) => {
-    // If an argument is missing, assume it is a starting hash and return it
+    // If an argument is missing, assume it is a starting point and return it
     if (!a) {
         return b;
     }
@@ -55,7 +57,7 @@ const cat = (a, b) => {
     return a + b;
 };
 /*
-   If running within nodejs, import these substitutes for core libraries
+   If running within nodejs, import these substitutes for core web libraries
 */
 if (typeof window === 'undefined') {
     global.XMLHttpRequest = xhr2_1.XMLHttpRequest;
@@ -104,7 +106,7 @@ describe("grpc-bchrpc-browser", () => {
     }));
     it("getBlockInfo for hash b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA=", () => __awaiter(void 0, void 0, void 0, function* () {
         const hexString = "00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048";
-        const hashArray = Uint8Array.from(buffer_1.Buffer.from(hexString, 'hex')).reverse();
+        const hashArray = mainnet.hexToU8(hexString).reverse();
         const hash = buffer_1.Buffer.from(hashArray).toString('base64'); // "b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA="
         const info = yield mainnet.getBlockInfo({ hash: hash }, null);
         chai_1.assert.equal(info.getInfo().getHeight(), 1);
@@ -120,7 +122,7 @@ describe("grpc-bchrpc-browser", () => {
     // 
     it("getRawTransaction returns a serialized raw tx with matching hash", () => __awaiter(void 0, void 0, void 0, function* () {
         const txHex = "11556da6ee3cb1d14727b3a8f4b37093b6fecd2bc7d577a02b4e98b7be58a7e8";
-        const txArray = Uint8Array.from(buffer_1.Buffer.from(txHex, 'hex')).reverse();
+        const txArray = mainnet.hexToU8(txHex).reverse();
         const hash = buffer_1.Buffer.from(txArray).toString('base64'); // 
         const res = yield mainnet.getRawTransaction({ hash: hash }, null);
         const hashOne = yield crypto.subtle.digest('SHA-256', res.getTransaction_asU8());
@@ -263,6 +265,8 @@ describe("grpc-bchrpc-browser", () => {
             chai_1.assert.equal(err.message, "tx rejected: transaction already exists");
         }
     }));
+    // P = 19
+    // M = 784931
 });
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
@@ -61168,7 +61172,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const buffer_1 = require("buffer");
 const bchrpc = __importStar(require("../pb/bchrpc_pb"));
 const bchrpc_pb_service = __importStar(require("../pb/BchrpcServiceClientPb"));
 class GrpcClient {
@@ -61181,15 +61184,14 @@ class GrpcClient {
     constructor({ url, testnet = false, options }) {
         this.sha256sha256 = (ab) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const data = yield crypto.subtle.digest('SHA-256', yield crypto.subtle.digest('SHA-256', ab));
-                return data;
+                return yield crypto.subtle.digest('SHA-256', yield crypto.subtle.digest('SHA-256', ab));
             }
             catch (error) {
                 throw error;
             }
         });
         this.hash = (a) => __awaiter(this, void 0, void 0, function* () {
-            a = (typeof a === 'string') ? Uint8Array.from(buffer_1.Buffer.from(a, 'base64')) : a;
+            a = (typeof a === 'string') ? this.base64toU8(a) : a;
             return yield new Uint8Array(yield this.sha256sha256(new Uint8Array([...a])));
         });
         this.hashPair = (a, b) => __awaiter(this, void 0, void 0, function* () {
@@ -61203,8 +61205,8 @@ class GrpcClient {
             }
             ;
             // Convert base64 strings to Uint8Arrays
-            a = (typeof a === 'string') ? Uint8Array.from(buffer_1.Buffer.from(a, 'base64')) : a;
-            b = (typeof b === 'string') ? Uint8Array.from(buffer_1.Buffer.from(b, 'base64')) : b;
+            a = (typeof a === 'string') ? this.base64toU8(a) : a;
+            b = (typeof b === 'string') ? this.base64toU8(b) : b;
             return yield new Uint8Array(yield this.sha256sha256(new Uint8Array([...a, ...b])));
         });
         this.expandMerkleFlags = (b) => {
@@ -61254,12 +61256,16 @@ class GrpcClient {
         this.hexToU8 = (hashHex) => {
             return new Uint8Array(hashHex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
         };
+        // TODO base64toHex 5 in test ?
         this.base64toU8 = (b64) => {
-            return Uint8Array.from(buffer_1.Buffer.from(b64, 'base64'));
+            return new Uint8Array(atob(b64).split("").map((c) => c.charCodeAt(0)));
         };
-        if (!url && !testnet) {
-            url = "bchd.fountainhead.cash:443";
-            url = "https://bchd.greyh.at:8335";
+        if (typeof url == 'string') {
+            url = url;
+        }
+        else if (!url && !testnet) {
+            url = "https://bchd.fountainhead.cash:443";
+            //url = "https://bchd.greyh.at:8335";
         }
         else if (!url) {
             url = "https://bchd-testnet.greyh.at:18335";
@@ -61642,20 +61648,17 @@ class GrpcClient {
             }
         });
     }
-    submitTransaction({ txnBuf, txnHex, txn }, metadata) {
+    submitTransaction({ txnHex, txn }, metadata) {
         let tx;
         const req = new bchrpc.SubmitTransactionRequest();
-        if (txnBuf) {
-            tx = txnBuf.toString("base64");
-        }
-        else if (txnHex) {
-            tx = buffer_1.Buffer.from(txnHex, "hex").toString("base64");
+        if (txnHex) {
+            tx = this.hexToU8(txnHex);
         }
         else if (txn) {
             tx = txn;
         }
         else {
-            throw Error("Most provide either Hex string, Buffer, or Uint8Array");
+            throw Error("Most provide either Hex string or Uint8Array");
         }
         req.setTransaction(tx);
         return new Promise((resolve, reject) => {
@@ -61671,7 +61674,7 @@ class GrpcClient {
     }
     verifyBlock({ block, hash }) {
         return __awaiter(this, void 0, void 0, function* () {
-            hash = (typeof hash === 'string') ? Uint8Array.from(buffer_1.Buffer.from(hash, 'base64')) : hash;
+            hash = (typeof hash === 'string') ? this.base64toU8(hash) : hash;
             if (!block) {
                 return false;
             }
@@ -61717,16 +61720,21 @@ class GrpcClient {
     }
     compareUint8Array(a, b) {
         // Convert base64 strings to Uint8Arrays
-        a = (typeof a === 'string') ? Uint8Array.from(buffer_1.Buffer.from(a, 'base64')) : a;
-        b = (typeof b === 'string') ? Uint8Array.from(buffer_1.Buffer.from(b, 'base64')) : b;
+        a = (typeof a === 'string') ? this.base64toU8(a) : a;
+        b = (typeof b === 'string') ? this.base64toU8(b) : b;
         for (let i = a.length; -1 < i; i -= 1) {
             if ((a[i] !== b[i]))
                 return false;
         }
         return true;
     }
+    hexToBase64(hashHex) {
+        return btoa(hashHex.match(/\w{2}/g).map(function (a) {
+            return String.fromCharCode(parseInt(a, 16));
+        }).join(""));
+    }
 }
 exports.GrpcClient = GrpcClient;
 
-},{"../pb/BchrpcServiceClientPb":237,"../pb/bchrpc_pb":238,"buffer":68}]},{},[2])(2)
+},{"../pb/BchrpcServiceClientPb":237,"../pb/bchrpc_pb":238}]},{},[2])(2)
 });
