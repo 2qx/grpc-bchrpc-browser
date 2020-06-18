@@ -94,7 +94,7 @@ describe("grpc-bchrpc-browser", () => {
 
     it("getBlockInfo for hash b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA=", async () => {
         const hexString = "00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048"
-        const hashArray = mainnet.hexToU8(hexString).reverse();
+        const hashArray = mainnet.utilHexToU8(hexString).reverse();
         const hash = Buffer.from(hashArray).toString('base64') // "b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA="
         const info = await mainnet.getBlockInfo({ hash: hash }, null);
         assert.equal(info.getInfo()!.getHeight(), 1);
@@ -112,12 +112,12 @@ describe("grpc-bchrpc-browser", () => {
     // 
     it("getRawTransaction returns a serialized raw tx with matching hash", async () => {
         const txHex = "11556da6ee3cb1d14727b3a8f4b37093b6fecd2bc7d577a02b4e98b7be58a7e8";
-        const txArray = mainnet.hexToU8(txHex).reverse();
+        const txArray = mainnet.utilHexToU8(txHex).reverse();
         const hash = Buffer.from(txArray).toString('base64') // 
         const res = await mainnet.getRawTransaction({ hash: hash }, null);
         const hashOne = await crypto.subtle.digest('SHA-256', res.getTransaction_asU8());
         const hashTwo = await crypto.subtle.digest('SHA-256', hashOne);
-        const hashHash = await mainnet.sha256sha256(res.getTransaction_asU8());
+        const hashHash = await mainnet.utilSha256sha256(res.getTransaction_asU8());
         assert.equal(hashHash, hashHash, "check double sha function");
         const hashTwo_u8 = new Uint8Array(hashTwo);
         assert.equal(hash, Buffer.from(hashTwo_u8).toString('base64'), "check that raw transaction matches it's hash");
@@ -135,7 +135,7 @@ describe("grpc-bchrpc-browser", () => {
     it("getRawBlock should return a block with a valid block header", async () => {
         const blockHash = "SGDrGL8bFiDjfpSQ/IpCdRRBb9dRWauGaI6agwAAAAA="
         const block = await mainnet.getRawBlock({ hash: blockHash }, null);
-        const blockHashVerify = await mainnet.sha256sha256(block.getBlock_asU8().slice(0, 80));
+        const blockHashVerify = await mainnet.utilSha256sha256(block.getBlock_asU8().slice(0, 80));
         assert.equal(blockHash, Buffer.from(blockHashVerify).toString('base64'), "check that the header matches the block hash");
     });
 
@@ -161,42 +161,42 @@ describe("grpc-bchrpc-browser", () => {
         block15000.set(1011101, ["ABCDEFGH", "I", "J"])
         block15000.forEach(async (value: string[], key: number) => {
             let flagArray = String(key).split("").map(x => parseInt(x))
-            assert.isTrue(String("ABCDEFGHIJ") === String(await mainnet.getMerkleRootFromProof(value, flagArray, cat)))
+            assert.isTrue(String("ABCDEFGHIJ") === String(await mainnet.utilGetMerkleRootFromProof(value, flagArray, cat)))
         });
     });
 
     it("hashPair returns sha256(sha256(ab)) from hex", async () => {
         // These are little endian hex strings
-        const a = mainnet.hexToU8("e1af205960ae338a37174b407ee71067c3cd7f04d48a5cec7e13f6eccb61dcbc")
-        const b = mainnet.hexToU8("a314970cd7c647d1cc0a477e1a2122b98205b6924b73001b8dab20ee81c2f4f7")
-        const ab_u8 = mainnet.hexToU8("a4a2774e14677eaf13a5e8d5f793618ee3b9763ebbd99ac20894b2cea5aa17b7")
-        const hashPairResult = await mainnet.hashPair(a, b)
+        const a = mainnet.utilHexToU8("e1af205960ae338a37174b407ee71067c3cd7f04d48a5cec7e13f6eccb61dcbc")
+        const b = mainnet.utilHexToU8("a314970cd7c647d1cc0a477e1a2122b98205b6924b73001b8dab20ee81c2f4f7")
+        const ab_u8 = mainnet.utilHexToU8("a4a2774e14677eaf13a5e8d5f793618ee3b9763ebbd99ac20894b2cea5aa17b7")
+        const hashPairResult = await mainnet.utilHashPair(a, b)
         assert.deepEqual(ab_u8, hashPairResult);
     })
 
     it("hashPair returns sha256(sha256(ab)) from Uint8", async () => {
-        const a = mainnet.base64toU8("4a8gWWCuM4o3F0tAfucQZ8PNfwTUilzsfhP27Mth3Lw="); // A
-        const b = mainnet.base64toU8("oxSXDNfGR9HMCkd+GiEiuYIFtpJLcwAbjasg7oHC9Pc="); // B
-        const ab = mainnet.base64toU8("pKJ3ThRnfq8TpejV95NhjuO5dj672ZrCCJSyzqWqF7c="); // AB
-        const abResult = await mainnet.hashPair(a, b)
+        const a = mainnet.utilBase64toU8("4a8gWWCuM4o3F0tAfucQZ8PNfwTUilzsfhP27Mth3Lw="); // A
+        const b = mainnet.utilBase64toU8("oxSXDNfGR9HMCkd+GiEiuYIFtpJLcwAbjasg7oHC9Pc="); // B
+        const ab = mainnet.utilBase64toU8("pKJ3ThRnfq8TpejV95NhjuO5dj672ZrCCJSyzqWqF7c="); // AB
+        const abResult = await mainnet.utilHashPair(a, b)
         assert.deepEqual(ab, abResult);
-        assert.deepEqual(mainnet.hexToU8("e1af205960ae338a37174b407ee71067c3cd7f04d48a5cec7e13f6eccb61dcbc"), a)
+        assert.deepEqual(mainnet.utilHexToU8("e1af205960ae338a37174b407ee71067c3cd7f04d48a5cec7e13f6eccb61dcbc"), a)
     });
 
     it("hashPair returns calculates merkle root", async () => {
-        const ab = mainnet.base64toU8("pKJ3ThRnfq8TpejV95NhjuO5dj672ZrCCJSyzqWqF7c="); // AB
-        const c = mainnet.base64toU8("sI653OBFKhsZcMTSnoi97gdmmipdGwhYbX/6F7Lj9rU="); // C
-        const d = mainnet.base64toU8("lYuelK6ppIW6SUxQ+zGSVYBX98rtlwXUsRNp8HHxBkI="); // D
-        const efgh = mainnet.base64toU8("i+FfwqsR7z4HlWjUOysJ7VpWkPsT7LEDL3qrmSOKGEc="); // EFGH
-        const ij = mainnet.base64toU8("6CczGx/nomifvCPRTNITF8aZWWy8oiIYKkiTIuzh+nQ="); // IJ
-        const abcdefghij = mainnet.base64toU8("sVLspDZIUPNCTHrCszfWBsXKCj+W8VVPjbM9L28TC74="); // Merkle Root
-        const abcdefghij_result = await mainnet.hashPair(
-            await mainnet.hashPair(
-                await mainnet.hashPair(
+        const ab = mainnet.utilBase64toU8("pKJ3ThRnfq8TpejV95NhjuO5dj672ZrCCJSyzqWqF7c="); // AB
+        const c = mainnet.utilBase64toU8("sI653OBFKhsZcMTSnoi97gdmmipdGwhYbX/6F7Lj9rU="); // C
+        const d = mainnet.utilBase64toU8("lYuelK6ppIW6SUxQ+zGSVYBX98rtlwXUsRNp8HHxBkI="); // D
+        const efgh = mainnet.utilBase64toU8("i+FfwqsR7z4HlWjUOysJ7VpWkPsT7LEDL3qrmSOKGEc="); // EFGH
+        const ij = mainnet.utilBase64toU8("6CczGx/nomifvCPRTNITF8aZWWy8oiIYKkiTIuzh+nQ="); // IJ
+        const abcdefghij = mainnet.utilBase64toU8("sVLspDZIUPNCTHrCszfWBsXKCj+W8VVPjbM9L28TC74="); // Merkle Root
+        const abcdefghij_result = await mainnet.utilHashPair(
+            await mainnet.utilHashPair(
+                await mainnet.utilHashPair(
                     ab,
-                    await mainnet.hashPair(
+                    await mainnet.utilHashPair(
                         c,
-                        await mainnet.hashPair(d, "")
+                        await mainnet.utilHashPair(d, "")
                     )
                 ),
                 efgh
@@ -284,7 +284,5 @@ describe("grpc-bchrpc-browser", () => {
         }
     });
 
-    // P = 19
 
-    // M = 784931
 });

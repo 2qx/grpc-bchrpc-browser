@@ -10,7 +10,7 @@
     ],
     "scripts": {
         "build": "tsc && mkdirp dist && browserify index.js --standalone bchrpc > dist/bchrpc.js && uglifyjs dist/bchrpc.js > dist/bchrpc.min.js && browserify index.spec.js --standalone test > test/index.spec.mjs",
-        "build:docs": "npx typedoc  --excludeExternals --plugin typedoc-plugin-markdown src/client.ts",
+        "build:docs": "npx typedoc  --excludeExternals --plugin typedoc-plugin-markdown --plugin typedoc-plugin-external-module-name src/client.ts",
         "pb-build": "protoc -I=pb bchrpc.proto --js_out=import_style=commonjs,binary:pb --grpc-web_out=import_style=typescript,mode=grpcwebtext:pb",
         "pb-clean": "echo the proto file in this project is forked ATM # rm pb/*",
         "pb-docs-html": "docker pull pseudomuto/protoc-gen-doc && docker run --rm -v $(pwd)/docs_bchrpc:/out  -v $(pwd)/pb:/protos pseudomuto/protoc-gen-doc --doc_opt=/out/html.tmpl,index.html",
@@ -48,6 +48,7 @@
         "ts-node": "^8.7.0",
         "ts-protoc-gen": "^0.10.0",
         "typedoc": "^0.17.7",
+        "typedoc-plugin-external-module-name": "^4.0.3",
         "typedoc-plugin-markdown": "^2.3.1",
         "typescript": "^3.8.3",
         "uglify-es": "^3.3.9",
