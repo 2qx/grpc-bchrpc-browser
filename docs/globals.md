@@ -6,4 +6,4 @@
 
 ### Modules
 
-* ["client"](modules/_client_.md)
+* [grpc-bchrpc-browser](modules/grpc_bchrpc_browser.md)
