@@ -1,3 +1,5 @@
+.nyc_output/
+.vscode/
 pb/*.js
 pb/*.ts
 node_modules

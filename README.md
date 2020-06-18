@@ -5,12 +5,12 @@ A bchd rpc client for browsers using grpc/grpc-web
 This package provides a simple gRPC client for connecting web applications to 
 a [bchd](https://bchd.cash) full node.
 
-[A mobile friendly version](www.grpc.cash) of this [project](https://github.com/2qx/grpc-bchrpc-browser) README. 
+[A mobile friendly version](https://www.grpc.cash) of this [project](https://github.com/2qx/grpc-bchrpc-browser) README. 
 
 
 ## Getting Started
 
-For a quick [example usage subscribing of transactions see the console here](example/).
+For a quick [example usage subscribing of transactions see the console here](https://www.grpc.cash/example/).
 
 Detailed [RPC Documentation](https://www.grpc.cash/docs_bchrpc/) for the rpc protocol is a work in progress.
 
