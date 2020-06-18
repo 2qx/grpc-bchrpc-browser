@@ -14,11 +14,12 @@ For a quick [example usage subscribing of transactions see the console here](exa
 
 Detailed [RPC Documentation](https://www.grpc.cash/docs_bchrpc/) for the rpc protocol is a work in progress.
 
+[Client Documentation](https://www.grpc.cash/docs/classes/grpc_bchrpc_browser.grpcclient.html) detailing methods and utility functions.
+
 As a big-endian language, certain convenience parameters were added to the client wrapper,
  for ease of use. Also all parameters are are passed as an object, and any metadata needed
  for the connection is passed as a second argument. 
 
-[Client Documentation](https://www.grpc.cash/docs/) which is generated using typedoc.
 
 [Mocha browser tests](https://www.grpc.cash/test/) should provide some working examples.
 
