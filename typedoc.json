@@ -1,0 +1,5 @@
+{
+    "inputFiles": ["./src/client.ts"],
+    "mode": "modules",
+    "out": "docs"
+  }
