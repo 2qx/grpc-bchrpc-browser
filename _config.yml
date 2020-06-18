@@ -1,2 +1,2 @@
 theme: jekyll-theme-minimal
-include: ["docs/classes/_client_.grpcclient.md", "docs/modules/_client_.md"]
+include: ["./docs/classes/_client_.grpcclient.md", "./docs/modules/_client_.md"]
