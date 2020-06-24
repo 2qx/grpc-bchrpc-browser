@@ -15,7 +15,7 @@ module.exports = {
     extensions: [ '.tsx', '.ts', '.js' ],
   },
   output: {
-      filename: 'bchrpc.spec.mjs',
+      filename: 'index.spec.mjs',
       path: path.resolve(__dirname, 'test'),
       libraryTarget: 'umd'
   }
