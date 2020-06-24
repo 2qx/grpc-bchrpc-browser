@@ -363,8 +363,15 @@ export default class GrpcClient {
      * @param includeBlockAcceptance - If true, transactions are included when they are confirmed. This notification is sent in addition to any requested mempool notifications.
      * @param includeSerializedTxn - If true, transactions are serialized using bitcoin protocol encoding. Default is false, transaction will be Marshaled.
      */
-    public subscribeTransactions({ includeMempoolAcceptance, includeBlockAcceptance, includeSerializedTxn }:
-        { includeMempoolAcceptance?: boolean, includeBlockAcceptance?: boolean, includeSerializedTxn?: boolean },
+    public subscribeTransactions({ includeMempoolAcceptance,
+        includeBlockAcceptance,
+        includeSerializedTxn,
+        subscribeAllTransactions,
+        unsubscribe }:
+        {
+            includeMempoolAcceptance?: boolean, includeBlockAcceptance?: boolean, includeSerializedTxn?: boolean,
+            filter?: bchrpc.TransactionFilter, subscribeAllTransactions?: boolean, unsubscribe?: boolean
+        },
     ): Promise<grpcWeb.ClientReadableStream<bchrpc.TransactionNotification>> {
         return new Promise((resolve, reject) => {
             const req = new bchrpc.SubscribeTransactionsRequest();
@@ -372,15 +379,18 @@ export default class GrpcClient {
             includeBlockAcceptance ? req.setIncludeInBlock(true) : req.setIncludeInBlock(false);
             includeSerializedTxn ? req.setSerializeTx(true) : req.setSerializeTx(false);
             const filter = new bchrpc.TransactionFilter();
-            filter.setAllTransactions(true);
-            req.setSubscribe(filter);
+            subscribeAllTransactions ? filter.setAllTransactions(true) : filter.setAllTransactions(false);
+            unsubscribe ? req.setUnsubscribe(filter) :  req.setSubscribe(filter);
             try {
                 resolve(this.client.subscribeTransactions(req));
             } catch (err) {
                 reject(err);
             }
+
+
         });
     }
+
 
     public subscribeBlocks({ includeSerializedBlock, includeTxnHashes, includeTxnData }:
         { includeSerializedBlock?: boolean, includeTxnHashes?: boolean, includeTxnData?: boolean },

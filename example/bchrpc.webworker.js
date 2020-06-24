@@ -15483,15 +15483,15 @@ class GrpcClient {
      * @param includeBlockAcceptance - If true, transactions are included when they are confirmed. This notification is sent in addition to any requested mempool notifications.
      * @param includeSerializedTxn - If true, transactions are serialized using bitcoin protocol encoding. Default is false, transaction will be Marshaled.
      */
-    subscribeTransactions({ includeMempoolAcceptance, includeBlockAcceptance, includeSerializedTxn }) {
+    subscribeTransactions({ includeMempoolAcceptance, includeBlockAcceptance, includeSerializedTxn, subscribeAllTransactions, unsubscribe }) {
         return new Promise((resolve, reject) => {
             const req = new bchrpc.SubscribeTransactionsRequest();
             includeMempoolAcceptance ? req.setIncludeMempool(true) : req.setIncludeMempool(false);
             includeBlockAcceptance ? req.setIncludeInBlock(true) : req.setIncludeInBlock(false);
             includeSerializedTxn ? req.setSerializeTx(true) : req.setSerializeTx(false);
             const filter = new bchrpc.TransactionFilter();
-            filter.setAllTransactions(true);
-            req.setSubscribe(filter);
+            subscribeAllTransactions ? filter.setAllTransactions(true) : filter.setAllTransactions(false);
+            unsubscribe ? req.setUnsubscribe(filter) : req.setSubscribe(filter);
             try {
                 resolve(this.client.subscribeTransactions(req));
             }

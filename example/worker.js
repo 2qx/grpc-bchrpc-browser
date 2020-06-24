@@ -29,6 +29,10 @@ class MempoolSubscription {
         this.client = c;
     }
 
+    async unsubscribeMempool(){
+        await this.stream.cancel()
+        console.log("subscription canceled")
+    }
     async subscribeMempool() {
         var filter = new TransactionFilter();
         filter.setAllTransactions(true)
@@ -40,7 +44,8 @@ class MempoolSubscription {
         this.stream = await this.client.subscribeTransactions({
             includeMempoolAcceptance: true,
             includeBlockAcceptance: true,
-            includeSerializedTxn: false
+            includeSerializedTxn: false,
+            subscribeAllTransactions: true,
         })
 
         this.stream.on('data', function (txnNotification) {
@@ -80,32 +85,31 @@ class MempoolSubscription {
 
 }
 
+const mainnet = new GrpcClient(
+    {
+        url: "https://bchd.fountainhead.cash",
+        testnet: false,
+        options: {}
+    }
+);
+let bchrpcMempoolSubscription = new MempoolSubscription(mainnet);
+
 
 onmessage = function (messageObject) {
     let m = messageObject.data;
     switch (m.command) {
         case 'init':
             
-
-            const mainnet = new GrpcClient(
-                {
-                    url: "https://bchd.fountainhead.cash",
-                    testnet: false,
-                    options: {}
-                }
-            );
-            let bchrpcMempoolSubscription = new MempoolSubscription(mainnet);
+            postMessage('Subscribing...');
             bchrpcMempoolSubscription.subscribeMempool();
-            break;
-        case 'stop':
-            postMessage('The worker is already running');
             break;
         case 'ping':
             let pongReponse = handlePing()
             postMessage(pongReponse);
             break;
         case 'stop':
-            console.log('can\'t stop won\'t stop');
+            postMessage('Attempting to unsubscribe...');
+            bchrpcMempoolSubscription.unsubscribeMempool();
             break;
         default:
             console.log('please pass a command');

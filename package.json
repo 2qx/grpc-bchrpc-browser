@@ -9,7 +9,7 @@
         "pb/"
     ],
     "scripts": {
-        "build": "npx webpack --mode=none --config=./webpack.config.js && npx webpack --mode=none --config=./webpack.worker.js",
+        "build": "npx webpack --mode=none --config=./webpack.config.js && npx webpack --mode=none --config=./webpack.worker.js && cp dist/bchrpc.webworker.js example/",
         "build:docs": "npx typedoc  --excludeExternals --plugin typedoc-plugin-markdown --plugin typedoc-plugin-external-module-name src/client.ts",
         "pb-build": "protoc -I=pb bchrpc.proto --js_out=import_style=commonjs,binary:pb --grpc-web_out=import_style=typescript,mode=grpcwebtext:pb",
         "pb-clean": "echo the proto file in this project is forked ATM # rm pb/*",
