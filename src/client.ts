@@ -1,9 +1,9 @@
 import * as grpcWeb from "grpc-web";
 import * as bchrpc from "../pb/bchrpc_pb";
 import * as bchrpc_pb_service from "../pb/BchrpcServiceClientPb";
+import * as util from "./util";
 
-
-export class GrpcClient {
+export default class GrpcClient {
 
     public client: bchrpc_pb_service.bchrpcClient;
 
@@ -15,11 +15,11 @@ export class GrpcClient {
     */
     constructor({ url, testnet = false, options }:
         { url?: string; testnet?: boolean; options: null | { [index: string]: string; } }) {
-        if (typeof url == 'string') {
+        if (typeof url === 'string') {
             url = url
         } else if (!url && !testnet) {
             url = "https://bchd.fountainhead.cash:443";
-            //url = "https://bchd.greyh.at:8335";
+            // url = "https://bchd.greyh.at:8335";
 
         } else if (!url) {
             url = "https://bchd-testnet.greyh.at:18335";
@@ -87,7 +87,7 @@ export class GrpcClient {
     ): Promise<bchrpc.GetRawTransactionResponse> {
         const req = new bchrpc.GetRawTransactionRequest();
         if (hashHex) {
-            req.setHash(this.utilHexToU8(hashHex).reverse());
+            req.setHash(util.hexToU8(hashHex).reverse());
         } else if (hash) {
             req.setHash(hash);
         } else {
@@ -114,7 +114,7 @@ export class GrpcClient {
     ): Promise<bchrpc.GetTransactionResponse> {
         const req = new bchrpc.GetTransactionRequest();
         if (hashHex) {
-            req.setHash(this.utilHexToU8(hashHex).reverse());
+            req.setHash(util.hexToU8(hashHex).reverse());
         } else if (hash) {
             req.setHash(hash);
         } else {
@@ -185,7 +185,7 @@ export class GrpcClient {
             req.setHeight(height);
         }
         if (hashHex) {
-            req.setHash(this.utilHexToU8(hashHex).reverse());
+            req.setHash(util.hexToU8(hashHex).reverse());
         }
         req.setAddress(address);
         return new Promise((resolve, reject) => {
@@ -208,7 +208,7 @@ export class GrpcClient {
             req.setIncludeMempool(true);
         }
         if (hashHex) {
-            req.setHash(this.utilHexToU8(hashHex).reverse());
+            req.setHash(util.hexToU8(hashHex).reverse());
         } else if (hash) {
             req.setHash(hash);
         }
@@ -221,8 +221,6 @@ export class GrpcClient {
     }
 
     /**
-     * getMerkleProof
-     * 
      * Retrieve merkle (SPV) proof that the given transaction is in the provided block.
      * @param hash - the tx hash, in either a 'base64' encoded string or byte array, little-endian.
      * @param hashHex - the tx hash as a big-endian 'hex' encoded string, will be overridden by hash if also provided.
@@ -236,7 +234,7 @@ export class GrpcClient {
     ): Promise<bchrpc.GetMerkleProofResponse> {
         const req = new bchrpc.GetMerkleProofRequest();
         if (hashHex) {
-            req.setTransactionHash(this.utilHexToU8(hashHex).reverse());
+            req.setTransactionHash(util.hexToU8(hashHex).reverse());
         } else if (hash) {
             req.setTransactionHash(hash);
         }
@@ -265,8 +263,6 @@ export class GrpcClient {
     }
 
     /**
-     * getRawBlock
-     * 
      * Retrieve raw block from a hash
      * @param hash - the hash, in either a 'base64' encoded string or byte array, little-endian.
      * @param hashHex - the hash as a big-endian 'hex' encoded string, will be overridden by hash if also provided.
@@ -278,7 +274,7 @@ export class GrpcClient {
     ): Promise<bchrpc.GetRawBlockResponse> {
         const req = new bchrpc.GetRawBlockRequest();
         if (hashHex) {
-            req.setHash(this.utilHexToU8(hashHex).reverse());
+            req.setHash(util.hexToU8(hashHex).reverse());
         } else if (hash) {
             req.setHash(hash);
         } else {
@@ -293,8 +289,6 @@ export class GrpcClient {
 
 
     /**
-     * getBlock
-     * 
      * Retrieve block info given a block number or hash
      * @param index - the block number to be retrieved.
      * @param hash - the hash, in either a 'base64' encoded string or byte array, little-endian.
@@ -310,7 +304,7 @@ export class GrpcClient {
         if (index !== null && index !== undefined) {
             req.setHeight(index);
         } else if (hashHex) {
-            req.setHash(this.utilHexToU8(hashHex).reverse());
+            req.setHash(util.hexToU8(hashHex).reverse());
         } else if (hash) {
             req.setHash(hash);
         } else {
@@ -327,8 +321,6 @@ export class GrpcClient {
     }
 
     /**
-     * getBlockInfo
-     * 
      * Retrieve block info given a block number or hash
      * @param height - the block number index to be retrieved.
      * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
@@ -341,11 +333,9 @@ export class GrpcClient {
     ): Promise<bchrpc.GetBlockInfoResponse> {
         const req = new bchrpc.GetBlockInfoRequest();
         if (height !== null && height !== undefined) { req.setHeight(height); } else if (hashHex) {
-            req.setHash(this.utilHexToU8(hashHex).reverse());
+            req.setHash(util.hexToU8(hashHex).reverse());
         } else if (hash) {
             req.setHash(hash);
-        } else {
-
         }
         return new Promise((resolve, reject) => {
             this.client.getBlockInfo(req, metadata, (err, response) => {
@@ -355,8 +345,6 @@ export class GrpcClient {
     }
 
     /**
-     * getBlockchainInfo
-     * 
      * Retrieve block info for the network, network state and host node.
      */
     public getBlockchainInfo(
@@ -371,7 +359,6 @@ export class GrpcClient {
     }
 
     /**
-     * 
      * @param includeMempoolAcceptance - If true, new unconfirmed transactions from mempool are included apart from the ones confirmed in a block.
      * @param includeBlockAcceptance - If true, transactions are included when they are confirmed. This notification is sent in addition to any requested mempool notifications.
      * @param includeSerializedTxn - If true, transactions are serialized using bitcoin protocol encoding. Default is false, transaction will be Marshaled.
@@ -418,7 +405,7 @@ export class GrpcClient {
         let tx: string | Uint8Array;
         const req = new bchrpc.SubmitTransactionRequest();
         if (txnHex) {
-            tx = this.utilHexToU8(txnHex);
+            tx = util.hexToU8(txnHex);
         } else if (txn) {
             tx = txn;
         } else {
@@ -432,168 +419,52 @@ export class GrpcClient {
         });
     }
 
+    // TODO remove this from the client, move it elsewhere
     public async verifyBlock({ block, hash }: { block?: bchrpc.BlockInfo, hash: string | Uint8Array }) {
-        hash = (typeof hash === 'string') ? this.utilBase64toU8(hash) : hash;
+        hash = (typeof hash === 'string') ? util.base64toU8(hash) : hash;
         if (!block) {
             return false
         }
         const header = new Uint8Array([
-            ...this.utilNumberTo4ByteLEArray(block.getVersion()),
+            ...util.numberTo4ByteLEArray(block.getVersion()),
             ...block.getPreviousBlock_asU8(),
             ...block.getMerkleRoot_asU8(),
-            ...this.utilNumberTo4ByteLEArray(block.getTimestamp()),
-            ...this.utilNumberTo4ByteLEArray(block.getBits()),
-            ...this.utilNumberTo4ByteLEArray(block.getNonce())
+            ...util.numberTo4ByteLEArray(block.getTimestamp()),
+            ...util.numberTo4ByteLEArray(block.getBits()),
+            ...util.numberTo4ByteLEArray(block.getNonce())
         ])
-        const hashComputed = await this.utilHash(header)
-        return this.utilCompareUint8Array(hashComputed, hash)
+        const hashComputed = await util.hash(header)
+        return util.compareUint8Array(hashComputed, hash)
     }
 
+
+    // TODO remove this from the client, move it elsewhere
     public async verifyTransaction({ txnHash, txnHashHex, merkleRoot, merkleRootHex }:
         { txnHash?: string | Uint8Array, txnHashHex?: string, merkleRoot?: string | Uint8Array, merkleRootHex?: string }
     ): Promise<boolean> {
-        let tx: string | Uint8Array, localMerkleRoot: string | Uint8Array
+        let tx: string | Uint8Array
+        let localMerkleRoot: string | Uint8Array
         if (txnHashHex) {
-            tx = this.utilHexToU8(txnHashHex)
+            tx = util.hexToU8(txnHashHex)
         } else if (txnHash) {
             tx = txnHash
         } else {
             throw Error("Most provide a transaction id for verification");
         }
         if (merkleRootHex) {
-            localMerkleRoot = this.utilHexToU8(merkleRootHex)
+            localMerkleRoot = util.hexToU8(merkleRootHex)
         } else if (merkleRoot) {
             localMerkleRoot = merkleRoot
         } else {
             throw Error("Most provide a locally validated merkle root for verification");
         }
         const proof = await this.getMerkleProof({ hash: tx }, null)
-        const merkleFlags = this.utilExpandMerkleFlags(await proof.getFlags_asU8());
+        const merkleFlags = util.expandMerkleFlags(await proof.getFlags_asU8());
         const merkleHashes = await proof.getHashesList();
-        const merkleCheckPromise = this.utilGetMerkleRootFromProof(merkleHashes, merkleFlags, this.utilHashPair)
-        return this.utilCompareUint8Array(await merkleCheckPromise, localMerkleRoot)
+        const merkleCheckPromise = util.getMerkleRootFromProof(merkleHashes, merkleFlags, util.hashPair)
+        return util.compareUint8Array(await merkleCheckPromise, localMerkleRoot)
     }
 
 
-    public utilSha256sha256 = async (ab: Uint8Array): Promise<ArrayBuffer> => {
-        try {
-            return await crypto.subtle.digest('SHA-256', await crypto.subtle.digest('SHA-256', ab))
-        } catch (error) {
-            throw error
-        }
-    }
-
-    public utilHash = async (a: string | Uint8Array) => {
-        a = (typeof a === 'string') ? this.utilBase64toU8(a) : a;
-        return await new Uint8Array(
-            await this.utilSha256sha256(
-                new Uint8Array(
-                    [...a]
-                )
-            )
-        )
-    }
-
-    public utilHashPair = async (a: string | Uint8Array, b: string | Uint8Array) => {
-        // If an argument is missing, assume it is a starting hash and return it
-        if (!a) { return b };
-        if (!b) { return a };
-
-        // Convert base64 strings to Uint8Arrays
-        a = (typeof a === 'string') ? this.utilBase64toU8(a) : a;
-        b = (typeof b === 'string') ? this.utilBase64toU8(b) : b;
-
-        return await new Uint8Array(
-            await this.utilSha256sha256(
-                new Uint8Array(
-                    [...a, ...b]
-                )
-            )
-        )
-    }
-
-    public utilExpandMerkleFlags = (b: Uint8Array) => {
-        return Array.from(b)
-            .reverse()
-            .map(x => x.toString(2).padStart(8, '0'))
-            .join("")
-            .replace(/\b0+/g, '')
-            .split("")
-            .map(x => parseInt(x))
-            .reverse();
-    }
-
-    public utilCompareUint8Array(a: string | Uint8Array, b: string | Uint8Array) {
-        // Convert base64 strings to Uint8Arrays
-        a = (typeof a === 'string') ? this.utilBase64toU8(a) : a;
-        b = (typeof b === 'string') ? this.utilBase64toU8(b) : b;
-        for (let i = a.length; -1 < i; i -= 1) {
-            if ((a[i] !== b[i])) return false;
-        }
-        return true;
-    }
-
-    public utilGetMerkleRootFromProof = async (proof: (string | Uint8Array)[], flags: number[], fn: any) => {
-
-        // proofCur tracks where in the list of proofs the next one is pulled from
-        // count the number of zeros to get the index of the transaction hash in the proof array
-        let proofCur = flags.filter(x => x == 0).length;
-
-        // accumulator is the root of the proof walked so far
-        let accumulator = null
-        for (let i = flags.length - 1; i >= 0;) {
-            // If the previous leaf was on the right side, combine it with the hash on the left 
-            if (flags[i] === 0) {
-                proofCur--;
-                accumulator = await fn(proof.splice(proofCur, 1).pop(), accumulator)
-                flags.pop() // remove the flag indicating that the previous node was on the right
-                i--
-                flags.pop() // remove the node flag
-                i--
-            }
-            // Otherwise, combine it with the leaf to the right
-            else {
-                accumulator = await fn(accumulator, proof.splice(proofCur, 1).pop())
-                flags.pop() // remove the node flag
-                i--
-            }
-        }
-        return accumulator
-    }
-
-    private utilNumberTo4ByteLEArray = (num: number) => {
-        var byteArray = [0, 0, 0, 0];
-
-        for (var index = 0; index < byteArray.length; index++) {
-            var byte = num & 0xff;
-            byteArray[index] = byte;
-            num = (num - byte) / 256;
-        }
-
-        return byteArray;
-    };
-
-    public utilHexToU8 = (hashHex: string) => {
-        return new Uint8Array(hashHex.match(/.{1,2}/g)!.map((byte) => parseInt(byte, 16)))
-    }
-
-    public utilHexToBase64(hashHex: string) {
-        return btoa(hashHex.match(/\w{2}/g)!.map(function(a) {
-            return String.fromCharCode(parseInt(a, 16));
-        }).join(""));
-    }
-
-    // TODO base64toHex 5 in test ?
-
-    public utilBase64toU8 = (b64: string) => {
-        return new Uint8Array(atob(b64).split("").map((c) => c.charCodeAt(0)))
-    }
-
-    // TODO u8toHex, ? in test ?
-    // TODO u8toBase64, 5 in test ?
-
-    // TODO addressBlockFilterMatch
-    // P = 19
-    // M = 784931
 
 }

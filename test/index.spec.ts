@@ -1,15 +1,19 @@
-import { Buffer } from "buffer";
 import { assert } from "chai";
-import { UnspentOutput, Transaction, GetBlockchainInfoResponse } from "./pb/bchrpc_pb";
-import { GrpcClient } from "./index";
+import { Buffer } from "buffer";
+import { UnspentOutput, Transaction, GetBlockchainInfoResponse } from "../pb/bchrpc_pb";
+import GrpcClient from "../src/client";
+import * as util from "../src/util";
 
 // Security notice:
 // Below is a collection of tools to approximate core javascript libraries that were not in nodejs.
 //
 // These libraries are only used for testing and should not be exported in the final module.
 //
-import { XMLHttpRequest } from "xhr2";
+// @ts-ignore
+import XMLHttpRequest from "xhr2";
 import { Crypto } from "@peculiar/webcrypto";
+
+
 
 const mainnet = new GrpcClient(
     {
@@ -79,7 +83,8 @@ describe("grpc-bchrpc-browser", () => {
         assert.equal(info.getInfo()!.getMedianTime(), 1231006505);
         assert.equal(info.getInfo()!.getDifficulty(), 1);
         assert.equal(info.getInfo()!.getNextBlockHash_asB64(), "SGDrGL8bFiDjfpSQ/IpCdRRBb9dRWauGaI6agwAAAAA=");
-        const hash = Buffer.from(info.getInfo()!.getHash_asU8().reverse()).toString("hex");
+        
+        const hash = util.u8toHex(info.getInfo()!.getHash_asU8().reverse());
         assert.equal(hash, "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
     });
 
@@ -87,18 +92,18 @@ describe("grpc-bchrpc-browser", () => {
         const hashHex = "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f";
         const info = await mainnet.getBlockInfo({ hashHex: hashHex }, null);
         assert.equal(info.getInfo()!.getHeight(), 0);
-        const hash = Buffer.from(info.getInfo()!.getHash_asU8().reverse()).toString("hex");
+        const hash = util.u8toHex(info.getInfo()!.getHash_asU8().reverse());
         assert.equal(hash, "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
     });
     
 
     it("getBlockInfo for hash b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA=", async () => {
         const hexString = "00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048"
-        const hashArray = mainnet.utilHexToU8(hexString).reverse();
-        const hash = Buffer.from(hashArray).toString('base64') // "b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA="
+        const hashArray = util.hexToU8(hexString).reverse();
+        const hash = util.u8toBase64(hashArray) // "b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA="
         const info = await mainnet.getBlockInfo({ hash: hash }, null);
         assert.equal(info.getInfo()!.getHeight(), 1);
-        const hashHex = Buffer.from(info.getInfo()!.getHash_asU8().reverse()).toString("hex");
+        const hashHex = util.u8toHex(info.getInfo()!.getHash_asU8().reverse());
         assert.equal(hashHex, "00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048");
     });
 
@@ -112,15 +117,15 @@ describe("grpc-bchrpc-browser", () => {
     // 
     it("getRawTransaction returns a serialized raw tx with matching hash", async () => {
         const txHex = "11556da6ee3cb1d14727b3a8f4b37093b6fecd2bc7d577a02b4e98b7be58a7e8";
-        const txArray = mainnet.utilHexToU8(txHex).reverse();
-        const hash = Buffer.from(txArray).toString('base64') // 
+        const txArray = util.hexToU8(txHex).reverse();
+        const hash = util.u8toBase64(txArray) // 
         const res = await mainnet.getRawTransaction({ hash: hash }, null);
         const hashOne = await crypto.subtle.digest('SHA-256', res.getTransaction_asU8());
         const hashTwo = await crypto.subtle.digest('SHA-256', hashOne);
-        const hashHash = await mainnet.utilSha256sha256(res.getTransaction_asU8());
+        const hashHash = await util.sha256sha256(res.getTransaction_asU8());
         assert.equal(hashHash, hashHash, "check double sha function");
         const hashTwo_u8 = new Uint8Array(hashTwo);
-        assert.equal(hash, Buffer.from(hashTwo_u8).toString('base64'), "check that raw transaction matches it's hash");
+        assert.equal(hash, util.u8toBase64(hashTwo_u8), "check that raw transaction matches it's hash");
     });
 
     
@@ -135,8 +140,8 @@ describe("grpc-bchrpc-browser", () => {
     it("getRawBlock should return a block with a valid block header", async () => {
         const blockHash = "SGDrGL8bFiDjfpSQ/IpCdRRBb9dRWauGaI6agwAAAAA="
         const block = await mainnet.getRawBlock({ hash: blockHash }, null);
-        const blockHashVerify = await mainnet.utilSha256sha256(block.getBlock_asU8().slice(0, 80));
-        assert.equal(blockHash, Buffer.from(blockHashVerify).toString('base64'), "check that the header matches the block hash");
+        const blockHashVerify = await util.sha256sha256(block.getBlock_asU8().slice(0, 80));
+        assert.equal(blockHash, util.arrayBufferToBase64(blockHashVerify), "check that the header matches the block hash");
     });
 
     it("verifyBlock should validate a marshaled block", async () => {
@@ -161,42 +166,42 @@ describe("grpc-bchrpc-browser", () => {
         block15000.set(1011101, ["ABCDEFGH", "I", "J"])
         block15000.forEach(async (value: string[], key: number) => {
             let flagArray = String(key).split("").map(x => parseInt(x))
-            assert.isTrue(String("ABCDEFGHIJ") === String(await mainnet.utilGetMerkleRootFromProof(value, flagArray, cat)))
+            assert.isTrue(String("ABCDEFGHIJ") === String(await util.getMerkleRootFromProof(value, flagArray, cat)))
         });
     });
 
     it("hashPair returns sha256(sha256(ab)) from hex", async () => {
         // These are little endian hex strings
-        const a = mainnet.utilHexToU8("e1af205960ae338a37174b407ee71067c3cd7f04d48a5cec7e13f6eccb61dcbc")
-        const b = mainnet.utilHexToU8("a314970cd7c647d1cc0a477e1a2122b98205b6924b73001b8dab20ee81c2f4f7")
-        const ab_u8 = mainnet.utilHexToU8("a4a2774e14677eaf13a5e8d5f793618ee3b9763ebbd99ac20894b2cea5aa17b7")
-        const hashPairResult = await mainnet.utilHashPair(a, b)
+        const a = util.hexToU8("e1af205960ae338a37174b407ee71067c3cd7f04d48a5cec7e13f6eccb61dcbc")
+        const b = util.hexToU8("a314970cd7c647d1cc0a477e1a2122b98205b6924b73001b8dab20ee81c2f4f7")
+        const ab_u8 = util.hexToU8("a4a2774e14677eaf13a5e8d5f793618ee3b9763ebbd99ac20894b2cea5aa17b7")
+        const hashPairResult = await util.hashPair(a, b)
         assert.deepEqual(ab_u8, hashPairResult);
     })
 
     it("hashPair returns sha256(sha256(ab)) from Uint8", async () => {
-        const a = mainnet.utilBase64toU8("4a8gWWCuM4o3F0tAfucQZ8PNfwTUilzsfhP27Mth3Lw="); // A
-        const b = mainnet.utilBase64toU8("oxSXDNfGR9HMCkd+GiEiuYIFtpJLcwAbjasg7oHC9Pc="); // B
-        const ab = mainnet.utilBase64toU8("pKJ3ThRnfq8TpejV95NhjuO5dj672ZrCCJSyzqWqF7c="); // AB
-        const abResult = await mainnet.utilHashPair(a, b)
+        const a = util.base64toU8("4a8gWWCuM4o3F0tAfucQZ8PNfwTUilzsfhP27Mth3Lw="); // A
+        const b = util.base64toU8("oxSXDNfGR9HMCkd+GiEiuYIFtpJLcwAbjasg7oHC9Pc="); // B
+        const ab = util.base64toU8("pKJ3ThRnfq8TpejV95NhjuO5dj672ZrCCJSyzqWqF7c="); // AB
+        const abResult = await util.hashPair(a, b)
         assert.deepEqual(ab, abResult);
-        assert.deepEqual(mainnet.utilHexToU8("e1af205960ae338a37174b407ee71067c3cd7f04d48a5cec7e13f6eccb61dcbc"), a)
+        assert.deepEqual(util.hexToU8("e1af205960ae338a37174b407ee71067c3cd7f04d48a5cec7e13f6eccb61dcbc"), a)
     });
 
     it("hashPair returns calculates merkle root", async () => {
-        const ab = mainnet.utilBase64toU8("pKJ3ThRnfq8TpejV95NhjuO5dj672ZrCCJSyzqWqF7c="); // AB
-        const c = mainnet.utilBase64toU8("sI653OBFKhsZcMTSnoi97gdmmipdGwhYbX/6F7Lj9rU="); // C
-        const d = mainnet.utilBase64toU8("lYuelK6ppIW6SUxQ+zGSVYBX98rtlwXUsRNp8HHxBkI="); // D
-        const efgh = mainnet.utilBase64toU8("i+FfwqsR7z4HlWjUOysJ7VpWkPsT7LEDL3qrmSOKGEc="); // EFGH
-        const ij = mainnet.utilBase64toU8("6CczGx/nomifvCPRTNITF8aZWWy8oiIYKkiTIuzh+nQ="); // IJ
-        const abcdefghij = mainnet.utilBase64toU8("sVLspDZIUPNCTHrCszfWBsXKCj+W8VVPjbM9L28TC74="); // Merkle Root
-        const abcdefghij_result = await mainnet.utilHashPair(
-            await mainnet.utilHashPair(
-                await mainnet.utilHashPair(
+        const ab = util.base64toU8("pKJ3ThRnfq8TpejV95NhjuO5dj672ZrCCJSyzqWqF7c="); // AB
+        const c = util.base64toU8("sI653OBFKhsZcMTSnoi97gdmmipdGwhYbX/6F7Lj9rU="); // C
+        const d = util.base64toU8("lYuelK6ppIW6SUxQ+zGSVYBX98rtlwXUsRNp8HHxBkI="); // D
+        const efgh = util.base64toU8("i+FfwqsR7z4HlWjUOysJ7VpWkPsT7LEDL3qrmSOKGEc="); // EFGH
+        const ij = util.base64toU8("6CczGx/nomifvCPRTNITF8aZWWy8oiIYKkiTIuzh+nQ="); // IJ
+        const abcdefghij = util.base64toU8("sVLspDZIUPNCTHrCszfWBsXKCj+W8VVPjbM9L28TC74="); // Merkle Root
+        const abcdefghij_result = await util.hashPair(
+            await util.hashPair(
+                await util.hashPair(
                     ab,
-                    await mainnet.utilHashPair(
+                    await util.hashPair(
                         c,
-                        await mainnet.utilHashPair(d, "")
+                        await util.hashPair(d, "")
                     )
                 ),
                 efgh
@@ -246,8 +251,8 @@ describe("grpc-bchrpc-browser", () => {
         const res = await mainnet.getAddressTransactions({ address: exampleAddress, height: 0 }, null);
         const txns = res.getConfirmedTransactionsList();
         assert.equal(txns.length >= 3, true);
-        const tx1 = txns.filter((t) => Buffer.from(t.getHash_asU8().reverse()).toString("hex") === firstTxid)[0];
-        assert.equal(Buffer.from(tx1.getHash() as Uint8Array).toString("hex"), firstTxid);
+        const tx1 = txns.filter((t) => util.u8toHex(t.getHash_asU8().reverse()) === firstTxid)[0];
+        assert.equal(util.u8toHex(tx1.getHash() as Uint8Array), firstTxid);
 
         // check input values
         assert.equal(tx1.getInputsList()[0].getAddress(), "qpesnqmhls2c8gz2fyqpczx4xy0weu6765p2sp2zfc");

@@ -5,5 +5,5 @@
 
 {
     "extends": ["tslint:recommended"],
-    "rules": {} // add additional rules and their configuration
+    "rules": {} 
 }

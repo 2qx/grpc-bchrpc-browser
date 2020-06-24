@@ -1,6 +1,6 @@
 require:
     - 'ts-node/register'
     - 'source-map-support/register'
-recursive: true
-timeout: 5000
-spec: 'index.spec.ts'
+recursive: false
+timeout: 10000
+spec: 'test/**/*.spec.ts'

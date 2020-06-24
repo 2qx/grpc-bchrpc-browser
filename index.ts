@@ -1,3 +1,4 @@
 export * from "./pb/bchrpc_pb";
 export * from "./pb/BchrpcServiceClientPb";
-export { GrpcClient } from "./src/client";
+export  { default as GrpcClient } from "./src/client";
+export * from "./src/util";
