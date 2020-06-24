@@ -2,17 +2,17 @@
 <html>
 
 <head>
-    <title>Demo for profiling cashedDbService in a Web Worker</title>
+    <title>grpc demo</title>
     <link rel="stylesheet" href="app.css" />
-    <link rel="modulepreload" href="./worker.js">
-
+    <script src="./bchrpc.webworker.js" type="module"></script>
     <!-- Include the app bundle: -->
-    <script src="./main.js"></script>
+    <script src="./main.js" type="module"></script>
 
 </head>
 
 <body>
-    <p>This example subscribes to unconfirmed transactions in a web worker and passes them back to the main window.</h3>
+    <p>This demo subscribes to unconfirmed transactions.</p>
+        
     <div id="consoleArea"></div>
     <button id="startWorker" type="button">
         subscribe
@@ -22,9 +22,6 @@
     </button>
     <button id="clearConsole" type="button">
         clear
-    </button>
-    <button id="pingWorker" type="button">
-        ping webworker
     </button>
 </body>
 

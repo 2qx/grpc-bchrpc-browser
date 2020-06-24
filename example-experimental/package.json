@@ -1,13 +1,13 @@
 {
   "name": "cashedDB-workbench",
   "version": "1.0.0",
-  "description": "Subscribe to the mempool of a bchd node (in a the browser)",
+  "description": "Subscribe to the mempool of a bchd node (in a WebWorker)",
   "scripts": {
     "serve": "live-server ./ -a localhost -p 8081"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/2qx/grpc-bchrpc-browser/example/"
+    "url": "https://github.com/2qx/grpc-bchrpc-browser/example-experimental/"
   },
   "keywords": [],
   "author": "2qx",

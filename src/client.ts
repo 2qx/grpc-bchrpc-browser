@@ -362,15 +362,18 @@ export default class GrpcClient {
      * @param includeMempoolAcceptance - If true, new unconfirmed transactions from mempool are included apart from the ones confirmed in a block.
      * @param includeBlockAcceptance - If true, transactions are included when they are confirmed. This notification is sent in addition to any requested mempool notifications.
      * @param includeSerializedTxn - If true, transactions are serialized using bitcoin protocol encoding. Default is false, transaction will be Marshaled.
+     * @param filter - Transaction filter
+     * @param subscribeAllTransactions - If true, a filter will be constructed that captures all transactions
+     * @param unsubscribe - NOT IMPLEMENTED, see ClientReadableStream.cancel()
      */
     public subscribeTransactions({ includeMempoolAcceptance,
         includeBlockAcceptance,
         includeSerializedTxn,
-        subscribeAllTransactions,
+        transactionFilter,
         unsubscribe }:
         {
             includeMempoolAcceptance?: boolean, includeBlockAcceptance?: boolean, includeSerializedTxn?: boolean,
-            filter?: bchrpc.TransactionFilter, subscribeAllTransactions?: boolean, unsubscribe?: boolean
+            transactionFilter?: bchrpc.TransactionFilter, unsubscribe?: boolean
         },
     ): Promise<grpcWeb.ClientReadableStream<bchrpc.TransactionNotification>> {
         return new Promise((resolve, reject) => {
@@ -378,9 +381,17 @@ export default class GrpcClient {
             includeMempoolAcceptance ? req.setIncludeMempool(true) : req.setIncludeMempool(false);
             includeBlockAcceptance ? req.setIncludeInBlock(true) : req.setIncludeInBlock(false);
             includeSerializedTxn ? req.setSerializeTx(true) : req.setSerializeTx(false);
-            const filter = new bchrpc.TransactionFilter();
-            subscribeAllTransactions ? filter.setAllTransactions(true) : filter.setAllTransactions(false);
-            unsubscribe ? req.setUnsubscribe(filter) :  req.setSubscribe(filter);
+            if(transactionFilter){
+                transactionFilter.setAllTransactions(false)
+                req.setSubscribe(transactionFilter)
+            }else{
+                const transactionFilter = new bchrpc.TransactionFilter();
+                transactionFilter.setAllTransactions(true)
+                req.setSubscribe(transactionFilter)
+            }
+            if(unsubscribe){
+                throw 'Unsubscribing is not currently (2020) possible on grpc-web, see grpc-web ClientReadableStream.cancel()'
+            } 
             try {
                 resolve(this.client.subscribeTransactions(req));
             } catch (err) {

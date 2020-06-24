@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Using bchrpc from a Web Worker</title>
+    <link rel="stylesheet" href="app.css" />
+    <!--link rel="modulepreload" href="./worker.js"-->
+
+    <!-- Include the app bundle: -->
+    <script src="./main.js"></script>
+
+</head>
+
+<body>
+    <p>This example subscribes to unconfirmed transactions in a web worker 
+        and passes them back to the main window.</p>
+        <br/>
+        <p>Support for loading ES5 modules outside of the "main" browser
+            context is only supported in Chrome 80+, so although it may give you a worker
+            that doesn't block the main thread, it might not be a good idea in 2020.
+            This feature is (maybe) being added by firefox and maybe safari.
+        </p>
+    <div id="consoleArea"></div>
+    <button id="startWorker" type="button">
+        subscribe
+    </button>
+    <button id="stopWorker" type="button">
+        stop
+    </button>
+    <button id="clearConsole" type="button">
+        clear
+    </button>
+    <button id="pingWorker" type="button">
+        ping webworker
+    </button>
+</body>
+
+</html>
