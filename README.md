@@ -10,7 +10,7 @@ a [bchd](https://bchd.cash) full node.
 
 ## Getting Started
 
-For a quick [example usage subscribing of transactions see the console here](https://www.grpc.cash/example/).
+For a quick [example usage subscribing of transactions](https://www.grpc.cash/example/).
 
 Detailed [RPC Documentation](https://www.grpc.cash/docs_bchrpc/) for the rpc protocol is a work in progress.
 

@@ -1,7 +1,2 @@
-This example prints live unconfirmed transactions using the parent package to a web console.
+This example subscribes to unconfirmed transactions in a web worker and passes them back to the main window.
 
-To build it use: 
-
-    npm run build 
-
-... from the example directory
