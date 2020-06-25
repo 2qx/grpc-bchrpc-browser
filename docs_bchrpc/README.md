@@ -93,7 +93,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| transaction_hash | [bytes](#bytes) |  | A transaction hash. |
+| transaction_hash | [bytes](#bytes) |  | Just the transaction hash. |
 | transaction | [Transaction](#pb.Transaction) |  | A marshaled transaction. |
 
 
@@ -116,7 +116,7 @@ Metadata for identifying and validating a block
 | merkle_root | [bytes](#bytes) |  | The root of the Merkle Tree built from all transactions in the block. |
 | timestamp | [int64](#int64) |  | When mining of the block started, expressed in seconds since 1970-01-01. |
 | bits | [uint32](#uint32) |  | Difficulty in Compressed Target Format. |
-| nonce | [uint32](#uint32) |  | A random value that was generated during block mining which happend to result in a computed block hash below the difficulty target at the time. |
+| nonce | [uint32](#uint32) |  | A random value that was generated during block mining which happened to result in a computed block hash below the difficulty target at the time. |
 | confirmations | [int32](#int32) |  | Number of blocks in a chain, including the block itself upon creation. |
 | difficulty | [double](#double) |  | Difficulty target at time of creation. |
 | next_block_hash | [bytes](#bytes) |  | Hash of the next block in this chain. |
@@ -149,7 +149,7 @@ Metadata for identifying and validating a block
 <a name="pb.GetAddressTransactionsRequest"></a>
 
 ### GetAddressTransactionsRequest
-GetAddressTransactionsRequest obtains transactions related to a specific address.
+Get encoded transactions related to a specific address.
 
 RECOMMENDED:
 Parameters have been provided to query without creating 
@@ -159,22 +159,20 @@ Parameters have been provided to query without creating
       over a large set of transactions, if necessary.
 
 - A starting block parameter (either `hash` or `height`) 
-      may then be used to filter results to those occuring
+      may then be used to filter results to those occurring
       after a certain time.
 
 This approach will reduce network traffic and response processing 
   for the client, as well as reduce workload on the node.
-The paging and start_block parameters are not applied to 
-  unconfirmed transactions.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | address | [string](#string) |  | The address to query transactions, in lowercase cashaddr format. The network prefix is optional (i.e. &#34;cashaddress:&#34;). |
-| nb_skip | [uint32](#uint32) |  | Skip some number of confirmed transactions. Does not affect results of unconfirmed transactions. |
-| nb_fetch | [uint32](#uint32) |  | Only fetch a specific number of transactions, at a time. |
-| hash | [bytes](#bytes) |  | Only get transactions after (or within) a starting block identified by hash. |
-| height | [int32](#int32) |  | Only get transactions after (or within) a starting block identified by block number. |
+| nb_skip | [uint32](#uint32) |  | The number of confirmed transactions to skip, starting with the oldest first. Does not affect results of unconfirmed transactions. |
+| nb_fetch | [uint32](#uint32) |  | Specify the number of transactions to fetch. |
+| hash | [bytes](#bytes) |  | Recommended. Only get transactions after (or within) a starting block identified by hash. |
+| height | [int32](#int32) |  | Recommended. Only get transactions after (or within) a starting block identified by block number. |
 
 
 
@@ -205,7 +203,7 @@ The paging and start_block parameters are not applied to
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| address | [string](#string) |  | The address to query transactions, in lowercase cashaddr format. The network prefix is optional (i.e. &#34;cashaddress:&#34;). |
+| address | [string](#string) |  | The address to query transactions, in lowercase cashaddr format. The network identifiaer is optional (i.e. &#34;cashaddress:&#34;). |
 | include_mempool | [bool](#bool) |  | When `include_mempool` is true, unconfirmed transactions from mempool are returned. Default is false. |
 
 
@@ -252,7 +250,7 @@ The paging and start_block parameters are not applied to
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| filter | [bytes](#bytes) |  | The Golomb-coded set of transactions in the block. |
+| filter | [bytes](#bytes) |  | A filter for matching public key outpoints in a block using a keyed SipHash function, serialized as a Golomb-coded set (GCS) |
 
 
 
@@ -361,8 +359,8 @@ Request headers using a list of known block hashes.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| block_locator_hashes | [bytes](#bytes) | repeated | A list of block hashes known to the client (most recent first) which is expodentially sparcer toward the genesis block (0). Common pratice is to include all of the last 10 blocks, and then 9 blocks for each order of magnitude thereafter. |
-| stop_hash | [bytes](#bytes) |  | hash of the latest desired block header; only blocks occuring before the stop will be returned. |
+| block_locator_hashes | [bytes](#bytes) | repeated | A list of block hashes known to the client (most recent first) which is exponentially sparser toward the genesis block (0). Common practice is to include all of the last 10 blocks, and then 9 blocks for each order of ten thereafter. |
+| stop_hash | [bytes](#bytes) |  | hash of the latest desired block header; only blocks occurring before the stop will be returned. |
 
 
 
@@ -501,22 +499,20 @@ Parameters have been provided to query without creating
       over a large set of transactions, if necessary.
 
 - A starting block parameter (either `hash` or `height`) 
-      may then be used to filter results to those occuring
+      may then be used to filter results to those occurring
       after a certain time.
 
 This approach will reduce network traffic and response processing 
   for the client, as well as reduce workload on the node.
-The paging and start_block parameters are not applied to 
-  unconfirmed transactions.
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | address | [string](#string) |  | The address to query transactions, in lowercase cashaddr format. The network prefix is optional (i.e. &#34;cashaddress:&#34;). |
-| nb_skip | [uint32](#uint32) |  | The number of confirmed transactions to skip starting with the oldest first. `nb_skip` does not affect results of unconfirmed transactions. |
-| nb_fetch | [uint32](#uint32) |  | The total number of transactions to be fetched. |
-| hash | [bytes](#bytes) |  | Recommended: Only return transactions after a starting block identified by hash. |
-| height | [int32](#int32) |  | Recommended: Only return transactions after a starting block identified by block number. |
+| nb_skip | [uint32](#uint32) |  | The number of confirmed transactions to skip, starting with the oldest first. Does not affect results of unconfirmed transactions. |
+| nb_fetch | [uint32](#uint32) |  | Specify the number of transactions to fetch. |
+| hash | [bytes](#bytes) |  | Recommended. Only return transactions after some starting block identified by hash. |
+| height | [int32](#int32) |  | Recommended. Only return transactions after some starting block identified by block number. |
 
 
 
@@ -563,7 +559,7 @@ The paging and start_block parameters are not applied to
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| block | [bytes](#bytes) |  | Raw block data (with header) serialized according the the block protocol. |
+| block | [bytes](#bytes) |  | Raw block data (with header) serialized according the the bitcoin block protocol. |
 
 
 
@@ -656,7 +652,7 @@ Get a transaction from a transaction hash.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | outpoint | [Transaction.Input.Outpoint](#pb.Transaction.Input.Outpoint) |  | A reference to the related input. |
-| pubkey_script | [bytes](#bytes) |  | TODO-DOCS ? : |
+| pubkey_script | [bytes](#bytes) |  | Locking script dictating how funds can be spent in the future |
 | value | [int64](#int64) |  | Amount in satoshi. |
 | is_coinbase | [bool](#bool) |  | When is_coinbase is true, the transaction was the first in a block, created by a miner, and used to pay the block reward |
 | block_height | [int32](#int32) |  | The index number of the block containing the transaction creating the output. |
@@ -675,8 +671,8 @@ Get a transaction from a transaction hash.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | transaction | [Transaction](#pb.Transaction) |  |  |
-| added_time | [int64](#int64) |  | When the transaction was witnessed by the node. |
-| added_height | [int32](#int32) |  | The block height at the time the transaction was added to the pool. |
+| added_time | [int64](#int64) |  | The time when the transaction was added too the pool. |
+| added_height | [int32](#int32) |  | The block height when the transaction was added to the pool. |
 | fee | [int64](#int64) |  | The total fee in satoshi the transaction pays. |
 | fee_per_kb | [int64](#int64) |  | The fee in satoshi per kilobyte the transaction pays. |
 | starting_priority | [double](#double) |  | The priority of the transaction when it was added to the pool. |
@@ -742,7 +738,7 @@ Options to define data structure to be sent by SubscribeBlock stream:
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | full_block | [bool](#bool) |  | When full_block is true, a complete marshaled block is sent. See `Block`. Default is false, block metadata is sent. See `BlockInfo`. |
-| full_transactions | [bool](#bool) |  | When `full_transactions` is true, provide full transaction info for a marshaled block. Default is false, only the transaction hashes are included for a marshaled block. See `TransactionData`. |
+| full_transactions | [bool](#bool) |  | When full_transactions is true, provide full transaction info for a marshaled block. Default is false, only the transaction hashes are included for a marshaled block. See `TransactionData`. |
 | serialize_block | [bool](#bool) |  | When serialize_block is true, blocks are serialized using bitcoin protocol encoding. Default is false, block will be Marshaled (see `BlockInfo` and `BlockNotification`) |
 
 
@@ -803,7 +799,7 @@ Request to subscribe or unsubscribe from a stream of transactions.
 | ----- | ---- | ----- | ----------- |
 | index | [uint32](#uint32) |  | The number of the input, starting from zero. |
 | outpoint | [Transaction.Input.Outpoint](#pb.Transaction.Input.Outpoint) |  | The related outpoint. |
-| signature_script | [bytes](#bytes) |  | TODO-DOCS: ? The signature script used to redeem the origin transaction. |
+| signature_script | [bytes](#bytes) |  | An unlocking script asserting a transaction is permitted to spend the Outpoint (UTXO) |
 | sequence | [uint32](#uint32) |  | As of BIP-68, the sequence number is interpreted as a relative lock-time for the input. |
 | value | [int64](#int64) |  | Amount in satoshi. |
 | previous_script | [bytes](#bytes) |  | The hash of the transaction containing the output to be spent. |
@@ -843,7 +839,7 @@ Request to subscribe or unsubscribe from a stream of transactions.
 | pubkey_script | [bytes](#bytes) |  | The public key script used to pay coins. |
 | address | [string](#string) |  | The bitcoin addresses associated with this output. |
 | script_class | [string](#string) |  | The type of script. |
-| disassembled_script | [string](#string) |  | TODO-DOCS ?: The script expressed in Bitcoin Cash Script. |
+| disassembled_script | [string](#string) |  | The script expressed in Bitcoin Cash Script. |
 
 
 
@@ -860,7 +856,7 @@ Request to subscribe or unsubscribe from a stream of transactions.
 | ----- | ---- | ----- | ----------- |
 | addresses | [string](#string) | repeated | Filter by address(es) |
 | outpoints | [Transaction.Input.Outpoint](#pb.Transaction.Input.Outpoint) | repeated | Filter by output hash and index. |
-| data_elements | [bytes](#bytes) | repeated | TODO-DOCS: ? Specify which transaction elements to return. |
+| data_elements | [bytes](#bytes) | repeated |  |
 | all_transactions | [bool](#bool) |  | Subscribe/Unsubscribe to everything. Other filters will be ignored. |
 
 
@@ -878,7 +874,7 @@ Request to subscribe or unsubscribe from a stream of transactions.
 | ----- | ---- | ----- | ----------- |
 | type | [TransactionNotification.Type](#pb.TransactionNotification.Type) |  | Whether or not the transaction has been included in a block. |
 | confirmed_transaction | [Transaction](#pb.Transaction) |  | A transaction included in a block. |
-| unconfirmed_transaction | [MempoolTransaction](#pb.MempoolTransaction) |  | A broadcasted transaction in mempool. |
+| unconfirmed_transaction | [MempoolTransaction](#pb.MempoolTransaction) |  | A transaction in mempool. |
 | serialized_transaction | [bytes](#bytes) |  | Binary transaction, serialized using bitcoin protocol encoding. |
 
 
@@ -940,7 +936,7 @@ State of the transaction acceptance.
 
 | Name | Number | Description |
 | ---- | ------ | ----------- |
-| UNCONFIRMED | 0 | A transction in mempool. |
+| UNCONFIRMED | 0 | A transaction in mempool. |
 | CONFIRMED | 1 | A transaction in a block. |
 
 
@@ -952,11 +948,9 @@ State of the transaction acceptance.
 <a name="pb.bchrpc"></a>
 
 ### bchrpc
-Bitcoin Cash remote procedure calls is a protocol for communicating with a 
-bitcoin cash node from some client.  It is a set of procedure calls, initially
-developed for bchd node, that can be exposed publicly via the command line options. 
-
-This service could be authenticated or unauthenticated.
+bchrpc contains a set of RPCs that can be exposed publicly via
+the command line options. This service could be authenticated or
+unauthenticated.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
@@ -966,7 +960,7 @@ This service could be authenticated or unauthenticated.
 | GetBlockInfo | [GetBlockInfoRequest](#pb.GetBlockInfoRequest) | [GetBlockInfoResponse](#pb.GetBlockInfoResponse) | Get info about the given block. |
 | GetBlock | [GetBlockRequest](#pb.GetBlockRequest) | [GetBlockResponse](#pb.GetBlockResponse) | Get a block. |
 | GetRawBlock | [GetRawBlockRequest](#pb.GetRawBlockRequest) | [GetRawBlockResponse](#pb.GetRawBlockResponse) | Get a serialized block. |
-| GetBlockFilter | [GetBlockFilterRequest](#pb.GetBlockFilterRequest) | [GetBlockFilterResponse](#pb.GetBlockFilterResponse) | Get the committed filter (cf) index by transaction hash as a Golomb-coded set.
+| GetBlockFilter | [GetBlockFilterRequest](#pb.GetBlockFilterRequest) | [GetBlockFilterResponse](#pb.GetBlockFilterResponse) | Get the committed filter (cf) of a block as a Golomb-coded set.
 
 **Requires CfIndex** |
 | GetHeaders | [GetHeadersRequest](#pb.GetHeadersRequest) | [GetHeadersResponse](#pb.GetHeadersResponse) | This RPC sends a block locator object to the server and the server responds with a batch of no more than 2000 headers. Upon parsing the block locator, if the server concludes there has been a fork, it will send headers starting at the fork point, or genesis if no blocks in the locator are in the best chain. If the locator is already at the tip no headers will be returned. see: bchd/bchrpc/documentation/wallet_operation.md |
@@ -992,7 +986,7 @@ This service could be authenticated or unauthenticated.
 | SubmitTransaction | [SubmitTransactionRequest](#pb.SubmitTransactionRequest) | [SubmitTransactionResponse](#pb.SubmitTransactionResponse) | Submit a transaction to all connected peers. |
 | SubscribeTransactions | [SubscribeTransactionsRequest](#pb.SubscribeTransactionsRequest) | [TransactionNotification](#pb.TransactionNotification) stream | Subscribe to relevant transactions based on the subscription requests.
 
-This RPC does not use bi-directional streams and therefore can be used with grpc-web. You will need to close and re-open the stream whenever you want to update the addresses. If you are not using grpc-web then SubscribeTransactionStream is more appropriate.
+This RPC does not use bidirectional streams and therefore can be used with grpc-web. You will need to close and reopen the stream whenever you want to update the addresses. If you are not using grpc-web then SubscribeTransactionStream is more appropriate.
 
 **Requires TxIndex to receive input metadata** |
 | SubscribeTransactionStream | [SubscribeTransactionsRequest](#pb.SubscribeTransactionsRequest) stream | [TransactionNotification](#pb.TransactionNotification) stream | Subscribe to relevant transactions based on the subscription requests. The parameters to filter transactions on can be updated by sending new SubscribeTransactionsRequest objects on the stream.

@@ -27,7 +27,7 @@ service bchrpc {
     // Get a serialized block.
     rpc GetRawBlock(GetRawBlockRequest) returns (GetRawBlockResponse) {}
 
-    // Get the committed filter (cf) index of addresses in a block as a Golomb-coded set.
+    // Get the committed filter (cf) of a block as a Golomb-coded set.
     //
     // **Requires CfIndex**
     rpc GetBlockFilter(GetBlockFilterRequest) returns (GetBlockFilterResponse) {}

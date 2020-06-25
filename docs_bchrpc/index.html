@@ -400,7 +400,7 @@
       <p></p>
       
         <h3 id="pb.bchrpc">bchrpc</h3>
-        <p>Bitcoin Cash remote procedure calls is a protocol for communicating with a </p><p>bitcoin cash node from some client.  It is a set of procedure calls, initially</p><p>developed for bchd node, that can be exposed publicly via the command line options. </p><p>This service could be authenticated or unauthenticated.</p>
+        <p>bchrpc contains a set of RPCs that can be exposed publicly via</p><p>the command line options. This service could be authenticated or</p><p>unauthenticated.</p>
         <table class="enum-table">
           <thead>
             <tr><td>Method Name</td><td>Request Type</td><td>Response Type</td><td>Description</td></tr>
@@ -455,7 +455,7 @@ block hash and height.</p></td>
                 <td>GetBlockFilter</td>
                 <td><a href="#pb.GetBlockFilterRequest">GetBlockFilterRequest</a></td>
                 <td><a href="#pb.GetBlockFilterResponse">GetBlockFilterResponse</a></td>
-                <td><p>Get the committed filter (cf) index by transaction hash as a Golomb-coded set.
+                <td><p>Get the committed filter (cf) of a block as a Golomb-coded set.
 
 **Requires CfIndex**</p></td>
               </tr>
@@ -548,8 +548,8 @@ limit, and from block options.
                 <td><a href="#pb.TransactionNotification">TransactionNotification</a> stream</td>
                 <td><p>Subscribe to relevant transactions based on the subscription requests.
 
-This RPC does not use bi-directional streams and therefore can be used
-with grpc-web. You will need to close and re-open the stream whenever
+This RPC does not use bidirectional streams and therefore can be used
+with grpc-web. You will need to close and reopen the stream whenever
 you want to update the addresses. If you are not using grpc-web
 then SubscribeTransactionStream is more appropriate.
 
@@ -628,7 +628,7 @@ or blocks being disconnected.</p></td>
                   <td>transaction_hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>A transaction hash. </p></td>
+                  <td><p>Just the transaction hash. </p></td>
                 </tr>
               
                 <tr>
@@ -710,7 +710,7 @@ sha256(sha256(encoded_header)) </p></td>
                   <td>nonce</td>
                   <td><a href="#uint32">uint32</a></td>
                   <td></td>
-                  <td><p>A random value that was generated during block mining which happend to
+                  <td><p>A random value that was generated during block mining which happened to
 result in a computed block hash below the difficulty target at the time. </p></td>
                 </tr>
               
@@ -802,7 +802,7 @@ result in a computed block hash below the difficulty target at the time. </p></t
         
       
         <h3 id="pb.GetAddressTransactionsRequest">GetAddressTransactionsRequest</h3>
-        <p>GetAddressTransactionsRequest obtains transactions related to a specific address.</p><p>RECOMMENDED:</p><p>Parameters have been provided to query without creating </p><p>performance issues on the node or client.</p><p>- The number of transactions to skip and fetch allow for iterating</p><p>over a large set of transactions, if necessary.</p><p>- A starting block parameter (either `hash` or `height`) </p><p>may then be used to filter results to those occuring</p><p>after a certain time.</p><p>This approach will reduce network traffic and response processing </p><p>for the client, as well as reduce workload on the node.</p><p>The paging and start_block parameters are not applied to </p><p>unconfirmed transactions.</p>
+        <p>Get encoded transactions related to a specific address.</p><p>RECOMMENDED:</p><p>Parameters have been provided to query without creating </p><p>performance issues on the node or client.</p><p>- The number of transactions to skip and fetch allow for iterating</p><p>over a large set of transactions, if necessary.</p><p>- A starting block parameter (either `hash` or `height`) </p><p>may then be used to filter results to those occurring</p><p>after a certain time.</p><p>This approach will reduce network traffic and response processing </p><p>for the client, as well as reduce workload on the node.</p>
 
         
           <table class="field-table">
@@ -823,7 +823,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>nb_skip</td>
                   <td><a href="#uint32">uint32</a></td>
                   <td></td>
-                  <td><p>Skip some number of confirmed transactions.
+                  <td><p>The number of confirmed transactions to skip, starting with the oldest first.
 Does not affect results of unconfirmed transactions. </p></td>
                 </tr>
               
@@ -831,21 +831,21 @@ Does not affect results of unconfirmed transactions. </p></td>
                   <td>nb_fetch</td>
                   <td><a href="#uint32">uint32</a></td>
                   <td></td>
-                  <td><p>Only fetch a specific number of transactions, at a time. </p></td>
+                  <td><p>Specify the number of transactions to fetch. </p></td>
                 </tr>
               
                 <tr>
                   <td>hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>Only get transactions after (or within) a starting block identified by hash. </p></td>
+                  <td><p>Recommended. Only get transactions after (or within) a starting block identified by hash. </p></td>
                 </tr>
               
                 <tr>
                   <td>height</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p>Only get transactions after (or within) a starting block identified by block number. </p></td>
+                  <td><p>Recommended. Only get transactions after (or within) a starting block identified by block number. </p></td>
                 </tr>
               
             </tbody>
@@ -901,7 +901,7 @@ Does not affect results of unconfirmed transactions. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The address to query transactions, in lowercase cashaddr format.
-The network prefix is optional (i.e. "cashaddress:"). </p></td>
+The network identifiaer is optional (i.e. "cashaddress:"). </p></td>
                 </tr>
               
                 <tr>
@@ -987,7 +987,8 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>filter</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>The Golomb-coded set of transactions in the block. </p></td>
+                  <td><p>A filter for matching public key outpoints in a block 
+using a keyed SipHash function, serialized as a Golomb-coded set (GCS) </p></td>
                 </tr>
               
             </tbody>
@@ -1201,16 +1202,16 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>block_locator_hashes</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td>repeated</td>
-                  <td><p>A list of block hashes known to the client (most recent first) which is expodentially 
-sparcer toward the genesis block (0).
-Common pratice is to include all of the last 10 blocks, and then 9 blocks for each order of magnitude thereafter. </p></td>
+                  <td><p>A list of block hashes known to the client (most recent first) which is exponentially 
+sparser toward the genesis block (0).
+Common practice is to include all of the last 10 blocks, and then 9 blocks for each order of ten thereafter. </p></td>
                 </tr>
               
                 <tr>
                   <td>stop_hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>hash of the latest desired block header; only blocks occuring before the stop will be returned. </p></td>
+                  <td><p>hash of the latest desired block header; only blocks occurring before the stop will be returned. </p></td>
                 </tr>
               
             </tbody>
@@ -1428,7 +1429,7 @@ starting with the root (`1`) at position/level 0, where `1` corresponds to a lef
         
       
         <h3 id="pb.GetRawAddressTransactionsRequest">GetRawAddressTransactionsRequest</h3>
-        <p>Get encoded transactions related to a specific address.</p><p>RECOMMENDED:</p><p>Parameters have been provided to query without creating </p><p>performance issues on the node or client.</p><p>- The number of transactions to skip and fetch allow for iterating</p><p>over a large set of transactions, if necessary.</p><p>- A starting block parameter (either `hash` or `height`) </p><p>may then be used to filter results to those occuring</p><p>after a certain time.</p><p>This approach will reduce network traffic and response processing </p><p>for the client, as well as reduce workload on the node.</p><p>The paging and start_block parameters are not applied to </p><p>unconfirmed transactions.</p>
+        <p>Get encoded transactions related to a specific address.</p><p>RECOMMENDED:</p><p>Parameters have been provided to query without creating </p><p>performance issues on the node or client.</p><p>- The number of transactions to skip and fetch allow for iterating</p><p>over a large set of transactions, if necessary.</p><p>- A starting block parameter (either `hash` or `height`) </p><p>may then be used to filter results to those occurring</p><p>after a certain time.</p><p>This approach will reduce network traffic and response processing </p><p>for the client, as well as reduce workload on the node.</p>
 
         
           <table class="field-table">
@@ -1449,29 +1450,29 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>nb_skip</td>
                   <td><a href="#uint32">uint32</a></td>
                   <td></td>
-                  <td><p>The number of confirmed transactions to skip starting with the oldest first.
-`nb_skip` does not affect results of unconfirmed transactions. </p></td>
+                  <td><p>The number of confirmed transactions to skip, starting with the oldest first.
+Does not affect results of unconfirmed transactions. </p></td>
                 </tr>
               
                 <tr>
                   <td>nb_fetch</td>
                   <td><a href="#uint32">uint32</a></td>
                   <td></td>
-                  <td><p>The total number of transactions to be fetched. </p></td>
+                  <td><p>Specify the number of transactions to fetch. </p></td>
                 </tr>
               
                 <tr>
                   <td>hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>Recommended: Only return transactions after a starting block identified by hash. </p></td>
+                  <td><p>Recommended. Only return transactions after some starting block identified by hash. </p></td>
                 </tr>
               
                 <tr>
                   <td>height</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p>Recommended: Only return transactions after a starting block identified by block number. </p></td>
+                  <td><p>Recommended. Only return transactions after some starting block identified by block number. </p></td>
                 </tr>
               
             </tbody>
@@ -1557,7 +1558,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>block</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>Raw block data (with header) serialized according the the block protocol. </p></td>
+                  <td><p>Raw block data (with header) serialized according the the bitcoin block protocol. </p></td>
                 </tr>
               
             </tbody>
@@ -1722,7 +1723,7 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>pubkey_script</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>TODO-DOCS ? : </p></td>
+                  <td><p>Locking script dictating how funds can be spent in the future </p></td>
                 </tr>
               
                 <tr>
@@ -1774,14 +1775,14 @@ The network prefix is optional (i.e. "cashaddress:"). </p></td>
                   <td>added_time</td>
                   <td><a href="#int64">int64</a></td>
                   <td></td>
-                  <td><p>When the transaction was witnessed by the node. </p></td>
+                  <td><p>The time when the transaction was added too the pool. </p></td>
                 </tr>
               
                 <tr>
                   <td>added_height</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p>The block height at the time the transaction was added to the pool. </p></td>
+                  <td><p>The block height when the transaction was added to the pool. </p></td>
                 </tr>
               
                 <tr>
@@ -1882,7 +1883,7 @@ Default is false, block metadata is sent. See `BlockInfo`. </p></td>
                   <td>full_transactions</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>When `full_transactions` is true, provide full transaction info for a marshaled block.
+                  <td><p>When full_transactions is true, provide full transaction info for a marshaled block.
 Default is false, only the transaction hashes are included for a marshaled block. See `TransactionData`. </p></td>
                 </tr>
               
@@ -2074,7 +2075,7 @@ otherwise it is treated as a block-height. Default is zero, or lock. </p></td>
                   <td>signature_script</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>TODO-DOCS: ? The signature script used to redeem the origin transaction. </p></td>
+                  <td><p>An unlocking script asserting a transaction is permitted to spend the Outpoint (UTXO) </p></td>
                 </tr>
               
                 <tr>
@@ -2192,7 +2193,7 @@ otherwise it is treated as a block-height. Default is zero, or lock. </p></td>
                   <td>disassembled_script</td>
                   <td><a href="#string">string</a></td>
                   <td></td>
-                  <td><p>TODO-DOCS ?: The script expressed in Bitcoin Cash Script. </p></td>
+                  <td><p>The script expressed in Bitcoin Cash Script. </p></td>
                 </tr>
               
             </tbody>
@@ -2230,7 +2231,7 @@ otherwise it is treated as a block-height. Default is zero, or lock. </p></td>
                   <td>data_elements</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td>repeated</td>
-                  <td><p>TODO-DOCS: ? Specify which transaction elements to return. </p></td>
+                  <td><p> </p></td>
                 </tr>
               
                 <tr>
@@ -2276,7 +2277,7 @@ will be ignored. </p></td>
                   <td>unconfirmed_transaction</td>
                   <td><a href="#pb.MempoolTransaction">MempoolTransaction</a></td>
                   <td></td>
-                  <td><p>A broadcasted transaction in mempool. </p></td>
+                  <td><p>A transaction in mempool. </p></td>
                 </tr>
               
                 <tr>
@@ -2418,7 +2419,7 @@ where a specified list of nodes is used, rather than node discovery.</p></td>
               <tr>
                 <td>UNCONFIRMED</td>
                 <td>0</td>
-                <td><p>A transction in mempool.</p></td>
+                <td><p>A transaction in mempool.</p></td>
               </tr>
             
               <tr>
