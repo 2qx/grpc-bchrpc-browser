@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log('Your browser doesn\'t support web workers.')
         }
     } catch (ex) {
-        console.warn(ex);
+        console.log(ex);
     }
 });
 

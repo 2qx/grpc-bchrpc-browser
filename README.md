@@ -5,23 +5,24 @@ A bchd rpc client for browsers using grpc/grpc-web
 This package provides a simple gRPC client for connecting web applications to 
 a [bchd](https://bchd.cash) full node.
 
-[A mobile friendly version](https://www.grpc.cash) of this [project](https://github.com/2qx/grpc-bchrpc-browser) README. 
+[A mobile friendly version](https://www.grpc.cash) of this [project](https://github.com/2qx/grpc-bchrpc-browser) is formatted [from markdown](https://github.com/2qx/grpc-bchrpc-browser/blob/master/README.md) by github pages.
 
 
 ## Getting Started
 
-For a quick [example usage subscribing of transactions see the console here](https://www.grpc.cash/example/), or an [experimental example](https://www.grpc.cash/example-experimental/) using this module in a web worker.
+For a quick [example usage subscribing transactions see the console here](https://www.grpc.cash/example/), or an [experimental example](https://www.grpc.cash/example-experimental/) using this module in a web worker.
 
 Detailed [RPC Documentation](https://www.grpc.cash/docs_bchrpc/) for the rpc protocol is a work in progress.
 
 [Client Documentation](https://www.grpc.cash/docs/classes/grpc_bchrpc_browser.grpcclient.html) detailing methods and utility functions.
 
-As a big-endian language, certain convenience parameters were added to the client wrapper,
+[Mocha browser tests](https://www.grpc.cash/test/) should provide some working examples.
+
+This is slightly mor than a stock client generated from protocol buffers. As a big-endian language (Javascript), certain convenience parameters were added to the client wrapper,
  for ease of use. Also all parameters are are passed as an object, and any metadata needed
  for the connection is passed as a second argument. 
 
-
-[Mocha browser tests](https://www.grpc.cash/test/) should provide some working examples.
+ For Bitcoin Cash and bchd specifically, functions are currently here to validate a transaction and block, as well as other utilities to handle different data types used or sent by bchd.
 
 ## Motivation
 
@@ -62,7 +63,7 @@ To build:
 
 ### Running Tests
 
-Tests can be run either from console or in a browser.  The test modules and javascript must be built prior to running tests
+Tests can be run either from console or in a browser.  The typescript is loaded via ts-node, in that context.
 
     npm run test          # run tests in node
     npm run test:browser  # run tests in a browser
@@ -71,13 +72,13 @@ Tests can be run either from console or in a browser.  The test modules and java
 
 If for some reason you need to update the gcash proto files yourself to add some future functionality use:
 
-**Important:** an [installed](https://github.com/protocolbuffers/protobuf/releases/latest) version of `protoc`  
- is required to run `pb-build`. 
-
     npm run pb-clean     # remove old definitions
     npm run pb-update    # download bchrpc.proto from gcash/bchd/master
     npm run pb-build     # create client library
     npm run pb-doc       # generate documentation
+
+**Important:** an [installed](https://github.com/protocolbuffers/protobuf/releases/latest) version of `protoc`  
+ is required to run `pb-build`. 
 
 ### Using bchrpc in a Postman-like webgui
 
