@@ -1,9 +1,6 @@
-try{
-    import './bchrpc.webworker.js';
-    import { handlePing } from './ping.js'    
-} catch (ex) {
-    console.error(ex);
-}
+import './bchrpc.webworker.js';
+import { handlePing } from './ping.js'    
+
 
 
 class Console {
