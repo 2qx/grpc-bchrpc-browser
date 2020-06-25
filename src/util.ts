@@ -139,3 +139,4 @@ export function arrayBufferToBase64(ab: ArrayBuffer) {
 // TODO addressBlockFilterMatch
 // P = 19
 // M = 784931
+// KeySize 16

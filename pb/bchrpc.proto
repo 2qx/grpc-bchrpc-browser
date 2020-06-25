@@ -2,12 +2,9 @@ syntax = "proto3";
 
 package pb;
 
-// Bitcoin Cash remote procedure calls is a protocol for communicating with a 
-// bitcoin cash node from some client.  It is a set of procedure calls, initially
-// developed for bchd node, that can be exposed publicly via the command line options. 
-//
-// This service could be authenticated or unauthenticated.
-//
+// bchrpc contains a set of RPCs that can be exposed publicly via
+// the command line options. This service could be authenticated or
+// unauthenticated.
 service bchrpc {
 
     // Get info about the mempool.
@@ -30,7 +27,7 @@ service bchrpc {
     // Get a serialized block.
     rpc GetRawBlock(GetRawBlockRequest) returns (GetRawBlockResponse) {}
 
-    // Get the committed filter (cf) index by transaction hash as a Golomb-coded set.
+    // Get the committed filter (cf) index of addresses in a block as a Golomb-coded set.
     //
     // **Requires CfIndex**
     rpc GetBlockFilter(GetBlockFilterRequest) returns (GetBlockFilterResponse) {}
@@ -83,8 +80,8 @@ service bchrpc {
 
     // Subscribe to relevant transactions based on the subscription requests.
     //
-    // This RPC does not use bi-directional streams and therefore can be used
-    // with grpc-web. You will need to close and re-open the stream whenever
+    // This RPC does not use bidirectional streams and therefore can be used
+    // with grpc-web. You will need to close and reopen the stream whenever
     // you want to update the addresses. If you are not using grpc-web
     // then SubscribeTransactionStream is more appropriate.
     //
@@ -210,7 +207,7 @@ message GetRawBlockRequest {
     }
 }
 message GetRawBlockResponse {
-    // Raw block data (with header) serialized according the the block protocol.
+    // Raw block data (with header) serialized according the the bitcoin block protocol.
     bytes block = 1;
 }
 
@@ -224,17 +221,18 @@ message GetBlockFilterRequest {
 }
 
 message GetBlockFilterResponse {
-    // The Golomb-coded set of transactions in the block. 
+    // A filter for matching public key outpoints in a block 
+    // using a keyed SipHash function, serialized as a Golomb-coded set (GCS) 
     bytes filter = 1;
 }
 
 // Request headers using a list of known block hashes.
 message GetHeadersRequest {
-    // A list of block hashes known to the client (most recent first) which is expodentially 
-    // sparcer toward the genesis block (0).
-    // Common pratice is to include all of the last 10 blocks, and then 9 blocks for each order of magnitude thereafter.
+    // A list of block hashes known to the client (most recent first) which is exponentially 
+    // sparser toward the genesis block (0).
+    // Common practice is to include all of the last 10 blocks, and then 9 blocks for each order of ten thereafter.
     repeated bytes block_locator_hashes = 1;
-    // hash of the latest desired block header; only blocks occuring before the stop will be returned.
+    // hash of the latest desired block header; only blocks occurring before the stop will be returned.
     bytes stop_hash = 2;
 }
 message GetHeadersResponse {
@@ -262,7 +260,7 @@ message GetRawTransactionResponse {
     bytes transaction = 1;
 }
 
-// GetAddressTransactionsRequest obtains transactions related to a specific address.
+// Get encoded transactions related to a specific address.
 //
 // RECOMMENDED:
 // Parameters have been provided to query without creating 
@@ -272,30 +270,28 @@ message GetRawTransactionResponse {
 //       over a large set of transactions, if necessary.
 //
 // - A starting block parameter (either `hash` or `height`) 
-//       may then be used to filter results to those occuring
+//       may then be used to filter results to those occurring
 //       after a certain time.
 //
 // This approach will reduce network traffic and response processing 
-//   for the client, as well as reduce workload on the node.
-// The paging and start_block parameters are not applied to 
-//   unconfirmed transactions. 
+//   for the client, as well as reduce workload on the node. 
 message GetAddressTransactionsRequest {
 
     // The address to query transactions, in lowercase cashaddr format.
     // The network prefix is optional (i.e. "cashaddress:").
     string address = 1;
 
-    // Skip some number of confirmed transactions.
+    // The number of confirmed transactions to skip, starting with the oldest first.
     // Does not affect results of unconfirmed transactions.
     uint32 nb_skip = 2;
-    // Only fetch a specific number of transactions, at a time.
+    // Specify the number of transactions to fetch.
     uint32 nb_fetch = 3;
 
 
     oneof start_block {
-        // Only get transactions after (or within) a starting block identified by hash.
+        // Recommended. Only get transactions after (or within) a starting block identified by hash.
         bytes hash = 4;
-        // Only get transactions after (or within) a starting block identified by block number.
+        // Recommended. Only get transactions after (or within) a starting block identified by block number.
         int32 height = 5;
     }
 }
@@ -317,29 +313,27 @@ message GetAddressTransactionsResponse {
 //       over a large set of transactions, if necessary.
 //
 // - A starting block parameter (either `hash` or `height`) 
-//       may then be used to filter results to those occuring
+//       may then be used to filter results to those occurring
 //       after a certain time.
 //
 // This approach will reduce network traffic and response processing 
-//   for the client, as well as reduce workload on the node.
-// The paging and start_block parameters are not applied to 
-//   unconfirmed transactions. 
+//   for the client, as well as reduce workload on the node. 
 message GetRawAddressTransactionsRequest {
 
     // The address to query transactions, in lowercase cashaddr format.
     // The network prefix is optional (i.e. "cashaddress:").
     string address = 1;
 
-    // The number of confirmed transactions to skip starting with the oldest first.
-    // `nb_skip` does not affect results of unconfirmed transactions.
+    // The number of confirmed transactions to skip, starting with the oldest first.
+    // Does not affect results of unconfirmed transactions.
     uint32 nb_skip = 2;
-    // The total number of transactions to be fetched.
+    // Specify the number of transactions to fetch.
     uint32 nb_fetch = 3;
 
     oneof start_block {
-        // Recommended: Only return transactions after a starting block identified by hash.
+        // Recommended. Only return transactions after some starting block identified by hash.
         bytes hash = 4;
-        // Recommended: Only return transactions after a starting block identified by block number.
+        // Recommended. Only return transactions after some starting block identified by block number.
         int32 height = 5;
     }
 }
@@ -352,7 +346,7 @@ message GetRawAddressTransactionsResponse {
 
 message GetAddressUnspentOutputsRequest {
     // The address to query transactions, in lowercase cashaddr format.
-    // The network prefix is optional (i.e. "cashaddress:").
+    // The network identifiaer is optional (i.e. "cashaddress:").
     string address = 1;
     // When `include_mempool` is true, unconfirmed transactions from mempool are returned. Default is false.
     bool include_mempool = 2;
@@ -374,7 +368,7 @@ message GetUnspentOutputResponse {
 
     // A reference to the related input.
     Transaction.Input.Outpoint outpoint = 1;
-    // TODO-DOCS ? : 
+    // Locking script dictating how funds can be spent in the future
     bytes pubkey_script = 2;
     // Amount in satoshi.
     int64 value = 3;
@@ -453,7 +447,7 @@ message SubscribeBlocksRequest {
     // Default is false, block metadata is sent. See `BlockInfo`.
     bool full_block = 1;
 
-    // When `full_transactions` is true, provide full transaction info for a marshaled block.
+    // When full_transactions is true, provide full transaction info for a marshaled block.
     // Default is false, only the transaction hashes are included for a marshaled block. See `TransactionData`.
     bool full_transactions = 2;
 
@@ -490,7 +484,7 @@ message TransactionNotification {
     
     // State of the transaction acceptance.
     enum Type {
-        // A transction in mempool.
+        // A transaction in mempool.
         UNCONFIRMED = 0;
         // A transaction in a block.
         CONFIRMED   = 1;
@@ -501,7 +495,7 @@ message TransactionNotification {
     oneof transaction {
         // A transaction included in a block.
         Transaction confirmed_transaction = 2;
-        // A broadcasted transaction in mempool.
+        // A transaction in mempool.
         MempoolTransaction unconfirmed_transaction = 3;
         // Binary transaction, serialized using bitcoin protocol encoding.
         bytes serialized_transaction = 4;
@@ -535,7 +529,7 @@ message BlockInfo {
     int64 timestamp = 6;
     // Difficulty in Compressed Target Format.
     uint32 bits = 7;
-    // A random value that was generated during block mining which happend to
+    // A random value that was generated during block mining which happened to
     // result in a computed block hash below the difficulty target at the time.
     uint32 nonce = 8;
 
@@ -556,7 +550,7 @@ message BlockInfo {
 message Block {
     message TransactionData {
         oneof txids_or_txs {
-            // A transaction hash.
+            // Just the transaction hash.
             bytes transaction_hash = 1;
             // A marshaled transaction.
             Transaction transaction = 2;
@@ -582,7 +576,7 @@ message Transaction {
         
         // The related outpoint.
         Outpoint outpoint = 2;
-        //  TODO-DOCS: ? The signature script used to redeem the origin transaction.
+        // An unlocking script asserting a transaction is permitted to spend the Outpoint (UTXO)
         bytes signature_script = 3;
         // As of BIP-68, the sequence number is interpreted as a relative lock-time for the input.
         uint32 sequence = 4;
@@ -605,7 +599,7 @@ message Transaction {
         string address = 4;
         // The type of script.
         string script_class = 5;
-        // TODO-DOCS ?: The script expressed in Bitcoin Cash Script.
+        // The script expressed in Bitcoin Cash Script.
         string disassembled_script = 6;
     }
 
@@ -640,9 +634,9 @@ message Transaction {
 message MempoolTransaction {
     Transaction transaction = 1;
 
-    // When the transaction was witnessed by the node.
+    // The time when the transaction was added too the pool.
     int64 added_time = 2;
-    // The block height at the time the transaction was added to the pool.
+    // The block height when the transaction was added to the pool.
     int32 added_height = 3;
     // The total fee in satoshi the transaction pays.
     int64 fee = 4;
@@ -671,12 +665,12 @@ message TransactionFilter {
 
     // Filter by output hash and index.
     repeated Transaction.Input.Outpoint outpoints = 2;
-
-    // TODO-DOCS: ? Specify which transaction elements to return.
     repeated bytes data_elements = 3;
 
-    //TODO: Are these extra filters values relevant?
+    //TODO: Are these extra filters for data elements relevant?
     // - scriptPubkey
+    // if so...
+    // Filter by data contained in OP_DATA_1 to OP_PUSHDATA4 in the public key output script
 
     // Subscribe/Unsubscribe to everything. Other filters
     // will be ignored.
