@@ -15436,6 +15436,34 @@ class GrpcClient {
         });
     }
     /**
+     * Retrieve block filter given a block number or hash
+     * @param height - the block number index to be retrieved.
+     * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
+     * @param hashHex - the hash as a big-endian 'hex' encoded string, will be overridden a hash if provided.
+     */
+    getBlockFilter({ height, hash, hashHex }, metadata) {
+        const req = new bchrpc.GetBlockInfoRequest();
+        if (height !== null && height !== undefined) {
+            req.setHeight(height);
+        }
+        else if (hashHex) {
+            req.setHash(util.hexToU8(hashHex).reverse());
+        }
+        else if (hash) {
+            req.setHash(hash);
+        }
+        return new Promise((resolve, reject) => {
+            this.client.getBlockFilter(req, metadata, (err, response) => {
+                if (err !== null) {
+                    reject(err);
+                }
+                else {
+                    resolve(response);
+                }
+            });
+        });
+    }
+    /**
      * Retrieve block info given a block number or hash
      * @param height - the block number index to be retrieved.
      * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
@@ -15727,9 +15755,6 @@ function arrayBufferToBase64(ab) {
     return u8toBase64(new Uint8Array(ab));
 }
 exports.arrayBufferToBase64 = arrayBufferToBase64;
-// TODO addressBlockFilterMatch
-// P = 19
-// M = 784931
 
 
 /***/ })

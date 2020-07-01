@@ -3,6 +3,7 @@ import { Buffer } from "buffer";
 import { UnspentOutput, Transaction, GetBlockchainInfoResponse } from "../pb/bchrpc_pb";
 import GrpcClient from "../src/client";
 import * as util from "../src/util";
+import * as gcs from "../src/gcs";
 
 // Security notice:
 // Below is a collection of tools to approximate core javascript libraries that were not in nodejs.
@@ -83,7 +84,7 @@ describe("grpc-bchrpc-browser", () => {
         assert.equal(info.getInfo()!.getMedianTime(), 1231006505);
         assert.equal(info.getInfo()!.getDifficulty(), 1);
         assert.equal(info.getInfo()!.getNextBlockHash_asB64(), "SGDrGL8bFiDjfpSQ/IpCdRRBb9dRWauGaI6agwAAAAA=");
-        
+
         const hash = util.u8toHex(info.getInfo()!.getHash_asU8().reverse());
         assert.equal(hash, "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
     });
@@ -95,7 +96,7 @@ describe("grpc-bchrpc-browser", () => {
         const hash = util.u8toHex(info.getInfo()!.getHash_asU8().reverse());
         assert.equal(hash, "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
     });
-    
+
 
     it("getBlockInfo for hash b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA=", async () => {
         const hexString = "00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048"
@@ -128,10 +129,10 @@ describe("grpc-bchrpc-browser", () => {
         assert.equal(hash, util.u8toBase64(hashTwo_u8), "check that raw transaction matches it's hash");
     });
 
-    
+
     it("getRawTransaction without a transaction should throw error", async () => {
         try {
-            await mainnet.getRawTransaction({  }, null);
+            await mainnet.getRawTransaction({}, null);
         } catch (err) {
             assert.equal(err.message, "No hash provided for transaction");
         }
@@ -147,7 +148,7 @@ describe("grpc-bchrpc-browser", () => {
     it("verifyBlock should validate a marshaled block", async () => {
         const blockHash = "SGDrGL8bFiDjfpSQ/IpCdRRBb9dRWauGaI6agwAAAAA="
         const block = await (await mainnet.getBlockInfo({ hash: blockHash }, null)).getInfo();
-        const hashIsValid = await mainnet.verifyBlock({block:block, hash:blockHash})
+        const hashIsValid = await mainnet.verifyBlock({ block: block, hash: blockHash })
         assert.isTrue(hashIsValid, "the hash of the block data matches the block hash");
     });
 
@@ -222,7 +223,7 @@ describe("grpc-bchrpc-browser", () => {
         // const hash = "kOAzGd3J1I2jirObLzfApa9a/HNvb/Kp2LhlPg/rMI0="; // I
         // const hash = "hCUYQqTA8OGI4cK/ZD7DehQC3YaiWpq1AEYzRn0W4xM="; // J
         const localMerkleRoot = "sVLspDZIUPNCTHrCszfWBsXKCj+W8VVPjbM9L28TC74=";
-        const proofIsValid = await mainnet.verifyTransaction({ txnHash: hash,  merkleRoot:localMerkleRoot})
+        const proofIsValid = await mainnet.verifyTransaction({ txnHash: hash, merkleRoot: localMerkleRoot })
 
         assert.isTrue(proofIsValid, "the root of the calculated merkle tree should match merkle root provided");
     });
@@ -230,15 +231,15 @@ describe("grpc-bchrpc-browser", () => {
     it("getTransaction returns the transaction", async () => {
         const txHex = "11556da6ee3cb1d14727b3a8f4b37093b6fecd2bc7d577a02b4e98b7be58a7e8";
         const res = await mainnet.getTransaction({ hashHex: txHex }, null);
-        assert.equal(res.getTransaction()?.getSize(), 441);
-        assert.equal(res.getTransaction()?.getVersion(), 2);
-        assert.equal(res.getTransaction()?.getLockTime(), 0);
-        const inputs = res.getTransaction()?.getInputsList()!;
+        assert.equal(res.getTransaction()!.getSize(), 441);
+        assert.equal(res.getTransaction()!.getVersion(), 2);
+        assert.equal(res.getTransaction()!.getLockTime(), 0);
+        const inputs = res.getTransaction()!.getInputsList()!;
         assert.equal(inputs[0].getAddress(), "qrhvcy5xlegs858fjqf8ssl6a4f7wpstaqlsy4gusz", "check the first input address");
         assert.equal(inputs[0].getValue(), 546, "check value");
         assert.equal(inputs[1].getAddress(), "qrhvcy5xlegs858fjqf8ssl6a4f7wpstaqlsy4gusz", "check the second input address");
         assert.equal(inputs[1].getValue(), 8089, "check value");
-        const outputs = res.getTransaction()?.getOutputsList()!;
+        const outputs = res.getTransaction()!.getOutputsList()!;
         assert.equal(outputs[0].getScriptClass(), "datacarrier", "check the script class");
         assert.equal(outputs[0].getDisassembledScript(), "OP_RETURN 534c5000 41 47454e45534953 4e465431204368696c64 4d79204e465431204368696c64   00  0000000000000001", "jSLPAGENESISNFT1 ChildMy NFT1 ChildLLL");
         assert.equal(outputs[1].getAddress(), "qrhvcy5xlegs858fjqf8ssl6a4f7wpstaqlsy4gusz", "check the second output address");
@@ -289,5 +290,45 @@ describe("grpc-bchrpc-browser", () => {
         }
     });
 
+    /*
+    *
+    *   Utility tests
+    * 
+    * 
+    */
+
+    it("transaction output pubkeys should match the decoded block filter", async () => {
+        
+        const block = (await (await mainnet.getBlock({ index: 100000, fullTransactions:true }, null)));
+        const hash = await block.getBlock()!.getInfo()!.getHash_asU8()
+
+        const filterData =  (await mainnet.getBlockFilter({ hash: hash }, null))!.getFilter_asU8()
+        let f = new gcs.default({filterData:filterData})
+        for(const tx of block.getBlock()!.getTransactionDataList()){
+            for(const txOutput of tx.getTransaction()!.getOutputsList()){
+                let hitPubkeyScript = f.match(hash, txOutput!.getPubkeyScript_asU8())
+                assert.isTrue(hitPubkeyScript, "the pubkeyScript should match filter");
+            }
+        }
+    });
+
+    it("transaction serialized input outpoints should match the decoded block filter", async () => {
+        
+        const block = (await (await mainnet.getBlock({ index: 100000, fullTransactions:true }, null)));
+        const hash = await block.getBlock()!.getInfo()!.getHash_asU8()
+
+        const filterData =  (await mainnet.getBlockFilter({ hash: hash }, null))!.getFilter_asU8()
+        const f = new gcs.default({filterData:filterData})
+        const nonCoinbaseTxns = block.getBlock()!.getTransactionDataList().slice(1)
+        for(const tx of nonCoinbaseTxns){
+            for(const txInput of tx.getTransaction()!.getInputsList()){
+                const opU8 = txInput.getOutpoint()!.getHash_asU8()
+                const opIdx = txInput.getOutpoint()!.getIndex()
+                const serializedOutpoint = new Uint8Array( [...opU8, ...util.numberTo4ByteLEArray(opIdx)])
+                const hitPubkeyScript = f.match(hash, serializedOutpoint)
+                assert.isTrue(hitPubkeyScript, "the pubkeyScript should match filter");
+            }
+        }
+    });
 
 });

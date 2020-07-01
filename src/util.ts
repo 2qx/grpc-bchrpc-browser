@@ -45,9 +45,12 @@ export function expandMerkleFlags(b: Uint8Array) {
         .join("")
         .replace(/\b0+/g, '')
         .split("")
-        .map(x => parseInt(x,10))
+        .map(x => parseInt(x, 10))
         .reverse();
 }
+
+
+
 
 export function compareUint8Array(a: string | Uint8Array, b: string | Uint8Array) {
     // Convert base64 strings to Uint8Arrays
@@ -117,7 +120,6 @@ export function hexToBase64(hashHex: string) {
 
 export function base64toHex(b64: string): string {
     return base64toU8(b64).reduce(reduceToHex, '')
-
 }
 
 export function base64toU8(b64: string) {
@@ -135,8 +137,3 @@ export function u8toBase64(u8: Uint8Array) {
 export function arrayBufferToBase64(ab: ArrayBuffer) {
     return u8toBase64(new Uint8Array(ab))
 }
-
-// TODO addressBlockFilterMatch
-// P = 19
-// M = 784931
-// KeySize 16

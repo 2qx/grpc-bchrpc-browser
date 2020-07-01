@@ -37,6 +37,7 @@
         "@types/crypto-js": "^3.1.46",
         "@types/google-protobuf": "^3.7.1",
         "@types/mocha": "^5.2.7",
+        "bsert": "0.0.10",
         "buffer": "^5.5.0",
         "chai": "^4.2.0",
         "live-server": "^1.2.1",
@@ -59,7 +60,8 @@
     },
     "dependencies": {
         "google-protobuf": "^3.6.1",
-        "grpc-web": "^1.0.7"
+        "grpc-web": "^1.0.7",
+        "siphash": "^1.1.0"
     },
     "keywords": [
         "bch",

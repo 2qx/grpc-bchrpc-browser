@@ -455,7 +455,7 @@ block hash and height.</p></td>
                 <td>GetBlockFilter</td>
                 <td><a href="#pb.GetBlockFilterRequest">GetBlockFilterRequest</a></td>
                 <td><a href="#pb.GetBlockFilterResponse">GetBlockFilterResponse</a></td>
-                <td><p>Get the committed filter (cf) of a block as a Golomb-coded set.
+                <td><p>Get the compact filter (cf) of a block as a Golomb-coded set.
 
 **Requires CfIndex**</p></td>
               </tr>
@@ -987,8 +987,7 @@ The network identifiaer is optional (i.e. "cashaddress:"). </p></td>
                   <td>filter</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>A filter for matching public key outpoints in a block 
-using a keyed SipHash function, serialized as a Golomb-coded set (GCS) </p></td>
+                  <td><p>A compact filter matching input outpoints and public key scripts contained in a block (encoded according to BIP158). </p></td>
                 </tr>
               
             </tbody>
@@ -1171,7 +1170,7 @@ using a keyed SipHash function, serialized as a Golomb-coded set (GCS) </p></td>
                   <td>tx_index</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>When `tx_index` is true, the node has full transaction index enabled . </p></td>
+                  <td><p>When `tx_index` is true, the node has full transaction index enabled. </p></td>
                 </tr>
               
                 <tr>

@@ -250,7 +250,7 @@ This approach will reduce network traffic and response processing
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| filter | [bytes](#bytes) |  | A filter for matching public key outpoints in a block using a keyed SipHash function, serialized as a Golomb-coded set (GCS) |
+| filter | [bytes](#bytes) |  | A compact filter matching input outpoints and public key scripts contained in a block (encoded according to BIP158). |
 
 
 
@@ -343,7 +343,7 @@ This approach will reduce network traffic and response processing
 | best_block_hash | [bytes](#bytes) |  | The hash of the best (tip) block in the most-work fully-validated chain. |
 | difficulty | [double](#double) |  | Threshold for adding new blocks. |
 | median_time | [int64](#int64) |  | Median time of the last 11 blocks. |
-| tx_index | [bool](#bool) |  | When `tx_index` is true, the node has full transaction index enabled . |
+| tx_index | [bool](#bool) |  | When `tx_index` is true, the node has full transaction index enabled. |
 | addr_index | [bool](#bool) |  | When `addr_index` is true, the node has address index enabled and may be used with call related by address. |
 
 
@@ -960,7 +960,7 @@ unauthenticated.
 | GetBlockInfo | [GetBlockInfoRequest](#pb.GetBlockInfoRequest) | [GetBlockInfoResponse](#pb.GetBlockInfoResponse) | Get info about the given block. |
 | GetBlock | [GetBlockRequest](#pb.GetBlockRequest) | [GetBlockResponse](#pb.GetBlockResponse) | Get a block. |
 | GetRawBlock | [GetRawBlockRequest](#pb.GetRawBlockRequest) | [GetRawBlockResponse](#pb.GetRawBlockResponse) | Get a serialized block. |
-| GetBlockFilter | [GetBlockFilterRequest](#pb.GetBlockFilterRequest) | [GetBlockFilterResponse](#pb.GetBlockFilterResponse) | Get the committed filter (cf) of a block as a Golomb-coded set.
+| GetBlockFilter | [GetBlockFilterRequest](#pb.GetBlockFilterRequest) | [GetBlockFilterResponse](#pb.GetBlockFilterResponse) | Get the compact filter (cf) of a block as a Golomb-coded set.
 
 **Requires CfIndex** |
 | GetHeaders | [GetHeadersRequest](#pb.GetHeadersRequest) | [GetHeadersResponse](#pb.GetHeadersResponse) | This RPC sends a block locator object to the server and the server responds with a batch of no more than 2000 headers. Upon parsing the block locator, if the server concludes there has been a fork, it will send headers starting at the fork point, or genesis if no blocks in the locator are in the best chain. If the locator is already at the tip no headers will be returned. see: bchd/bchrpc/documentation/wallet_operation.md |

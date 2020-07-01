@@ -320,6 +320,31 @@ export default class GrpcClient {
         });
     }
 
+
+    /**
+     * Retrieve block filter given a block number or hash
+     * @param height - the block number index to be retrieved.
+     * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
+     * @param hashHex - the hash as a big-endian 'hex' encoded string, will be overridden a hash if provided.
+     */
+    public getBlockFilter(
+        { height, hash, hashHex }:
+            { height?: number, hash?: string | Uint8Array, hashHex?: string },
+        metadata: grpcWeb.Metadata | null
+    ): Promise<bchrpc.GetBlockFilterResponse> {
+        const req = new bchrpc.GetBlockInfoRequest();
+        if (height !== null && height !== undefined) { req.setHeight(height); } else if (hashHex) {
+            req.setHash(util.hexToU8(hashHex).reverse());
+        } else if (hash) {
+            req.setHash(hash);
+        }
+        return new Promise((resolve, reject) => {
+            this.client.getBlockFilter(req, metadata, (err, response) => {
+                if (err !== null) { reject(err); } else { resolve(response!); }
+            });
+        });
+    }
+
     /**
      * Retrieve block info given a block number or hash
      * @param height - the block number index to be retrieved.
@@ -357,6 +382,8 @@ export default class GrpcClient {
             });
         });
     }
+
+
 
     /**
      * @param includeMempoolAcceptance - If true, new unconfirmed transactions from mempool are included apart from the ones confirmed in a block.
