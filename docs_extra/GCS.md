@@ -1,18 +1,25 @@
+# Using Compact Block Filters
+
+Compact block filters are an efficient way to determine whether or not
+a relevant transaction may be in a block, specified in BIP158.
+
+By mapping input outpoints and public key scripts to a set of values, a 
+service is able to test whether any of those data may be affected by 
+transactions within a block, without downloading the full block or list of transactions.
 
 
 // key is first 128 bits of hash
 
 // P = 19 // default 
 
-// N = 0 // default
-
 // n = length of data in the filter, the sum input outpoints and output public 
+
+// "Modulus" for reduction is a fixed constant
 M = 784931
 
 
 Serialized Outpoints
-// 32-byte little endian hash followed by 4-byte little endian
-// index.
+// 32-byte little endian hash followed by 4-byte little endian index.
 
 
 // KeySize 16 bytes
@@ -47,6 +54,10 @@ DeSerialized:
 |    `0        `    |   `001    10011100    10100011`   |    0    |    105635    |    105635    |    2716450   |
 |    `11110    `    |   `010    01101000    10011101`   |    4    |    157853    |    2255005   |    4971455   |
 |    `0        `    |   `101    01111001    01000101`   |    0    |    358725    |    358725    |    5330180   |
-|    `000000   `    |                                   |         |              |              |              |
+|    `000000   `    |   <- ignore                       |         |              |              |              |
 
 
+
+
+
+https://blog.trezor.io/bip158-compact-block-filters-9b813b07a878

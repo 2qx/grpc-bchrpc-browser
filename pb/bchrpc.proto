@@ -27,7 +27,7 @@ service bchrpc {
     // Get a serialized block.
     rpc GetRawBlock(GetRawBlockRequest) returns (GetRawBlockResponse) {}
 
-    // Get the compact filter (cf) of a block as a Golomb-coded set.
+    // Get the compact filter (cf) of a block as a Golomb-Rice encoded set.
     //
     // **Requires CfIndex**
     rpc GetBlockFilter(GetBlockFilterRequest) returns (GetBlockFilterResponse) {}

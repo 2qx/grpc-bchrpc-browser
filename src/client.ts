@@ -8,11 +8,11 @@ export default class GrpcClient {
     public client: bchrpc_pb_service.bchrpcClient;
 
     /**
-    * Create a client.
-    * @param url - The bchd server expressed as host:port.
-    * @param testnet - Whether testnet is being used, default:false.
-    * @param options - grpc client options.
-    */
+     * Create a client.
+     * @param url - The bchd server expressed as host:port.
+     * @param testnet - Whether testnet is being used, default:false.
+     * @param options - grpc client options.
+     */
     constructor({ url, testnet = false, options }:
         { url?: string; testnet?: boolean; options: null | { [index: string]: string; } }) {
         if (typeof url === 'string') {
@@ -33,14 +33,13 @@ export default class GrpcClient {
     }
 
     /**
-    * Get information about transactions in mempool
-    * @param metadata - optional parameters for grpcWeb client
-    */
-    public getMempoolInfo(metadata: grpcWeb.Metadata | null): Promise<bchrpc.GetMempoolInfoResponse> {
+     * Get information about transactions in mempool
+     */
+    public getMempoolInfo(): Promise<bchrpc.GetMempoolInfoResponse> {
         return new Promise((resolve, reject) => {
             this.client.getMempoolInfo(
                 new bchrpc.GetMempoolInfoRequest(),
-                metadata,
+                null,
                 (err: grpcWeb.Error, response: bchrpc.GetMempoolInfoResponse) => {
                     if (err !== null) { reject(err); } else {
                         resolve(response!);
@@ -51,13 +50,11 @@ export default class GrpcClient {
     }
 
     /**
-    * Get transactions from mempool
-    * @param fullTransactions - A flag to return full transaction data. Default is `false`, only transaction hashes are returned.
-    * @param metadata - Optional parameters for grpcWeb client
-    */
+     * Get transactions from mempool
+     * @param fullTransactions - A flag to return full transaction data. Default is `false`, only transaction hashes are returned.
+     */
     public getMempool(
-        { fullTransactions }: { fullTransactions?: boolean },
-        metadata: grpcWeb.Metadata | null
+        { fullTransactions }: { fullTransactions?: boolean }
     ): Promise<bchrpc.GetMempoolResponse> {
         const req = new bchrpc.GetMempoolRequest();
         if (fullTransactions) {
@@ -66,7 +63,7 @@ export default class GrpcClient {
         return new Promise((resolve, reject) => {
             this.client.getMempool(
                 req,
-                metadata,
+                null,
                 (err: grpcWeb.Error, response: bchrpc.GetMempoolResponse) => {
                     if (err !== null) { reject(err); } else { resolve(response!); }
                 }
@@ -75,15 +72,13 @@ export default class GrpcClient {
     }
 
     /**
-    * Get a raw transaction
-    * @param hash - the hash, in either a base64 encoded string or byte array, little-endian.
-    * @param hashHex - the hash as a big-endian hexadecimal encoded string, sill be overridden by hash if provided.
-    * @param metadata - Optional parameters for grpcWeb client
-    */
+     * Get a raw transaction
+     * @param hash - the hash, in either a base64 encoded string or byte array, little-endian.
+     * @param hashHex - the hash as a big-endian hexadecimal encoded string, sill be overridden by hash if provided.
+     */
     public getRawTransaction(
         { hash, hashHex }:
-            { hash?: string | Uint8Array; hashHex?: string },
-        metadata: grpcWeb.Metadata | null
+            { hash?: string | Uint8Array; hashHex?: string }
     ): Promise<bchrpc.GetRawTransactionResponse> {
         const req = new bchrpc.GetRawTransactionRequest();
         if (hashHex) {
@@ -95,22 +90,20 @@ export default class GrpcClient {
         }
 
         return new Promise((resolve, reject) => {
-            this.client.getRawTransaction(req, metadata, (err: grpcWeb.Error, response: bchrpc.GetRawTransactionResponse) => {
+            this.client.getRawTransaction(req, null, (err: grpcWeb.Error, response: bchrpc.GetRawTransactionResponse) => {
                 if (err !== null) { reject(err); } else { resolve(response!); }
             });
         });
     }
 
     /**
-    * Get a transaction
-    * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
-    * @param hashHex - the hash as a big-endian hexadecimal encoded string, will be overridden by hash, if provided.
-    * @param metadata - Optional parameters for grpcWeb client
-    */
+     * Get a transaction
+     * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
+     * @param hashHex - the hash as a big-endian hexadecimal encoded string, will be overridden by hash, if provided.
+     */
     public getTransaction(
         { hash, hashHex }:
-            { hash?: string | Uint8Array; hashHex?: string },
-        metadata: grpcWeb.Metadata | null
+            { hash?: string | Uint8Array; hashHex?: string }
     ): Promise<bchrpc.GetTransactionResponse> {
         const req = new bchrpc.GetTransactionRequest();
         if (hashHex) {
@@ -121,7 +114,7 @@ export default class GrpcClient {
             throw Error("No hash provided for transaction");
         }
         return new Promise((resolve, reject) => {
-            this.client.getTransaction(req, metadata, (err: grpcWeb.Error, response: bchrpc.GetTransactionResponse) => {
+            this.client.getTransaction(req, null, (err: grpcWeb.Error, response: bchrpc.GetTransactionResponse) => {
                 if (err !== null) { reject(err); } else { resolve(response!); }
             });
         });
@@ -129,16 +122,15 @@ export default class GrpcClient {
 
 
     /**
-    * Get block header information
-    * @param blockLocatorHashes - Sparse list of hashes known to the client.
-    * @param stopHash -Last block hash to return.
-    */
+     * Get block header information
+     * @param blockLocatorHashes - Sparse list of hashes known to the client.
+     * @param stopHash -Last block hash to return.
+     */
     public getHeaders({ blockLocatorHashes, stopHash }:
         {
             blockLocatorHashes?: (string | Uint8Array)[],
             stopHash?: string
-        },
-        metadata: grpcWeb.Metadata | null
+        }
     ): Promise<bchrpc.GetHeadersResponse> {
         const req = new bchrpc.GetHeadersRequest();
         if (blockLocatorHashes) {
@@ -148,22 +140,21 @@ export default class GrpcClient {
             req.setStopHash(stopHash);
         }
         return new Promise((resolve, reject) => {
-            this.client.getHeaders(req, metadata, (err: grpcWeb.Error, response: bchrpc.GetHeadersResponse) => {
+            this.client.getHeaders(req, null, (err: grpcWeb.Error, response: bchrpc.GetHeadersResponse) => {
                 if (err !== null) { reject(err); } else { resolve(response!); }
             });
         });
     }
 
     /**
-    * Get transactions related to a particular address
-    * @param address - Bitcoin cash address in casharr format.
-    * @param nbSkip - Number of transactions to skip, in chronological order.
-    * @param nbFetch - Number of transactions return.
-    * @param height - Filter to only return transactions after this block number.
-    * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
-    * @param hashHex - the hash as a big-endian hexadecimal encoded string, will be overridden by `hash`, if provided.
-    * @param metadata - Optional parameters for grpcWeb client
-    */
+     * Get transactions related to a particular address
+     * @param address - Bitcoin cash address in casharr format.
+     * @param nbSkip - Number of transactions to skip, in chronological order.
+     * @param nbFetch - Number of transactions return.
+     * @param height - Filter to only return transactions after this block number.
+     * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
+     * @param hashHex - the hash as a big-endian hexadecimal encoded string, will be overridden by `hash`, if provided.
+     */
     public getAddressTransactions({ address, nbSkip, nbFetch, height, hashHex }:
         {
             address: string,
@@ -171,8 +162,7 @@ export default class GrpcClient {
             nbFetch?: number,
             height?: number,
             hashHex?: string
-        },
-        metadata: grpcWeb.Metadata | null
+        }
     ): Promise<bchrpc.GetAddressTransactionsResponse> {
         const req = new bchrpc.GetAddressTransactionsRequest();
         if (nbSkip) {
@@ -189,7 +179,7 @@ export default class GrpcClient {
         }
         req.setAddress(address);
         return new Promise((resolve, reject) => {
-            this.client.getAddressTransactions(req, metadata, (err: grpcWeb.Error, response: bchrpc.GetAddressTransactionsResponse) => {
+            this.client.getAddressTransactions(req, null, (err: grpcWeb.Error, response: bchrpc.GetAddressTransactionsResponse) => {
                 if (err !== null) { reject(err); } else { resolve(response!); }
             });
         });
@@ -201,7 +191,6 @@ export default class GrpcClient {
                 hash?: string | Uint8Array, hashHex?: string, vout: number,
                 includeMempool?: boolean
             }
-        , metadata: grpcWeb.Metadata | null
     ): Promise<bchrpc.GetUnspentOutputResponse> {
         const req = new bchrpc.GetUnspentOutputRequest();
         if (includeMempool) {
@@ -214,7 +203,7 @@ export default class GrpcClient {
         }
         req.setIndex(vout);
         return new Promise((resolve, reject) => {
-            this.client.getUnspentOutput(req, metadata, (err, data) => {
+            this.client.getUnspentOutput(req, null, (err, data) => {
                 if (err !== null) { reject(err); } else { resolve(data!); }
             });
         });
@@ -230,7 +219,6 @@ export default class GrpcClient {
             {
                 hash?: string | Uint8Array, hashHex?: string
             }
-        , metadata: grpcWeb.Metadata | null
     ): Promise<bchrpc.GetMerkleProofResponse> {
         const req = new bchrpc.GetMerkleProofRequest();
         if (hashHex) {
@@ -239,7 +227,7 @@ export default class GrpcClient {
             req.setTransactionHash(hash);
         }
         return new Promise((resolve, reject) => {
-            this.client.getMerkleProof(req, metadata, (err, data) => {
+            this.client.getMerkleProof(req, null, (err, data) => {
                 if (err !== null) { reject(err); } else { resolve(data!); }
             });
         });
@@ -247,8 +235,7 @@ export default class GrpcClient {
 
     public getAddressUtxos(
         { address, includeMempool }:
-            { address: string, includeMempool: boolean },
-        metadata: grpcWeb.Metadata | null
+            { address: string, includeMempool: boolean }
     ): Promise<bchrpc.GetAddressUnspentOutputsResponse> {
         const req = new bchrpc.GetAddressUnspentOutputsRequest();
         req.setAddress(address);
@@ -256,7 +243,7 @@ export default class GrpcClient {
             req.setIncludeMempool(true);
         }
         return new Promise((resolve, reject) => {
-            this.client.getAddressUnspentOutputs(req, metadata, (err, response) => {
+            this.client.getAddressUnspentOutputs(req, null, (err, response) => {
                 if (err !== null) { reject(err); } else { resolve(response!); }
             });
         });
@@ -270,7 +257,6 @@ export default class GrpcClient {
     public getRawBlock(
         { hash, hashHex }:
             { hash?: string | Uint8Array, hashHex?: string },
-        metadata: grpcWeb.Metadata | null
     ): Promise<bchrpc.GetRawBlockResponse> {
         const req = new bchrpc.GetRawBlockRequest();
         if (hashHex) {
@@ -281,7 +267,7 @@ export default class GrpcClient {
             throw Error("No hash provided for raw block request");
         }
         return new Promise((resolve, reject) => {
-            this.client.getRawBlock(req, metadata, (err, response) => {
+            this.client.getRawBlock(req, null, (err, response) => {
                 if (err !== null) { reject(err); } else { resolve(response!); }
             });
         });
@@ -297,8 +283,7 @@ export default class GrpcClient {
      */
     public getBlock(
         { index, hash, hashHex, fullTransactions }:
-            { index?: number, hash?: string | Uint8Array, hashHex?: string, fullTransactions?: boolean },
-        metadata: grpcWeb.Metadata | null
+            { index?: number, hash?: string | Uint8Array, hashHex?: string, fullTransactions?: boolean }
     ): Promise<bchrpc.GetBlockResponse> {
         const req = new bchrpc.GetBlockRequest();
         if (index !== null && index !== undefined) {
@@ -314,7 +299,7 @@ export default class GrpcClient {
             req.setFullTransactions(true);
         }
         return new Promise((resolve, reject) => {
-            this.client.getBlock(req, metadata, (err, response) => {
+            this.client.getBlock(req, null, (err, response) => {
                 if (err !== null) { reject(err); } else { resolve(response!); }
             });
         });
@@ -329,8 +314,7 @@ export default class GrpcClient {
      */
     public getBlockFilter(
         { height, hash, hashHex }:
-            { height?: number, hash?: string | Uint8Array, hashHex?: string },
-        metadata: grpcWeb.Metadata | null
+            { height?: number, hash?: string | Uint8Array, hashHex?: string }
     ): Promise<bchrpc.GetBlockFilterResponse> {
         const req = new bchrpc.GetBlockInfoRequest();
         if (height !== null && height !== undefined) { req.setHeight(height); } else if (hashHex) {
@@ -339,7 +323,7 @@ export default class GrpcClient {
             req.setHash(hash);
         }
         return new Promise((resolve, reject) => {
-            this.client.getBlockFilter(req, metadata, (err, response) => {
+            this.client.getBlockFilter(req, null, (err, response) => {
                 if (err !== null) { reject(err); } else { resolve(response!); }
             });
         });
@@ -353,8 +337,7 @@ export default class GrpcClient {
      */
     public getBlockInfo(
         { height, hash, hashHex }:
-            { height?: number, hash?: string | Uint8Array, hashHex?: string },
-        metadata: grpcWeb.Metadata | null
+            { height?: number, hash?: string | Uint8Array, hashHex?: string }
     ): Promise<bchrpc.GetBlockInfoResponse> {
         const req = new bchrpc.GetBlockInfoRequest();
         if (height !== null && height !== undefined) { req.setHeight(height); } else if (hashHex) {
@@ -363,7 +346,7 @@ export default class GrpcClient {
             req.setHash(hash);
         }
         return new Promise((resolve, reject) => {
-            this.client.getBlockInfo(req, metadata, (err, response) => {
+            this.client.getBlockInfo(req, null, (err, response) => {
                 if (err !== null) { reject(err); } else { resolve(response!); }
             });
         });
@@ -373,11 +356,10 @@ export default class GrpcClient {
      * Retrieve block info for the network, network state and host node.
      */
     public getBlockchainInfo(
-        { }: {},
-        metadata: grpcWeb.Metadata | null
+        { }: {}
     ): Promise<bchrpc.GetBlockchainInfoResponse> {
         return new Promise((resolve, reject) => {
-            this.client.getBlockchainInfo(new bchrpc.GetBlockchainInfoRequest(), metadata, (err, response) => {
+            this.client.getBlockchainInfo(new bchrpc.GetBlockchainInfoRequest(), null, (err, response) => {
                 if (err !== null) { reject(err); } else { resolve(response!); }
             });
         });
@@ -412,13 +394,13 @@ export default class GrpcClient {
                 transactionFilter.setAllTransactions(false)
                 req.setSubscribe(transactionFilter)
             }else{
-                const transactionFilter = new bchrpc.TransactionFilter();
-                transactionFilter.setAllTransactions(true)
-                req.setSubscribe(transactionFilter)
+                const defaultFilter = new bchrpc.TransactionFilter();
+                defaultFilter.setAllTransactions(true)
+                req.setSubscribe(defaultFilter)
             }
             if(unsubscribe){
-                throw 'Unsubscribing is not currently (2020) possible on grpc-web, see grpc-web ClientReadableStream.cancel()'
-            } 
+                throw new Error('Unsubscribing is not currently (2020) possible on grpc-web, see grpc-web ClientReadableStream.cancel()');
+            }
             try {
                 resolve(this.client.subscribeTransactions(req));
             } catch (err) {
@@ -447,8 +429,7 @@ export default class GrpcClient {
     }
 
     public submitTransaction(
-        { txnHex, txn }: { txnHex?: string, txn?: Uint8Array },
-        metadata: grpcWeb.Metadata | null
+        { txnHex, txn }: { txnHex?: string, txn?: Uint8Array }
     ): Promise<bchrpc.SubmitTransactionResponse> {
         let tx: string | Uint8Array;
         const req = new bchrpc.SubmitTransactionRequest();
@@ -461,7 +442,7 @@ export default class GrpcClient {
         }
         req.setTransaction(tx);
         return new Promise((resolve, reject) => {
-            this.client.submitTransaction(req, metadata, (err, response) => {
+            this.client.submitTransaction(req, null, (err, response) => {
                 if (err !== null) { reject(err); } else { resolve(response!); }
             });
         });
@@ -506,7 +487,7 @@ export default class GrpcClient {
         } else {
             throw Error("Most provide a locally validated merkle root for verification");
         }
-        const proof = await this.getMerkleProof({ hash: tx }, null)
+        const proof = await this.getMerkleProof({ hash: tx })
         const merkleFlags = util.expandMerkleFlags(await proof.getFlags_asU8());
         const merkleHashes = await proof.getHashesList();
         const merkleCheckPromise = util.getMerkleRootFromProof(merkleHashes, merkleFlags, util.hashPair)

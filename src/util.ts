@@ -1,6 +1,3 @@
-
-
-
 export async function sha256sha256(ab: Uint8Array): Promise<ArrayBuffer> {
     try {
         return await crypto.subtle.digest('SHA-256', await crypto.subtle.digest('SHA-256', ab))
@@ -102,6 +99,12 @@ export function numberTo4ByteLEArray(num: number) {
     return byteArray;
 };
 
+export function numberPairToBase64(hi:number, lo:number):string{
+    const hiArray = numberTo4ByteLEArray(hi);
+    const loArray = numberTo4ByteLEArray(lo);
+    return u8toBase64(new Uint8Array([...hiArray, ...loArray]))
+}
+
 
 const hexArray = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
 const reduceToHex = (s: string, c: number) => s + hexArray[c >>> 4] + hexArray[c & 0x0F]
@@ -115,7 +118,6 @@ export function hexToU8(hashHex: string) {
 export function hexToBase64(hashHex: string) {
     return btoa(hashHex.match(/\w{2}/g)!.map((a) => String.fromCharCode(parseInt(a, 16))).join(""));
 }
-
 
 
 export function base64toHex(b64: string): string {

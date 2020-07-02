@@ -15133,11 +15133,11 @@ const bchrpc_pb_service = __importStar(__webpack_require__(8));
 const util = __importStar(__webpack_require__(11));
 class GrpcClient {
     /**
-    * Create a client.
-    * @param url - The bchd server expressed as host:port.
-    * @param testnet - Whether testnet is being used, default:false.
-    * @param options - grpc client options.
-    */
+     * Create a client.
+     * @param url - The bchd server expressed as host:port.
+     * @param testnet - Whether testnet is being used, default:false.
+     * @param options - grpc client options.
+     */
     constructor({ url, testnet = false, options }) {
         if (typeof url === 'string') {
             url = url;
@@ -15157,12 +15157,11 @@ class GrpcClient {
         this.client = new bchrpc_pb_service.bchrpcClient(url, null, options);
     }
     /**
-    * Get information about transactions in mempool
-    * @param metadata - optional parameters for grpcWeb client
-    */
-    getMempoolInfo(metadata) {
+     * Get information about transactions in mempool
+     */
+    getMempoolInfo() {
         return new Promise((resolve, reject) => {
-            this.client.getMempoolInfo(new bchrpc.GetMempoolInfoRequest(), metadata, (err, response) => {
+            this.client.getMempoolInfo(new bchrpc.GetMempoolInfoRequest(), null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -15173,17 +15172,16 @@ class GrpcClient {
         });
     }
     /**
-    * Get transactions from mempool
-    * @param fullTransactions - A flag to return full transaction data. Default is `false`, only transaction hashes are returned.
-    * @param metadata - Optional parameters for grpcWeb client
-    */
-    getMempool({ fullTransactions }, metadata) {
+     * Get transactions from mempool
+     * @param fullTransactions - A flag to return full transaction data. Default is `false`, only transaction hashes are returned.
+     */
+    getMempool({ fullTransactions }) {
         const req = new bchrpc.GetMempoolRequest();
         if (fullTransactions) {
             req.setFullTransactions(fullTransactions);
         }
         return new Promise((resolve, reject) => {
-            this.client.getMempool(req, metadata, (err, response) => {
+            this.client.getMempool(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -15194,12 +15192,11 @@ class GrpcClient {
         });
     }
     /**
-    * Get a raw transaction
-    * @param hash - the hash, in either a base64 encoded string or byte array, little-endian.
-    * @param hashHex - the hash as a big-endian hexadecimal encoded string, sill be overridden by hash if provided.
-    * @param metadata - Optional parameters for grpcWeb client
-    */
-    getRawTransaction({ hash, hashHex }, metadata) {
+     * Get a raw transaction
+     * @param hash - the hash, in either a base64 encoded string or byte array, little-endian.
+     * @param hashHex - the hash as a big-endian hexadecimal encoded string, sill be overridden by hash if provided.
+     */
+    getRawTransaction({ hash, hashHex }) {
         const req = new bchrpc.GetRawTransactionRequest();
         if (hashHex) {
             req.setHash(util.hexToU8(hashHex).reverse());
@@ -15211,7 +15208,7 @@ class GrpcClient {
             throw Error("No hash provided for transaction");
         }
         return new Promise((resolve, reject) => {
-            this.client.getRawTransaction(req, metadata, (err, response) => {
+            this.client.getRawTransaction(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -15222,12 +15219,11 @@ class GrpcClient {
         });
     }
     /**
-    * Get a transaction
-    * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
-    * @param hashHex - the hash as a big-endian hexadecimal encoded string, will be overridden by hash, if provided.
-    * @param metadata - Optional parameters for grpcWeb client
-    */
-    getTransaction({ hash, hashHex }, metadata) {
+     * Get a transaction
+     * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
+     * @param hashHex - the hash as a big-endian hexadecimal encoded string, will be overridden by hash, if provided.
+     */
+    getTransaction({ hash, hashHex }) {
         const req = new bchrpc.GetTransactionRequest();
         if (hashHex) {
             req.setHash(util.hexToU8(hashHex).reverse());
@@ -15239,7 +15235,7 @@ class GrpcClient {
             throw Error("No hash provided for transaction");
         }
         return new Promise((resolve, reject) => {
-            this.client.getTransaction(req, metadata, (err, response) => {
+            this.client.getTransaction(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -15250,11 +15246,11 @@ class GrpcClient {
         });
     }
     /**
-    * Get block header information
-    * @param blockLocatorHashes - Sparse list of hashes known to the client.
-    * @param stopHash -Last block hash to return.
-    */
-    getHeaders({ blockLocatorHashes, stopHash }, metadata) {
+     * Get block header information
+     * @param blockLocatorHashes - Sparse list of hashes known to the client.
+     * @param stopHash -Last block hash to return.
+     */
+    getHeaders({ blockLocatorHashes, stopHash }) {
         const req = new bchrpc.GetHeadersRequest();
         if (blockLocatorHashes) {
             req.setBlockLocatorHashesList(blockLocatorHashes);
@@ -15263,7 +15259,7 @@ class GrpcClient {
             req.setStopHash(stopHash);
         }
         return new Promise((resolve, reject) => {
-            this.client.getHeaders(req, metadata, (err, response) => {
+            this.client.getHeaders(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -15274,16 +15270,15 @@ class GrpcClient {
         });
     }
     /**
-    * Get transactions related to a particular address
-    * @param address - Bitcoin cash address in casharr format.
-    * @param nbSkip - Number of transactions to skip, in chronological order.
-    * @param nbFetch - Number of transactions return.
-    * @param height - Filter to only return transactions after this block number.
-    * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
-    * @param hashHex - the hash as a big-endian hexadecimal encoded string, will be overridden by `hash`, if provided.
-    * @param metadata - Optional parameters for grpcWeb client
-    */
-    getAddressTransactions({ address, nbSkip, nbFetch, height, hashHex }, metadata) {
+     * Get transactions related to a particular address
+     * @param address - Bitcoin cash address in casharr format.
+     * @param nbSkip - Number of transactions to skip, in chronological order.
+     * @param nbFetch - Number of transactions return.
+     * @param height - Filter to only return transactions after this block number.
+     * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
+     * @param hashHex - the hash as a big-endian hexadecimal encoded string, will be overridden by `hash`, if provided.
+     */
+    getAddressTransactions({ address, nbSkip, nbFetch, height, hashHex }) {
         const req = new bchrpc.GetAddressTransactionsRequest();
         if (nbSkip) {
             req.setNbSkip(nbSkip);
@@ -15299,7 +15294,7 @@ class GrpcClient {
         }
         req.setAddress(address);
         return new Promise((resolve, reject) => {
-            this.client.getAddressTransactions(req, metadata, (err, response) => {
+            this.client.getAddressTransactions(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -15309,7 +15304,7 @@ class GrpcClient {
             });
         });
     }
-    getUnspentOutput({ hash, hashHex, vout, includeMempool }, metadata) {
+    getUnspentOutput({ hash, hashHex, vout, includeMempool }) {
         const req = new bchrpc.GetUnspentOutputRequest();
         if (includeMempool) {
             req.setIncludeMempool(true);
@@ -15322,7 +15317,7 @@ class GrpcClient {
         }
         req.setIndex(vout);
         return new Promise((resolve, reject) => {
-            this.client.getUnspentOutput(req, metadata, (err, data) => {
+            this.client.getUnspentOutput(req, null, (err, data) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -15337,7 +15332,7 @@ class GrpcClient {
      * @param hash - the tx hash, in either a 'base64' encoded string or byte array, little-endian.
      * @param hashHex - the tx hash as a big-endian 'hex' encoded string, will be overridden by hash if also provided.
      */
-    getMerkleProof({ hash, hashHex }, metadata) {
+    getMerkleProof({ hash, hashHex }) {
         const req = new bchrpc.GetMerkleProofRequest();
         if (hashHex) {
             req.setTransactionHash(util.hexToU8(hashHex).reverse());
@@ -15346,7 +15341,7 @@ class GrpcClient {
             req.setTransactionHash(hash);
         }
         return new Promise((resolve, reject) => {
-            this.client.getMerkleProof(req, metadata, (err, data) => {
+            this.client.getMerkleProof(req, null, (err, data) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -15356,14 +15351,14 @@ class GrpcClient {
             });
         });
     }
-    getAddressUtxos({ address, includeMempool }, metadata) {
+    getAddressUtxos({ address, includeMempool }) {
         const req = new bchrpc.GetAddressUnspentOutputsRequest();
         req.setAddress(address);
         if (includeMempool) {
             req.setIncludeMempool(true);
         }
         return new Promise((resolve, reject) => {
-            this.client.getAddressUnspentOutputs(req, metadata, (err, response) => {
+            this.client.getAddressUnspentOutputs(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -15378,7 +15373,7 @@ class GrpcClient {
      * @param hash - the hash, in either a 'base64' encoded string or byte array, little-endian.
      * @param hashHex - the hash as a big-endian 'hex' encoded string, will be overridden by hash if also provided.
      */
-    getRawBlock({ hash, hashHex }, metadata) {
+    getRawBlock({ hash, hashHex }) {
         const req = new bchrpc.GetRawBlockRequest();
         if (hashHex) {
             req.setHash(util.hexToU8(hashHex).reverse());
@@ -15390,7 +15385,7 @@ class GrpcClient {
             throw Error("No hash provided for raw block request");
         }
         return new Promise((resolve, reject) => {
-            this.client.getRawBlock(req, metadata, (err, response) => {
+            this.client.getRawBlock(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -15407,7 +15402,7 @@ class GrpcClient {
      * @param hashHex - the hash as a big-endian 'hex' encoded string, will be overridden by hash if also provided.
      * @param fullTransactions - a flag to return full transaction data, by defult `false` only transaction hashes are returned.
      */
-    getBlock({ index, hash, hashHex, fullTransactions }, metadata) {
+    getBlock({ index, hash, hashHex, fullTransactions }) {
         const req = new bchrpc.GetBlockRequest();
         if (index !== null && index !== undefined) {
             req.setHeight(index);
@@ -15425,7 +15420,7 @@ class GrpcClient {
             req.setFullTransactions(true);
         }
         return new Promise((resolve, reject) => {
-            this.client.getBlock(req, metadata, (err, response) => {
+            this.client.getBlock(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -15441,7 +15436,7 @@ class GrpcClient {
      * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
      * @param hashHex - the hash as a big-endian 'hex' encoded string, will be overridden a hash if provided.
      */
-    getBlockFilter({ height, hash, hashHex }, metadata) {
+    getBlockFilter({ height, hash, hashHex }) {
         const req = new bchrpc.GetBlockInfoRequest();
         if (height !== null && height !== undefined) {
             req.setHeight(height);
@@ -15453,7 +15448,7 @@ class GrpcClient {
             req.setHash(hash);
         }
         return new Promise((resolve, reject) => {
-            this.client.getBlockFilter(req, metadata, (err, response) => {
+            this.client.getBlockFilter(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -15469,7 +15464,7 @@ class GrpcClient {
      * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
      * @param hashHex - the hash as a big-endian 'hex' encoded string, will be overridden a hash if provided.
      */
-    getBlockInfo({ height, hash, hashHex }, metadata) {
+    getBlockInfo({ height, hash, hashHex }) {
         const req = new bchrpc.GetBlockInfoRequest();
         if (height !== null && height !== undefined) {
             req.setHeight(height);
@@ -15481,7 +15476,7 @@ class GrpcClient {
             req.setHash(hash);
         }
         return new Promise((resolve, reject) => {
-            this.client.getBlockInfo(req, metadata, (err, response) => {
+            this.client.getBlockInfo(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -15494,9 +15489,9 @@ class GrpcClient {
     /**
      * Retrieve block info for the network, network state and host node.
      */
-    getBlockchainInfo({}, metadata) {
+    getBlockchainInfo({}) {
         return new Promise((resolve, reject) => {
-            this.client.getBlockchainInfo(new bchrpc.GetBlockchainInfoRequest(), metadata, (err, response) => {
+            this.client.getBlockchainInfo(new bchrpc.GetBlockchainInfoRequest(), null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -15525,12 +15520,12 @@ class GrpcClient {
                 req.setSubscribe(transactionFilter);
             }
             else {
-                const transactionFilter = new bchrpc.TransactionFilter();
-                transactionFilter.setAllTransactions(true);
-                req.setSubscribe(transactionFilter);
+                const defaultFilter = new bchrpc.TransactionFilter();
+                defaultFilter.setAllTransactions(true);
+                req.setSubscribe(defaultFilter);
             }
             if (unsubscribe) {
-                throw 'Unsubscribing is not currently (2020) possible on grpc-web, see grpc-web ClientReadableStream.cancel()';
+                throw new Error('Unsubscribing is not currently (2020) possible on grpc-web, see grpc-web ClientReadableStream.cancel()');
             }
             try {
                 resolve(this.client.subscribeTransactions(req));
@@ -15554,7 +15549,7 @@ class GrpcClient {
             }
         });
     }
-    submitTransaction({ txnHex, txn }, metadata) {
+    submitTransaction({ txnHex, txn }) {
         let tx;
         const req = new bchrpc.SubmitTransactionRequest();
         if (txnHex) {
@@ -15568,7 +15563,7 @@ class GrpcClient {
         }
         req.setTransaction(tx);
         return new Promise((resolve, reject) => {
-            this.client.submitTransaction(req, metadata, (err, response) => {
+            this.client.submitTransaction(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -15617,7 +15612,7 @@ class GrpcClient {
         else {
             throw Error("Most provide a locally validated merkle root for verification");
         }
-        const proof = await this.getMerkleProof({ hash: tx }, null);
+        const proof = await this.getMerkleProof({ hash: tx });
         const merkleFlags = util.expandMerkleFlags(await proof.getFlags_asU8());
         const merkleHashes = await proof.getHashesList();
         const merkleCheckPromise = util.getMerkleRootFromProof(merkleHashes, merkleFlags, util.hashPair);
@@ -15634,7 +15629,7 @@ exports.default = GrpcClient;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.arrayBufferToBase64 = exports.u8toBase64 = exports.u8toHex = exports.base64toU8 = exports.base64toHex = exports.hexToBase64 = exports.hexToU8 = exports.numberTo4ByteLEArray = exports.getMerkleRootFromProof = exports.compareUint8Array = exports.expandMerkleFlags = exports.hashPair = exports.hash = exports.sha256sha256 = void 0;
+exports.arrayBufferToBase64 = exports.u8toBase64 = exports.u8toHex = exports.base64toU8 = exports.base64toHex = exports.hexToBase64 = exports.hexToU8 = exports.numberPairToBase64 = exports.numberTo4ByteLEArray = exports.getMerkleRootFromProof = exports.compareUint8Array = exports.expandMerkleFlags = exports.hashPair = exports.hash = exports.sha256sha256 = void 0;
 async function sha256sha256(ab) {
     try {
         return await crypto.subtle.digest('SHA-256', await crypto.subtle.digest('SHA-256', ab));
@@ -15724,6 +15719,12 @@ function numberTo4ByteLEArray(num) {
 }
 exports.numberTo4ByteLEArray = numberTo4ByteLEArray;
 ;
+function numberPairToBase64(hi, lo) {
+    const hiArray = numberTo4ByteLEArray(hi);
+    const loArray = numberTo4ByteLEArray(lo);
+    return u8toBase64(new Uint8Array([...hiArray, ...loArray]));
+}
+exports.numberPairToBase64 = numberPairToBase64;
 const hexArray = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
 const reduceToHex = (s, c) => s + hexArray[c >>> 4] + hexArray[c & 0x0F];
 const reduceToBase64 = (s, c) => s + String.fromCharCode(c);

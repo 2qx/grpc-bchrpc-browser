@@ -2,74 +2,92 @@
 // @ts-ignore
 import * as siphash from "./siphash.js";
 
+import { Block, Transaction } from "../pb/bchrpc_pb";
+import { base64toU8 } from "./util";
 
-function toValue(hi:number, lo:number){
-    return (BigInt(hi>>>0) <<32n) + BigInt(lo>>>0)
+function toValue(hi: number, lo: number) {
+    if (hi > 0) {
+        throw Error("GCS value overflowed 32bits")
+    } else {
+        return Number(lo >>> 0)
+    }
 }
 
 
-export default class Filter {
-    
-        
-        keySize:   number;
+export class Filter {
 
-        n:         number;
-        p:         number;
-        m:         number;
 
-        filterValues: bigint[];
+    keySize: number;
 
-        constructor({ p = 19, m = 784931, filterData }:
-            {  p?: number; m?: number; filterData: Uint8Array }){
-                this.keySize = 16
-                this.p = p;
-                this.m = m;
-                const filterArray = this._gscFilterToArray(filterData)
-                this.n = this._gcsGetFilterSize(filterArray)
-                this.filterValues = this._gcsGetFilterValues(filterArray, p)
-        }
+    n: number;
+    p: number;
+    m: number;
+    blockHash: Uint8Array;
+    filterValues: Set<number>;
 
-        public match(keyU8:Uint8Array, data: Uint8Array){
-            const key = keyU8.subarray(0, this.keySize)
-            let modulus = siphash.mul64(this.m, this.n)
-            let b = siphash.sipmod(data, key, modulus.hi, modulus.lo)
-            return this.filterValues.includes(toValue(b[0],b[1]))
-        }
+    constructor({ blockHash, filterData, p = 19, m = 784931 }:
+        { blockHash: Uint8Array | string; filterData: Uint8Array; p?: number; m?: number }) {
+        this.blockHash = (typeof blockHash === 'string') ? base64toU8(blockHash) : blockHash
+        this.keySize = 16
+        this.p = p;
+        this.m = m;
+        const filterBlob = this._gscFilterToArray(filterData)
+        this.n = this._gcsGetFilterSize(filterBlob)
+        this.filterValues = this._gcsGetFilterValues(filterBlob, p)
+    }
 
-        private _gcsGetFilterValues(f: number[], p: number){
-            f = f.splice(8)
-            let values = [];
-            let quo = 0n;
-            let value = 0n
-            while(f.length > 0) {
-                let i = f.shift()
-                if(i === 0){
-                    let bucket = f.slice(0,p)
-                    f = f.splice(p)
-                    let bucketStr = "0b"+ bucket.join("")
-                    let delta = (quo << BigInt(p)) + BigInt(bucketStr)
-                    if(delta>0){
-                        value += delta
-                        values.push(value)    
-                    }
-                    quo = 0n
-                }else{
-                    quo++
+    public match({ hash, data }: { hash: Uint8Array, data: Uint8Array }) {
+        const key = hash.subarray(0, this.keySize)
+        const modulus = siphash.mul64(this.m, this.n)
+        const b = siphash.sipmod(data, key, modulus.hi, modulus.lo)
+        return this.filterValues.has(toValue(b[0], b[1]))
+    }
+
+
+
+
+    private _gcsGetFilterValues(rawFilter: number[], p: number) {
+        // disgard the size bits
+        rawFilter = rawFilter.splice(8)
+
+        // Create a Set for the decoded values
+        const values: Set<number> = new Set()
+
+
+        let quo = 0
+        let value = 0
+        while (rawFilter.length > 0) {
+            const i = rawFilter.shift()
+            // end of quotent bits
+            if (i === 0) {
+                // get a block value and store it in the Set
+                const remainder = Number("0b" + rawFilter.slice(0, p).join(""))
+                const delta = (quo << p) + Number(remainder)
+                if (delta > 0) {
+                    value += delta
+                    values.add(value)
                 }
+                quo = 0
+                // remove the bucket bits
+                rawFilter = rawFilter.splice(p)
+            } else {
+                // increment the quotent
+                quo++
             }
-            return values
         }
+        return values
+    }
 
-        private _gscFilterToArray(f: Uint8Array){
-            return Array.from(f)
-                .map(x => x.toString(2).padStart(8, '0'))
-                .join("")
-                .split("")
-                .map(x => parseInt(x, 10))
-        }
+    private _gscFilterToArray(f: Uint8Array) {
+        return Array.from(f)
+            .map(x => x.toString(2).padStart(8, '0'))
+            .join("")
+            .split("")
+            .map(x => parseInt(x, 2))
+    }
 
-        private _gcsGetFilterSize(f: number[]){
-            let sizeN = f.slice(0,8)
-            return parseInt(sizeN.join(""),2)
-        }
+    private _gcsGetFilterSize(f: number[]) {
+        const sizeN = f.slice(0, 8)
+        return parseInt(sizeN.join(""), 2)
+    }
 }
