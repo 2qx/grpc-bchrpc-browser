@@ -7,32 +7,32 @@ package pb;
 // unauthenticated.
 service bchrpc {
 
-    // Get info about the mempool.
+    // GetMempoolInfo returns the state of the current mempool.
     rpc GetMempoolInfo(GetMempoolInfoRequest) returns (GetMempoolInfoResponse) {}
 
-    // Returns information about all of the transactions currently in the memory pool.
+    // GetMempool returns information about all transactions currently in the memory pool.
     // Offers an option to return full transactions or just transactions hashes.
     rpc GetMempool(GetMempoolRequest) returns (GetMempoolResponse) {}
 
-    // GetBlockchainInfo info about the blockchain including the most recent
+    // GetBlockchainInfo returns data about the blockchain including the most recent
     // block hash and height.
     rpc GetBlockchainInfo(GetBlockchainInfoRequest) returns (GetBlockchainInfoResponse) {}
 
-    // Get info about the given block.
+    // GetBlockInfo returns metadata and info for a specified block.
     rpc GetBlockInfo(GetBlockInfoRequest)returns (GetBlockInfoResponse) {}
 
-    // Get a block.
+    // GetBlock returns detailed data for a block.
     rpc GetBlock(GetBlockRequest) returns (GetBlockResponse) {}
 
-    // Get a serialized block.
+    // GetRawBlock returns a block in a serialized format.
     rpc GetRawBlock(GetRawBlockRequest) returns (GetRawBlockResponse) {}
 
-    // Get the compact filter (cf) of a block as a Golomb-Rice encoded set.
+    // GetBlockFilter returns the compact filter (cf) of a block as a Golomb-Rice encoded set.
     //
     // **Requires CfIndex**
     rpc GetBlockFilter(GetBlockFilterRequest) returns (GetBlockFilterResponse) {}
 
-    // This RPC sends a block locator object to the server and the server responds with
+    // GetHeaders takes a block locator object and returns
     // a batch of no more than 2000 headers. Upon parsing the block locator, if the server
     // concludes there has been a fork, it will send headers starting at the fork point,
     // or genesis if no blocks in the locator are in the best chain. If the locator is
@@ -40,45 +40,46 @@ service bchrpc {
     // see: bchd/bchrpc/documentation/wallet_operation.md
     rpc GetHeaders(GetHeadersRequest) returns (GetHeadersResponse) {}
 
-    // Get a transaction given its hash.
+    // GetTransaction returns a transaction given a transaction hash.
     //
     // **Requires TxIndex**
     rpc GetTransaction(GetTransactionRequest) returns (GetTransactionResponse) {}
 
-    // Get a serialized transaction given its hash.
+    // GetRawTransaction returns a serialized transaction given a transaction hash.
     //
     // **Requires TxIndex**
     rpc GetRawTransaction(GetRawTransactionRequest) returns (GetRawTransactionResponse) {}
 
-    // Returns the transactions for the given address. Offers offset,
+    // GetAddressTransactions returns the transactions for the given address. Offers offset,
     // limit, and from block options.
     //
     // **Requires AddressIndex**
     rpc GetAddressTransactions(GetAddressTransactionsRequest) returns (GetAddressTransactionsResponse) {}
 
-    // Returns the raw transactions for the given address. Offers offset,
+    // GetRawAddressTransactions the serialized raw transactions for the given address. Offers offset,
     // limit, and from block options.
     //
     // **Requires AddressIndex**
     rpc GetRawAddressTransactions(GetRawAddressTransactionsRequest) returns (GetRawAddressTransactionsResponse) {}
 
-    // Returns all the unspent transaction outputs for the given address.
+    // GetAddressUnspentOutputs returns all the unspent transaction outputs for the given address.
     //
     // **Requires AddressIndex**
     rpc GetAddressUnspentOutputs(GetAddressUnspentOutputsRequest) returns (GetAddressUnspentOutputsResponse) {}
 
-    // Looks up the unspent output in the utxo set and returns the utxo metadata or not found.
+    // GetUnspentOutput takes an unspent output in the utxo set and returns the utxo metadata or not found.
     rpc GetUnspentOutput(GetUnspentOutputRequest) returns (GetUnspentOutputResponse) {}
 
-    // Returns a Merkle (SPV) proof that the given transaction is in the provided block.
+    // GetMerkleProof returns a Merkle (SPV) proof for a specific transaction in the provided block.
     //
     // **Requires TxIndex***
     rpc GetMerkleProof(GetMerkleProofRequest) returns (GetMerkleProofResponse) {}
 
-    // Submit a transaction to all connected peers.
+    // SubmitTransaction broadcasts a transaction to all connected peers.
     rpc SubmitTransaction(SubmitTransactionRequest) returns (SubmitTransactionResponse) {}
 
-    // Subscribe to relevant transactions based on the subscription requests.
+    // SubscribeTransactions creates subscription to all relevant transactions based on 
+    // the subscription filter.
     //
     // This RPC does not use bidirectional streams and therefore can be used
     // with grpc-web. You will need to close and reopen the stream whenever
@@ -98,8 +99,8 @@ service bchrpc {
     // **Requires TxIndex to receive input metadata**
     rpc SubscribeTransactionStream(stream SubscribeTransactionsRequest) returns (stream TransactionNotification) {}
 
-    // Subscribe to notifications of new blocks being connected to the blockchain
-    // or blocks being disconnected.
+    // SubscribeBlocks creates a subscription for notifications of new blocks being
+    // connected to the blockchain or blocks being disconnected.
     rpc SubscribeBlocks(SubscribeBlocksRequest) returns (stream BlockNotification) {}
 }
 
