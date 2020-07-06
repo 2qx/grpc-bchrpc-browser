@@ -6,7 +6,7 @@ import * as util from "../src/util";
 import * as gcs from "../src/gcs";
 
 // Security notice:
-// Below is a collection of tools to approximate core javascript libraries that were not in nodejs.
+// Below is a collection of tools to approximate web javascript libraries that were not in nodejs.
 //
 // These libraries are only used for testing and should not be exported in the final module.
 //
@@ -301,8 +301,6 @@ describe("grpc-bchrpc-browser", () => {
     it("match output should match without downloading full block", async () => {
 
         const block99059 = (await mainnet.getBlock({ index: 99059, fullTransactions: false }));
-        const hash99059 = block99059.getBlock()!.getInfo()!.getHash_asU8()
-
         const block100000 = (await mainnet.getBlockInfo({ height: 100000 }));
         const hash100000 = block100000.getInfo()!.getHash_asU8()
 
@@ -310,20 +308,20 @@ describe("grpc-bchrpc-browser", () => {
         const f = new gcs.Filter({ blockHash: hash100000, filterData: filterData1 })
         const txHash = block99059.getBlock()!.getTransactionDataList()[2].getTransactionHash_asU8()
         const serializedOutpoint = new Uint8Array([...txHash, ...util.numberTo4ByteLEArray(0)])
-        const hitOutput = f.match({ hash: hash100000, data: serializedOutpoint })
+        const hitOutput = f.match({ data: serializedOutpoint })
         assert.isTrue(hitOutput, "the pubkeyScript should match filter");
     });
 
     it("transaction output pubkeys should match the decoded block filter", async () => {
 
         const block = (await mainnet.getBlock({ index: 100000, fullTransactions: true }));
-        const hash1 = block.getBlock()!.getInfo()!.getHash_asU8()
+        const hash100000 = block.getBlock()!.getInfo()!.getHash_asU8()
 
-        const filterData1 = (await mainnet.getBlockFilter({ hash: hash1 }))!.getFilter_asU8()
-        const f = new gcs.Filter({ blockHash: hash1, filterData: filterData1 })
+        const filterData1 = (await mainnet.getBlockFilter({ hash: hash100000 }))!.getFilter_asU8()
+        const f = new gcs.Filter({ blockHash: hash100000, filterData: filterData1 })
         for (const tx of block.getBlock()!.getTransactionDataList()) {
             for (const txOutput of tx.getTransaction()!.getOutputsList()) {
-                const hitPubkeyScript = f.match({ hash: hash1, data: txOutput!.getPubkeyScript_asU8() })
+                const hitPubkeyScript = f.match({ data: txOutput!.getPubkeyScript_asU8() })
                 assert.isTrue(hitPubkeyScript, "the pubkeyScript should match filter");
             }
         }
@@ -332,19 +330,40 @@ describe("grpc-bchrpc-browser", () => {
     it("transaction serialized input outpoints should match the decoded block filter", async () => {
 
         const block = (await mainnet.getBlock({ index: 100000, fullTransactions: true }));
-        const hash1 = block.getBlock()!.getInfo()!.getHash_asU8()
-        const filterData1 = (await mainnet.getBlockFilter({ hash: hash1 }))!.getFilter_asU8()
-        const f = new gcs.Filter({ blockHash: hash1, filterData: filterData1 })
+        const hash100000 = block.getBlock()!.getInfo()!.getHash_asU8()
+        const filterData1 = (await mainnet.getBlockFilter({ hash: hash100000 }))!.getFilter_asU8()
+        const f = new gcs.Filter({ blockHash: hash100000, filterData: filterData1 })
         const nonCoinbaseTxns = block.getBlock()!.getTransactionDataList().slice(1)
         for (const tx of nonCoinbaseTxns) {
             for (const txInput of tx.getTransaction()!.getInputsList()) {
                 const opU8 = txInput.getOutpoint()!.getHash_asU8()
                 const opIdx = txInput.getOutpoint()!.getIndex()
                 const serializedOutpoint = new Uint8Array([...opU8, ...util.numberTo4ByteLEArray(opIdx)])
-                const hitPubkeyScript = f.match({ hash: hash1, data: serializedOutpoint })
+                const hitPubkeyScript = f.match({ data: serializedOutpoint })
                 assert.isTrue(hitPubkeyScript, "the input outpoint should match filter");
             }
         }
+    });
+
+    it("MatchAllU8 should not return false positive on sizable block", async () => {
+
+        const block100000 = (await mainnet.getBlock({ index: 100000, fullTransactions: true }));
+        const nonCoinbaseTxns = block100000.getBlock()!.getTransactionDataList().slice(1)
+        const outPutSet = []
+        for (const tx of nonCoinbaseTxns) {
+            for (const txInput of tx.getTransaction()!.getInputsList()) {
+                const opU8 = txInput.getOutpoint()!.getHash_asU8()
+                const opIdx = txInput.getOutpoint()!.getIndex()
+                const serializedOutpoint = new Uint8Array([...opU8, ...util.numberTo4ByteLEArray(opIdx)])
+                outPutSet.push(serializedOutpoint)
+            }
+        }
+        const block633817 = (await mainnet.getBlock({ index: 633817, fullTransactions: false }));
+        const hash633817 = block633817.getBlock()!.getInfo()!.getHash_asU8()
+        const filterData633817 = (await mainnet.getBlockFilter({ hash: hash633817 }))!.getFilter_asU8()
+        const f = new gcs.Filter({ blockHash: hash633817, filterData: filterData633817 })
+        const hit = f.matchAllU8(outPutSet)
+        assert.isFalse(hit, "False positive should be less than 1 in 2^19")
     });
 
 });

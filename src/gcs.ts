@@ -2,7 +2,6 @@
 // @ts-ignore
 import * as siphash from "./siphash.js";
 
-import { Block, Transaction } from "../pb/bchrpc_pb";
 import { base64toU8 } from "./util";
 
 function toValue(hi: number, lo: number) {
@@ -25,6 +24,11 @@ export class Filter {
     blockHash: Uint8Array;
     filterValues: Set<number>;
 
+    /**
+     * Create a Golomb-Rice encoded set filter handler for a particular block.
+     * @param blockHash - The hash block corresponding to the filter object.
+     * @param filterData - The compact filter for the block.
+     */
     constructor({ blockHash, filterData, p = 19, m = 784931 }:
         { blockHash: Uint8Array | string; filterData: Uint8Array; p?: number; m?: number }) {
         this.blockHash = (typeof blockHash === 'string') ? base64toU8(blockHash) : blockHash
@@ -36,18 +40,63 @@ export class Filter {
         this.filterValues = this._gcsGetFilterValues(filterBlob, p)
     }
 
-    public match({ hash, data }: { hash: Uint8Array, data: Uint8Array }) {
-        const key = hash.subarray(0, this.keySize)
-        const modulus = siphash.mul64(this.m, this.n)
-        const b = siphash.sipmod(data, key, modulus.hi, modulus.lo)
-        return this.filterValues.has(toValue(b[0], b[1]))
+    /**
+     * Determine whether some data likely matches the filter.
+     * @param data - The public key script or serialized outpoint to be matched
+     */
+    public match({ data }: { data: Uint8Array }): boolean {
+        const dataValue = this._getFilterValue(data)
+        return this.filterValues.has(dataValue)
     }
 
+    /**
+     * Determine whether a list of Base64 encoded strings likely matches the filter
+     * @param values - A list of data as Base64 encoded strings to match
+     */
+    public matchAllBase64(values : string[]){
+        let valuesU8 = values.map(s => base64toU8(s))
+        return this.matchAllU8(valuesU8)
+    }
 
+    /**
+     * Determine whether a list of Uint8Arrays likely matches the filter
+     * @param values - A list of data as Uint8Arrays to match
+     */
+    public matchAllU8(values : Uint8Array[]): boolean {
+        const mapFn = (x:Uint8Array) => this._getFilterValue(x)
+        const valueList = values.map(mapFn)
+        const intersection = this._intersection(this.filterValues, new Set([...valueList]))
+        return intersection.values().next().value > 0
+    }
 
+    /**
+     * Get the numberic value corresponding to the data
+     * @param data - A Uint8Array to match
+     */
+    private _getFilterValue(data: Uint8Array) {
+        const key = this.blockHash.subarray(0, this.keySize)
+        const modulus = siphash.mul64(this.m, this.n)
+        const b = siphash.sipmod(data, key, modulus.hi, modulus.lo)
+        return toValue(b[0], b[1])
+    }
 
-    private _gcsGetFilterValues(rawFilter: number[], p: number) {
-        // disgard the size bits
+    private _intersection(setA: Set<number>, setB: Set<number>) {
+        let _intersection = new Set()
+        for (let elem of setB) {
+            if (setA.has(elem)) {
+                _intersection.add(elem)
+            }
+        }
+        return _intersection
+    }
+
+    /**
+     * Parse the compact filter for a block and return a set of numeric values.
+     * @param rawFilter - The filter as a binary numeric array
+     * @param p - The bucket size of the Golomb encoding
+     */
+    private _gcsGetFilterValues(rawFilter: number[], p: number): Set<number> {
+        // disgard the first 8 bits
         rawFilter = rawFilter.splice(8)
 
         // Create a Set for the decoded values
@@ -78,6 +127,10 @@ export class Filter {
         return values
     }
 
+    /**
+     * Transform the filter from an Uint8Array to type number[] of 1/0s 
+     * @param f - A Uint8Array to match
+     */
     private _gscFilterToArray(f: Uint8Array) {
         return Array.from(f)
             .map(x => x.toString(2).padStart(8, '0'))
@@ -86,6 +139,10 @@ export class Filter {
             .map(x => parseInt(x, 2))
     }
 
+    /**
+     * Get the decimal value of the first eight bits of a binary array
+     * @param f - a binary array provided as an array of numbers
+     */
     private _gcsGetFilterSize(f: number[]) {
         const sizeN = f.slice(0, 8)
         return parseInt(sizeN.join(""), 2)

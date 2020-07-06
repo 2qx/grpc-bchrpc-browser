@@ -819,7 +819,7 @@ Request to subscribe or unsubscribe from a stream of transactions.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | hash | [bytes](#bytes) |  | The hash of the transaction containing the output to be spent. |
-| index | [uint32](#uint32) |  | The index of the UXTO outpoint. |
+| index | [uint32](#uint32) |  | The index of specific output on the transaction. |
 
 
 
@@ -890,7 +890,7 @@ Request to subscribe or unsubscribe from a stream of transactions.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| outpoint | [Transaction.Input.Outpoint](#pb.Transaction.Input.Outpoint) |  |  |
+| outpoint | [Transaction.Input.Outpoint](#pb.Transaction.Input.Outpoint) |  | A reference to the output given by transaction hash and index. |
 | pubkey_script | [bytes](#bytes) |  | The public key script used to pay coins. |
 | value | [int64](#int64) |  | The amount in satoshis |
 | is_coinbase | [bool](#bool) |  | When is_coinbase is true, the output is the first in the block, a generation transaction, the result of mining. |

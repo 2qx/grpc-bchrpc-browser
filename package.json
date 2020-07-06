@@ -10,11 +10,11 @@
     ],
     "scripts": {
         "build": "npx webpack --mode=none --config=./webpack.config.js && npx webpack --mode=none --config=./webpack.worker.js && cp dist/bchrpc.webworker.js example/",
-        "build:docs": "npx typedoc  --excludeExternals --plugin typedoc-plugin-markdown --plugin typedoc-plugin-external-module-name src/client.ts",
+        "build:docs": "npx typedoc  --excludeExternals --plugin typedoc-plugin-markdown --out docs/ts --plugin typedoc-plugin-external-module-name src/client.ts",
         "pb-build": "protoc -I=pb bchrpc.proto --js_out=import_style=commonjs,binary:pb --grpc-web_out=import_style=typescript,mode=grpcwebtext:pb",
         "pb-clean": "echo the proto file in this project is forked ATM # rm pb/*",
-        "pb-docs-html": "docker pull pseudomuto/protoc-gen-doc && docker run --rm -v $(pwd)/docs_bchrpc:/out  -v $(pwd)/pb:/protos pseudomuto/protoc-gen-doc --doc_opt=/out/html.tmpl,index.html",
-        "pb-docs-md": "docker pull pseudomuto/protoc-gen-doc && docker run --rm -v $(pwd)/docs_bchrpc:/out  -v $(pwd)/pb:/protos pseudomuto/protoc-gen-doc --doc_opt=markdown,README.md",
+        "pb-docs-html": "docker pull pseudomuto/protoc-gen-doc && docker run --rm -v $(pwd)/docs/bchrpc:/out  -v $(pwd)/pb:/protos pseudomuto/protoc-gen-doc --doc_opt=/out/html.tmpl,index.html",
+        "pb-docs-md": "docker pull pseudomuto/protoc-gen-doc && docker run --rm -v $(pwd)/docs/bchrpc:/out  -v $(pwd)/pb:/protos pseudomuto/protoc-gen-doc --doc_opt=markdown,README.md",
         "pb-grpcui-install": "go get github.com/fullstorydev/grpcui && go install github.com/fullstorydev/grpcui/cmd/grpcui",
         "pb-grpcui": "grpcui -proto pb/bchrpc.proto bchd.fountainhead.cash:443",
         "pb-update": "echo the proto file in this project is forked ATM # wget https://raw.githubusercontent.com/gcash/bchd/master/bchrpc/bchrpc.proto -O pb/bchrpc.proto",
@@ -60,8 +60,7 @@
     },
     "dependencies": {
         "google-protobuf": "^3.6.1",
-        "grpc-web": "^1.0.7",
-        "siphash": "^1.1.0"
+        "grpc-web": "^1.0.7"
     },
     "keywords": [
         "bch",

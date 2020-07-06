@@ -21,6 +21,7 @@
 * [getAddressTransactions](grpc_bchrpc_browser.grpcclient.md#getaddresstransactions)
 * [getAddressUtxos](grpc_bchrpc_browser.grpcclient.md#getaddressutxos)
 * [getBlock](grpc_bchrpc_browser.grpcclient.md#getblock)
+* [getBlockFilter](grpc_bchrpc_browser.grpcclient.md#getblockfilter)
 * [getBlockInfo](grpc_bchrpc_browser.grpcclient.md#getblockinfo)
 * [getBlockchainInfo](grpc_bchrpc_browser.grpcclient.md#getblockchaininfo)
 * [getHeaders](grpc_bchrpc_browser.grpcclient.md#getheaders)
@@ -34,16 +35,6 @@
 * [submitTransaction](grpc_bchrpc_browser.grpcclient.md#submittransaction)
 * [subscribeBlocks](grpc_bchrpc_browser.grpcclient.md#subscribeblocks)
 * [subscribeTransactions](grpc_bchrpc_browser.grpcclient.md#subscribetransactions)
-* [utilBase64toU8](grpc_bchrpc_browser.grpcclient.md#utilbase64tou8)
-* [utilCompareUint8Array](grpc_bchrpc_browser.grpcclient.md#utilcompareuint8array)
-* [utilExpandMerkleFlags](grpc_bchrpc_browser.grpcclient.md#utilexpandmerkleflags)
-* [utilGetMerkleRootFromProof](grpc_bchrpc_browser.grpcclient.md#utilgetmerklerootfromproof)
-* [utilHash](grpc_bchrpc_browser.grpcclient.md#utilhash)
-* [utilHashPair](grpc_bchrpc_browser.grpcclient.md#utilhashpair)
-* [utilHexToBase64](grpc_bchrpc_browser.grpcclient.md#utilhextobase64)
-* [utilHexToU8](grpc_bchrpc_browser.grpcclient.md#utilhextou8)
-* [utilNumberTo4ByteLEArray](grpc_bchrpc_browser.grpcclient.md#private-utilnumberto4bytelearray)
-* [utilSha256sha256](grpc_bchrpc_browser.grpcclient.md#utilsha256sha256)
 * [verifyBlock](grpc_bchrpc_browser.grpcclient.md#verifyblock)
 * [verifyTransaction](grpc_bchrpc_browser.grpcclient.md#verifytransaction)
 
@@ -53,7 +44,7 @@
 
 \+ **new GrpcClient**(`__namedParameters`: object): *[GrpcClient](grpc_bchrpc_browser.grpcclient.md)*
 
-*Defined in [client.ts:8](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L8)*
+*Defined in [client.ts:8](https://github.com/2qx/grpc-bchrpc-browser/blob/b9443a5/src/client.ts#L8)*
 
 Create a client.
 
@@ -75,15 +66,15 @@ Name | Type | Default | Description |
 
 • **client**: *bchrpcClient*
 
-*Defined in [client.ts:8](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L8)*
+*Defined in [client.ts:8](https://github.com/2qx/grpc-bchrpc-browser/blob/b9443a5/src/client.ts#L8)*
 
 ## Methods
 
 ###  getAddressTransactions
 
-▸ **getAddressTransactions**(`__namedParameters`: object, `metadata`: Metadata | null): *Promise‹GetAddressTransactionsResponse›*
+▸ **getAddressTransactions**(`__namedParameters`: object): *Promise‹GetAddressTransactionsResponse›*
 
-*Defined in [client.ts:167](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L167)*
+*Defined in [client.ts:158](https://github.com/2qx/grpc-bchrpc-browser/blob/b9443a5/src/client.ts#L158)*
 
 Get transactions related to a particular address
 
@@ -94,14 +85,10 @@ Get transactions related to a particular address
 Name | Type | Description |
 ------ | ------ | ------ |
 `address` | string | Bitcoin cash address in casharr format. |
-`hashHex` | undefined &#124; string | the hash as a big-endian hexadecimal encoded string, will be overridden by `hash`, if provided. |
+`hashHex` | undefined &#124; string | the hash as a big-endian hexadecimal encoded string, will be overridden by `hash`, if provided.  |
 `height` | undefined &#124; number | Filter to only return transactions after this block number. |
 `nbFetch` | undefined &#124; number | Number of transactions return. |
 `nbSkip` | undefined &#124; number | Number of transactions to skip, in chronological order. |
-
-▪ **metadata**: *Metadata | null*
-
-Optional parameters for grpcWeb client
 
 **Returns:** *Promise‹GetAddressTransactionsResponse›*
 
@@ -109,9 +96,9 @@ ___
 
 ###  getAddressUtxos
 
-▸ **getAddressUtxos**(`__namedParameters`: object, `metadata`: Metadata | null): *Promise‹GetAddressUnspentOutputsResponse›*
+▸ **getAddressUtxos**(`__namedParameters`: object): *Promise‹GetAddressUnspentOutputsResponse›*
 
-*Defined in [client.ts:250](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L250)*
+*Defined in [client.ts:236](https://github.com/2qx/grpc-bchrpc-browser/blob/b9443a5/src/client.ts#L236)*
 
 **Parameters:**
 
@@ -122,19 +109,15 @@ Name | Type |
 `address` | string |
 `includeMempool` | boolean |
 
-▪ **metadata**: *Metadata | null*
-
 **Returns:** *Promise‹GetAddressUnspentOutputsResponse›*
 
 ___
 
 ###  getBlock
 
-▸ **getBlock**(`__namedParameters`: object, `metadata`: Metadata | null): *Promise‹GetBlockResponse›*
+▸ **getBlock**(`__namedParameters`: object): *Promise‹GetBlockResponse›*
 
-*Defined in [client.ts:304](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L304)*
-
-getBlock
+*Defined in [client.ts:284](https://github.com/2qx/grpc-bchrpc-browser/blob/b9443a5/src/client.ts#L284)*
 
 Retrieve block info given a block number or hash
 
@@ -149,19 +132,37 @@ Name | Type | Description |
 `hashHex` | undefined &#124; string | the hash as a big-endian 'hex' encoded string, will be overridden by hash if also provided. |
 `index` | undefined &#124; number | the block number to be retrieved. |
 
-▪ **metadata**: *Metadata | null*
-
 **Returns:** *Promise‹GetBlockResponse›*
+
+___
+
+###  getBlockFilter
+
+▸ **getBlockFilter**(`__namedParameters`: object): *Promise‹GetBlockFilterResponse›*
+
+*Defined in [client.ts:315](https://github.com/2qx/grpc-bchrpc-browser/blob/b9443a5/src/client.ts#L315)*
+
+Retrieve block filter given a block number or hash
+
+**Parameters:**
+
+▪ **__namedParameters**: *object*
+
+Name | Type | Description |
+------ | ------ | ------ |
+`hash` | undefined &#124; string &#124; Uint8Array‹› | the hash, expressed in little-endian in either a base64 encoded string or byte array. |
+`hashHex` | undefined &#124; string | the hash as a big-endian 'hex' encoded string, will be overridden a hash if provided.  |
+`height` | undefined &#124; number | the block number index to be retrieved. |
+
+**Returns:** *Promise‹GetBlockFilterResponse›*
 
 ___
 
 ###  getBlockInfo
 
-▸ **getBlockInfo**(`__namedParameters`: object, `metadata`: Metadata | null): *Promise‹GetBlockInfoResponse›*
+▸ **getBlockInfo**(`__namedParameters`: object): *Promise‹GetBlockInfoResponse›*
 
-*Defined in [client.ts:337](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L337)*
-
-getBlockInfo
+*Defined in [client.ts:338](https://github.com/2qx/grpc-bchrpc-browser/blob/b9443a5/src/client.ts#L338)*
 
 Retrieve block info given a block number or hash
 
@@ -175,19 +176,15 @@ Name | Type | Description |
 `hashHex` | undefined &#124; string | the hash as a big-endian 'hex' encoded string, will be overridden a hash if provided.  |
 `height` | undefined &#124; number | the block number index to be retrieved. |
 
-▪ **metadata**: *Metadata | null*
-
 **Returns:** *Promise‹GetBlockInfoResponse›*
 
 ___
 
 ###  getBlockchainInfo
 
-▸ **getBlockchainInfo**(`__namedParameters`: object, `metadata`: Metadata | null): *Promise‹GetBlockchainInfoResponse›*
+▸ **getBlockchainInfo**(`__namedParameters`: object): *Promise‹GetBlockchainInfoResponse›*
 
-*Defined in [client.ts:362](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L362)*
-
-getBlockchainInfo
+*Defined in [client.ts:358](https://github.com/2qx/grpc-bchrpc-browser/blob/b9443a5/src/client.ts#L358)*
 
 Retrieve block info for the network, network state and host node.
 
@@ -196,7 +193,6 @@ Retrieve block info for the network, network state and host node.
 Name | Type |
 ------ | ------ |
 `__namedParameters` | object |
-`metadata` | Metadata &#124; null |
 
 **Returns:** *Promise‹GetBlockchainInfoResponse›*
 
@@ -204,9 +200,9 @@ ___
 
 ###  getHeaders
 
-▸ **getHeaders**(`__namedParameters`: object, `metadata`: Metadata | null): *Promise‹GetHeadersResponse›*
+▸ **getHeaders**(`__namedParameters`: object): *Promise‹GetHeadersResponse›*
 
-*Defined in [client.ts:136](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L136)*
+*Defined in [client.ts:129](https://github.com/2qx/grpc-bchrpc-browser/blob/b9443a5/src/client.ts#L129)*
 
 Get block header information
 
@@ -219,17 +215,15 @@ Name | Type | Description |
 `blockLocatorHashes` | undefined &#124; string &#124; Uint8Array‹›[] | Sparse list of hashes known to the client. |
 `stopHash` | undefined &#124; string | -Last block hash to return.  |
 
-▪ **metadata**: *Metadata | null*
-
 **Returns:** *Promise‹GetHeadersResponse›*
 
 ___
 
 ###  getMempool
 
-▸ **getMempool**(`__namedParameters`: object, `metadata`: Metadata | null): *Promise‹GetMempoolResponse›*
+▸ **getMempool**(`__namedParameters`: object): *Promise‹GetMempoolResponse›*
 
-*Defined in [client.ts:58](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L58)*
+*Defined in [client.ts:56](https://github.com/2qx/grpc-bchrpc-browser/blob/b9443a5/src/client.ts#L56)*
 
 Get transactions from mempool
 
@@ -239,11 +233,7 @@ Get transactions from mempool
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`fullTransactions` | undefined &#124; false &#124; true | A flag to return full transaction data. Default is `false`, only transaction hashes are returned. |
-
-▪ **metadata**: *Metadata | null*
-
-Optional parameters for grpcWeb client
+`fullTransactions` | undefined &#124; false &#124; true | A flag to return full transaction data. Default is `false`, only transaction hashes are returned.  |
 
 **Returns:** *Promise‹GetMempoolResponse›*
 
@@ -251,17 +241,11 @@ ___
 
 ###  getMempoolInfo
 
-▸ **getMempoolInfo**(`metadata`: Metadata | null): *Promise‹GetMempoolInfoResponse›*
+▸ **getMempoolInfo**(): *Promise‹GetMempoolInfoResponse›*
 
-*Defined in [client.ts:39](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L39)*
+*Defined in [client.ts:38](https://github.com/2qx/grpc-bchrpc-browser/blob/b9443a5/src/client.ts#L38)*
 
 Get information about transactions in mempool
-
-**Parameters:**
-
-Name | Type | Description |
------- | ------ | ------ |
-`metadata` | Metadata &#124; null | optional parameters for grpcWeb client  |
 
 **Returns:** *Promise‹GetMempoolInfoResponse›*
 
@@ -269,11 +253,9 @@ ___
 
 ###  getMerkleProof
 
-▸ **getMerkleProof**(`__namedParameters`: object, `metadata`: Metadata | null): *Promise‹GetMerkleProofResponse›*
+▸ **getMerkleProof**(`__namedParameters`: object): *Promise‹GetMerkleProofResponse›*
 
-*Defined in [client.ts:230](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L230)*
-
-getMerkleProof
+*Defined in [client.ts:217](https://github.com/2qx/grpc-bchrpc-browser/blob/b9443a5/src/client.ts#L217)*
 
 Retrieve merkle (SPV) proof that the given transaction is in the provided block.
 
@@ -286,19 +268,15 @@ Name | Type | Description |
 `hash` | undefined &#124; string &#124; Uint8Array‹› | the tx hash, in either a 'base64' encoded string or byte array, little-endian. |
 `hashHex` | undefined &#124; string | the tx hash as a big-endian 'hex' encoded string, will be overridden by hash if also provided.  |
 
-▪ **metadata**: *Metadata | null*
-
 **Returns:** *Promise‹GetMerkleProofResponse›*
 
 ___
 
 ###  getRawBlock
 
-▸ **getRawBlock**(`__namedParameters`: object, `metadata`: Metadata | null): *Promise‹GetRawBlockResponse›*
+▸ **getRawBlock**(`__namedParameters`: object): *Promise‹GetRawBlockResponse›*
 
-*Defined in [client.ts:274](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L274)*
-
-getRawBlock
+*Defined in [client.ts:257](https://github.com/2qx/grpc-bchrpc-browser/blob/b9443a5/src/client.ts#L257)*
 
 Retrieve raw block from a hash
 
@@ -311,17 +289,15 @@ Name | Type | Description |
 `hash` | undefined &#124; string &#124; Uint8Array‹› | the hash, in either a 'base64' encoded string or byte array, little-endian. |
 `hashHex` | undefined &#124; string | the hash as a big-endian 'hex' encoded string, will be overridden by hash if also provided.  |
 
-▪ **metadata**: *Metadata | null*
-
 **Returns:** *Promise‹GetRawBlockResponse›*
 
 ___
 
 ###  getRawTransaction
 
-▸ **getRawTransaction**(`__namedParameters`: object, `metadata`: Metadata | null): *Promise‹GetRawTransactionResponse›*
+▸ **getRawTransaction**(`__namedParameters`: object): *Promise‹GetRawTransactionResponse›*
 
-*Defined in [client.ts:83](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L83)*
+*Defined in [client.ts:79](https://github.com/2qx/grpc-bchrpc-browser/blob/b9443a5/src/client.ts#L79)*
 
 Get a raw transaction
 
@@ -332,11 +308,7 @@ Get a raw transaction
 Name | Type | Description |
 ------ | ------ | ------ |
 `hash` | undefined &#124; string &#124; Uint8Array‹› | the hash, in either a base64 encoded string or byte array, little-endian. |
-`hashHex` | undefined &#124; string | the hash as a big-endian hexadecimal encoded string, sill be overridden by hash if provided. |
-
-▪ **metadata**: *Metadata | null*
-
-Optional parameters for grpcWeb client
+`hashHex` | undefined &#124; string | the hash as a big-endian hexadecimal encoded string, sill be overridden by hash if provided.  |
 
 **Returns:** *Promise‹GetRawTransactionResponse›*
 
@@ -344,9 +316,9 @@ ___
 
 ###  getTransaction
 
-▸ **getTransaction**(`__namedParameters`: object, `metadata`: Metadata | null): *Promise‹GetTransactionResponse›*
+▸ **getTransaction**(`__namedParameters`: object): *Promise‹GetTransactionResponse›*
 
-*Defined in [client.ts:110](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L110)*
+*Defined in [client.ts:104](https://github.com/2qx/grpc-bchrpc-browser/blob/b9443a5/src/client.ts#L104)*
 
 Get a transaction
 
@@ -357,11 +329,7 @@ Get a transaction
 Name | Type | Description |
 ------ | ------ | ------ |
 `hash` | undefined &#124; string &#124; Uint8Array‹› | the hash, expressed in little-endian in either a base64 encoded string or byte array. |
-`hashHex` | undefined &#124; string | the hash as a big-endian hexadecimal encoded string, will be overridden by hash, if provided. |
-
-▪ **metadata**: *Metadata | null*
-
-Optional parameters for grpcWeb client
+`hashHex` | undefined &#124; string | the hash as a big-endian hexadecimal encoded string, will be overridden by hash, if provided.  |
 
 **Returns:** *Promise‹GetTransactionResponse›*
 
@@ -369,9 +337,9 @@ ___
 
 ###  getUnspentOutput
 
-▸ **getUnspentOutput**(`__namedParameters`: object, `metadata`: Metadata | null): *Promise‹GetUnspentOutputResponse›*
+▸ **getUnspentOutput**(`__namedParameters`: object): *Promise‹GetUnspentOutputResponse›*
 
-*Defined in [client.ts:198](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L198)*
+*Defined in [client.ts:188](https://github.com/2qx/grpc-bchrpc-browser/blob/b9443a5/src/client.ts#L188)*
 
 **Parameters:**
 
@@ -384,17 +352,15 @@ Name | Type |
 `includeMempool` | undefined &#124; false &#124; true |
 `vout` | number |
 
-▪ **metadata**: *Metadata | null*
-
 **Returns:** *Promise‹GetUnspentOutputResponse›*
 
 ___
 
 ###  submitTransaction
 
-▸ **submitTransaction**(`__namedParameters`: object, `metadata`: Metadata | null): *Promise‹SubmitTransactionResponse›*
+▸ **submitTransaction**(`__namedParameters`: object): *Promise‹SubmitTransactionResponse›*
 
-*Defined in [client.ts:414](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L414)*
+*Defined in [client.ts:431](https://github.com/2qx/grpc-bchrpc-browser/blob/b9443a5/src/client.ts#L431)*
 
 **Parameters:**
 
@@ -405,8 +371,6 @@ Name | Type |
 `txn` | undefined &#124; Uint8Array‹› |
 `txnHex` | undefined &#124; string |
 
-▪ **metadata**: *Metadata | null*
-
 **Returns:** *Promise‹SubmitTransactionResponse›*
 
 ___
@@ -415,7 +379,7 @@ ___
 
 ▸ **subscribeBlocks**(`__namedParameters`: object): *Promise‹ClientReadableStream‹BlockNotification››*
 
-*Defined in [client.ts:398](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L398)*
+*Defined in [client.ts:415](https://github.com/2qx/grpc-bchrpc-browser/blob/b9443a5/src/client.ts#L415)*
 
 **Parameters:**
 
@@ -435,7 +399,7 @@ ___
 
 ▸ **subscribeTransactions**(`__namedParameters`: object): *Promise‹ClientReadableStream‹TransactionNotification››*
 
-*Defined in [client.ts:379](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L379)*
+*Defined in [client.ts:378](https://github.com/2qx/grpc-bchrpc-browser/blob/b9443a5/src/client.ts#L378)*
 
 **Parameters:**
 
@@ -445,173 +409,11 @@ Name | Type | Description |
 ------ | ------ | ------ |
 `includeBlockAcceptance` | undefined &#124; false &#124; true | If true, transactions are included when they are confirmed. This notification is sent in addition to any requested mempool notifications. |
 `includeMempoolAcceptance` | undefined &#124; false &#124; true | If true, new unconfirmed transactions from mempool are included apart from the ones confirmed in a block. |
-`includeSerializedTxn` | undefined &#124; false &#124; true | If true, transactions are serialized using bitcoin protocol encoding. Default is false, transaction will be Marshaled.  |
+`includeSerializedTxn` | undefined &#124; false &#124; true | If true, transactions are serialized using bitcoin protocol encoding. Default is false, transaction will be Marshaled. |
+`transactionFilter` | undefined &#124; TransactionFilter‹› | - |
+`unsubscribe` | undefined &#124; false &#124; true | NOT IMPLEMENTED, see ClientReadableStream.cancel()  |
 
 **Returns:** *Promise‹ClientReadableStream‹TransactionNotification››*
-
-___
-
-###  utilBase64toU8
-
-▸ **utilBase64toU8**(`b64`: string): *Uint8Array‹›*
-
-*Defined in [client.ts:588](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L588)*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`b64` | string |
-
-**Returns:** *Uint8Array‹›*
-
-___
-
-###  utilCompareUint8Array
-
-▸ **utilCompareUint8Array**(`a`: string | Uint8Array, `b`: string | Uint8Array): *boolean*
-
-*Defined in [client.ts:526](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L526)*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`a` | string &#124; Uint8Array |
-`b` | string &#124; Uint8Array |
-
-**Returns:** *boolean*
-
-___
-
-###  utilExpandMerkleFlags
-
-▸ **utilExpandMerkleFlags**(`b`: Uint8Array): *number[]*
-
-*Defined in [client.ts:515](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L515)*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`b` | Uint8Array |
-
-**Returns:** *number[]*
-
-___
-
-###  utilGetMerkleRootFromProof
-
-▸ **utilGetMerkleRootFromProof**(`proof`: string | Uint8Array‹›[], `flags`: number[], `fn`: any): *Promise‹any›*
-
-*Defined in [client.ts:536](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L536)*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`proof` | string &#124; Uint8Array‹›[] |
-`flags` | number[] |
-`fn` | any |
-
-**Returns:** *Promise‹any›*
-
-___
-
-###  utilHash
-
-▸ **utilHash**(`a`: string | Uint8Array): *Promise‹Uint8Array‹››*
-
-*Defined in [client.ts:486](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L486)*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`a` | string &#124; Uint8Array |
-
-**Returns:** *Promise‹Uint8Array‹››*
-
-___
-
-###  utilHashPair
-
-▸ **utilHashPair**(`a`: string | Uint8Array, `b`: string | Uint8Array): *Promise‹string | Uint8Array‹››*
-
-*Defined in [client.ts:497](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L497)*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`a` | string &#124; Uint8Array |
-`b` | string &#124; Uint8Array |
-
-**Returns:** *Promise‹string | Uint8Array‹››*
-
-___
-
-###  utilHexToBase64
-
-▸ **utilHexToBase64**(`hashHex`: string): *string*
-
-*Defined in [client.ts:580](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L580)*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`hashHex` | string |
-
-**Returns:** *string*
-
-___
-
-###  utilHexToU8
-
-▸ **utilHexToU8**(`hashHex`: string): *Uint8Array‹›*
-
-*Defined in [client.ts:576](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L576)*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`hashHex` | string |
-
-**Returns:** *Uint8Array‹›*
-
-___
-
-### `Private` utilNumberTo4ByteLEArray
-
-▸ **utilNumberTo4ByteLEArray**(`num`: number): *number[]*
-
-*Defined in [client.ts:564](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L564)*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`num` | number |
-
-**Returns:** *number[]*
-
-___
-
-###  utilSha256sha256
-
-▸ **utilSha256sha256**(`ab`: Uint8Array): *Promise‹ArrayBuffer›*
-
-*Defined in [client.ts:478](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L478)*
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`ab` | Uint8Array |
-
-**Returns:** *Promise‹ArrayBuffer›*
 
 ___
 
@@ -619,7 +421,7 @@ ___
 
 ▸ **verifyBlock**(`__namedParameters`: object): *Promise‹boolean›*
 
-*Defined in [client.ts:435](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L435)*
+*Defined in [client.ts:452](https://github.com/2qx/grpc-bchrpc-browser/blob/b9443a5/src/client.ts#L452)*
 
 **Parameters:**
 
@@ -638,7 +440,7 @@ ___
 
 ▸ **verifyTransaction**(`__namedParameters`: object): *Promise‹boolean›*
 
-*Defined in [client.ts:452](https://github.com/2qx/grpc-bchrpc-browser/blob/e40d8c2/src/client.ts#L452)*
+*Defined in [client.ts:471](https://github.com/2qx/grpc-bchrpc-browser/blob/b9443a5/src/client.ts#L471)*
 
 **Parameters:**
 

@@ -116,6 +116,7 @@ __exportStar(__webpack_require__(8), exports);
 var client_1 = __webpack_require__(10);
 Object.defineProperty(exports, "GrpcClient", { enumerable: true, get: function () { return client_1.default; } });
 __exportStar(__webpack_require__(11), exports);
+__exportStar(__webpack_require__(12), exports);
 
 
 /***/ }),
@@ -15725,9 +15726,6 @@ function numberPairToBase64(hi, lo) {
     return u8toBase64(new Uint8Array([...hiArray, ...loArray]));
 }
 exports.numberPairToBase64 = numberPairToBase64;
-const hexArray = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
-const reduceToHex = (s, c) => s + hexArray[c >>> 4] + hexArray[c & 0x0F];
-const reduceToBase64 = (s, c) => s + String.fromCharCode(c);
 function hexToU8(hashHex) {
     return new Uint8Array(hashHex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
 }
@@ -15740,14 +15738,23 @@ function base64toHex(b64) {
     return base64toU8(b64).reduce(reduceToHex, '');
 }
 exports.base64toHex = base64toHex;
+// see https://jsperf.com/base64-to-uint8array/19
 function base64toU8(b64) {
-    return new Uint8Array(atob(b64).split("").map((c) => c.charCodeAt(0)));
+    const binary = atob(b64);
+    const len = binary.length >>> 0;
+    const v = new Uint8Array(len);
+    for (let i = 0; i < len; ++i)
+        v[i] = binary.charCodeAt(i);
+    return v;
 }
 exports.base64toU8 = base64toU8;
+const hexArray = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
+const reduceToHex = (s, c) => s + hexArray[c >>> 4] + hexArray[c & 0x0F];
 function u8toHex(u8) {
     return u8.reduce(reduceToHex, '');
 }
 exports.u8toHex = u8toHex;
+const reduceToBase64 = (s, c) => s + String.fromCharCode(c);
 function u8toBase64(u8) {
     return btoa(u8.reduce(reduceToBase64, ''));
 }
@@ -15756,6 +15763,478 @@ function arrayBufferToBase64(ab) {
     return u8toBase64(new Uint8Array(ab));
 }
 exports.arrayBufferToBase64 = arrayBufferToBase64;
+
+
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Filter = void 0;
+// @ts-ignore
+const siphash = __importStar(__webpack_require__(13));
+const util_1 = __webpack_require__(11);
+function toValue(hi, lo) {
+    if (hi > 0) {
+        throw Error("GCS value overflowed 32bits");
+    }
+    else {
+        return Number(lo >>> 0);
+    }
+}
+class Filter {
+    /**
+     * Create a Golomb-Rice encoded set filter handler for a particular block.
+     * @param blockHash - The hash block corresponding to the filter object.
+     * @param filterData - The compact filter for the block.
+     */
+    constructor({ blockHash, filterData, p = 19, m = 784931 }) {
+        this.blockHash = (typeof blockHash === 'string') ? util_1.base64toU8(blockHash) : blockHash;
+        this.keySize = 16;
+        this.p = p;
+        this.m = m;
+        const filterBlob = this._gscFilterToArray(filterData);
+        this.n = this._gcsGetFilterSize(filterBlob);
+        this.filterValues = this._gcsGetFilterValues(filterBlob, p);
+    }
+    /**
+     * Determine whether some data likely matches the filter.
+     * @param data - The public key script or serialized outpoint to be matched
+     */
+    match({ data }) {
+        const dataValue = this._getFilterValue(data);
+        return this.filterValues.has(dataValue);
+    }
+    /**
+     * Determine whether a list of Base64 encoded strings likely matches the filter
+     * @param values - A list of data as Base64 encoded strings to match
+     */
+    matchAllBase64(values) {
+        let valuesU8 = values.map(s => util_1.base64toU8(s));
+        return this.matchAllU8(valuesU8);
+    }
+    /**
+     * Determine whether a list of Uint8Arrays likely matches the filter
+     * @param values - A list of data as Uint8Arrays to match
+     */
+    matchAllU8(values) {
+        const mapFn = (x) => this._getFilterValue(x);
+        const valueList = values.map(mapFn);
+        const intersection = this._intersection(this.filterValues, new Set([...valueList]));
+        return intersection.values().next().value > 0;
+    }
+    /**
+     * Get the numberic value corresponding to the data
+     * @param data - A Uint8Array to match
+     */
+    _getFilterValue(data) {
+        const key = this.blockHash.subarray(0, this.keySize);
+        const modulus = siphash.mul64(this.m, this.n);
+        const b = siphash.sipmod(data, key, modulus.hi, modulus.lo);
+        return toValue(b[0], b[1]);
+    }
+    _intersection(setA, setB) {
+        let _intersection = new Set();
+        for (let elem of setB) {
+            if (setA.has(elem)) {
+                _intersection.add(elem);
+            }
+        }
+        return _intersection;
+    }
+    /**
+     * Parse the compact filter for a block and return a set of numeric values.
+     * @param rawFilter - The filter as a binary numeric array
+     * @param p - The bucket size of the Golomb encoding
+     */
+    _gcsGetFilterValues(rawFilter, p) {
+        // disgard the first 8 bits
+        rawFilter = rawFilter.splice(8);
+        // Create a Set for the decoded values
+        const values = new Set();
+        let quo = 0;
+        let value = 0;
+        while (rawFilter.length > 0) {
+            const i = rawFilter.shift();
+            // end of quotent bits
+            if (i === 0) {
+                // get a block value and store it in the Set
+                const remainder = Number("0b" + rawFilter.slice(0, p).join(""));
+                const delta = (quo << p) + Number(remainder);
+                if (delta > 0) {
+                    value += delta;
+                    values.add(value);
+                }
+                quo = 0;
+                // remove the bucket bits
+                rawFilter = rawFilter.splice(p);
+            }
+            else {
+                // increment the quotent
+                quo++;
+            }
+        }
+        return values;
+    }
+    /**
+     * Transform the filter from an Uint8Array to type number[] of 1/0s
+     * @param f - A Uint8Array to match
+     */
+    _gscFilterToArray(f) {
+        return Array.from(f)
+            .map(x => x.toString(2).padStart(8, '0'))
+            .join("")
+            .split("")
+            .map(x => parseInt(x, 2));
+    }
+    /**
+     * Get the decimal value of the first eight bits of a binary array
+     * @param f - a binary array provided as an array of numbers
+     */
+    _gcsGetFilterSize(f) {
+        const sizeN = f.slice(0, 8);
+        return parseInt(sizeN.join(""), 2);
+    }
+}
+exports.Filter = Filter;
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*!
+ *
+ * This is a truncated version of the bcoin library for siphash
+ *
+ *
+ * siphash.js - siphash for bcoin
+ * Copyright (c) 2017, Christopher Jeffrey (MIT License).
+ * https://github.com/bcoin-org/bcoin
+ */
+
+
+
+/*
+ * Constants
+ */
+
+const HI = 1 / 0x100000000;
+
+/**
+ * Javascript siphash 2-4 implementation.
+ * @private
+ * @param {Uint8Array} data
+ * @param {Uint8Array} key - 128 bit key.
+ * @returns {Array} [hi, lo]
+ */
+
+function _siphash(data, key) {
+
+  const blocks = data.length >>> 3;
+  const c0 = new U64(0x736f6d65, 0x70736575);
+  const c1 = new U64(0x646f7261, 0x6e646f6d);
+  const c2 = new U64(0x6c796765, 0x6e657261);
+  const c3 = new U64(0x74656462, 0x79746573);
+  const f0 = new U64(data.length << 24, 0);
+  const f1 = new U64(0, 0xff);
+  const k0 = U64.fromRaw(key, 0);
+  const k1 = U64.fromRaw(key, 8);
+
+  // Init
+  const v0 = c0.ixor(k0);
+  const v1 = c1.ixor(k1);
+  const v2 = c2.ixor(k0);
+  const v3 = c3.ixor(k1);
+
+  // Blocks
+  let p = 0;
+  for (let i = 0; i < blocks; i++) {
+    const d = U64.fromRaw(data, p);
+    p += 8;
+    v3.ixor(d);
+    sipround(v0, v1, v2, v3);
+    sipround(v0, v1, v2, v3);
+    v0.ixor(d);
+  }
+
+  switch (data.length & 7) {
+    case 7:
+      f0.hi |= data[p + 6] << 16;
+    case 6:
+      f0.hi |= data[p + 5] << 8;
+    case 5:
+      f0.hi |= data[p + 4];
+    case 4:
+      f0.lo |= data[p + 3] << 24;
+    case 3:
+      f0.lo |= data[p + 2] << 16;
+    case 2:
+      f0.lo |= data[p + 1] << 8;
+    case 1:
+      f0.lo |= data[p];
+  }
+  // Finalization
+  v3.ixor(f0);
+  sipround(v0, v1, v2, v3);
+  sipround(v0, v1, v2, v3);
+  v0.ixor(f0);
+  v2.ixor(f1);
+  sipround(v0, v1, v2, v3);
+  sipround(v0, v1, v2, v3);
+  sipround(v0, v1, v2, v3);
+  sipround(v0, v1, v2, v3);
+  v0.ixor(v1);
+  v0.ixor(v2);
+  v0.ixor(v3);
+
+  return [v0.hi, v0.lo];
+}
+
+
+/**
+ * Javascript siphash 2-4 implementation.
+ * Used by bitcoin for compact block relay.
+ * @param {Uint8Array} data
+ * @param {Uint8Array} key - 128 bit key.
+ * @returns {Array} [hi, lo]
+ */
+
+function siphash(data, key) {
+  return _siphash(data, key);
+}
+
+/**
+ * Javascript siphash 2-4 implementation
+ * plus 128 bit reduction by a modulus.
+ * Used by the neutrino protocol.
+ * @param {Uint8Array} data
+ * @param {Uint8Array} key - 128 bit key.
+ * @param {Number} mhi - Modulus hi bits.
+ * @param {Number} mlo - Modulus lo bits.
+ * @returns {Array} [hi, lo]
+ */
+
+function sipmod(data, key, mhi, mlo) {
+  const [hi, lo] = _siphash(data, key);
+  return reduce64(hi, lo, mhi, mlo);
+}
+
+
+/**
+ * U64
+ * @ignore
+ */
+
+class U64 {
+  constructor(hi, lo) {
+    this.hi = hi | 0;
+    this.lo = lo | 0;
+  }
+
+  iadd(b) {
+    const a = this;
+
+    // Credit to @indutny for this method.
+    const lo = (a.lo + b.lo) | 0;
+
+    const s = lo >> 31;
+    const as = a.lo >> 31;
+    const bs = b.lo >> 31;
+
+    const c = ((as & bs) | (~s & (as ^ bs))) & 1;
+
+    const hi = ((a.hi + b.hi) | 0) + c;
+
+    a.hi = hi | 0;
+    a.lo = lo;
+
+    return a;
+  }
+
+  ixor(b) {
+    this.hi ^= b.hi;
+    this.lo ^= b.lo;
+    return this;
+  }
+
+  irotl(bits) {
+    let ahi = this.hi;
+    let alo = this.lo;
+    let bhi = this.hi;
+    let blo = this.lo;
+
+    // a = x << b
+    if (bits < 32) {
+      ahi <<= bits;
+      ahi |= alo >>> (32 - bits);
+      alo <<= bits;
+    } else {
+      ahi = alo << (bits - 32);
+      alo = 0;
+    }
+
+    bits = 64 - bits;
+
+    // b = x >> (64 - b)
+    if (bits < 32) {
+      blo >>>= bits;
+      blo |= bhi << (32 - bits);
+      bhi >>>= bits;
+    } else {
+      blo = bhi >>> (bits - 32);
+      bhi = 0;
+    }
+
+    // a | b
+    this.hi = ahi | bhi;
+    this.lo = alo | blo;
+
+    return this;
+  }
+
+  static fromRaw(data, off) {
+    const lo = readUInt32LE(data, off);
+    const hi = readUInt32LE(data, off + 4);
+    return new U64(hi, lo);
+  }
+
+
+}
+
+/*
+ * Helpers
+ */
+
+function sipround(v0, v1, v2, v3) {
+  v0.iadd(v1);
+  v1.irotl(13);
+  v1.ixor(v0);
+
+  v0.irotl(32);
+
+  v2.iadd(v3);
+  v3.irotl(16);
+  v3.ixor(v2);
+
+  v0.iadd(v3);
+  v3.irotl(21);
+  v3.ixor(v0);
+
+  v2.iadd(v1);
+  v1.irotl(17);
+  v1.ixor(v2);
+
+  v2.irotl(32);
+}
+
+// Compute `((uint128_t)a * b) >> 64`
+function reduce64(ahi, alo, bhi, blo) {
+  const axbhi = mul64(ahi, bhi);
+  const axbmid = mul64(ahi, blo);
+  const bxamid = mul64(bhi, alo);
+  const axblo = mul64(alo, blo);
+
+  // Hack:
+  const c = (axbmid.lo >>> 0) + (bxamid.lo >>> 0) + (axblo.hi >>> 0);
+  const m = (axbmid.hi >>> 0) + (bxamid.hi >>> 0) + ((c * HI) >>> 0);
+
+  // More hacks:
+  const mhi = (m * HI) | 0;
+  const mlo = m | 0;
+
+  const {hi, lo} = sum64(axbhi.hi, axbhi.lo, mhi, mlo);
+
+  return [hi, lo];
+}
+
+function sum64(ahi, alo, bhi, blo) {
+  // Credit to @indutny for this method.
+  const lo = (alo + blo) | 0;
+
+  const s = lo >> 31;
+  const as = alo >> 31;
+  const bs = blo >> 31;
+
+  const c = ((as & bs) | (~s & (as ^ bs))) & 1;
+
+  const hi = (((ahi + bhi) | 0) + c) | 0;
+
+  return { hi, lo };
+}
+
+function mul64(alo, blo) {
+  const a16 = alo >>> 16;
+  const a00 = alo & 0xffff;
+
+  const b16 = blo >>> 16;
+  const b00 = blo & 0xffff;
+
+  let c48 = 0;
+  let c32 = 0;
+  let c16 = 0;
+  let c00 = 0;
+
+  c00 += a00 * b00;
+  c16 += c00 >>> 16;
+  c00 &= 0xffff;
+  c16 += a16 * b00;
+  c32 += c16 >>> 16;
+  c16 &= 0xffff;
+  c16 += a00 * b16;
+  c32 += c16 >>> 16;
+  c16 &= 0xffff;
+  c48 += c32 >>> 16;
+  c32 &= 0xffff;
+  c32 += a16 * b16;
+  c48 += c32 >>> 16;
+  c32 &= 0xffff;
+  c48 += c32 >>> 16;
+  c48 &= 0xffff;
+
+  const hi = (c48 << 16) | c32;
+  const lo = (c16 << 16) | c00;
+
+  return { hi, lo };
+}
+
+function readUInt32LE (data, offset) {
+    offset = offset >>> 0  
+    return ((data[offset]) |
+        (data[offset + 1] << 8) |
+        (data[offset + 2] << 16)) +
+        (data[offset + 3] * 0x1000000)
+  }
+
+/*
+ * Expose
+ */
+
+exports.mul64 = mul64;
+exports.siphash = siphash;
+exports.sipmod = sipmod;
 
 
 /***/ })

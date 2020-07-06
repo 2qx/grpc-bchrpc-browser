@@ -1,5 +1,3 @@
-# grpc-bchrpc-browser
-
 A bchd rpc client for browsers using grpc/grpc-web 
 
 This package provides a simple gRPC client for connecting web applications to 
@@ -12,15 +10,18 @@ a [bchd](https://bchd.cash) full node.
 
 For a quick [example usage subscribing transactions see the console here](https://www.grpc.cash/example/), or an [experimental example](https://www.grpc.cash/example-experimental/) using this module in a web worker.
 
-Detailed [RPC Documentation](https://www.grpc.cash/docs_bchrpc/) for the rpc protocol is a work in progress.
+Detailed [RPC Documentation](https://www.grpc.cash/docs/bchrpc/) for the rpc protocol is a work in progress.
 
-[Client Documentation](https://www.grpc.cash/docs/classes/grpc_bchrpc_browser.grpcclient.html) detailing methods and utility functions.
+[Client Documentation](https://www.grpc.cash/docs/ts/classes/grpc_bchrpc_browser.grpcclient.html) detailing methods and utility functions.
 
 [Mocha browser tests](https://www.grpc.cash/test/) should provide some working examples.
 
-This is slightly mor than a stock client generated from protocol buffers. As a big-endian language (Javascript), certain convenience parameters were added to the client wrapper,
- for ease of use. Also all parameters are are passed as an object, and any metadata needed
- for the connection is passed as a second argument. 
+This is slightly more than a stock client generated from protocol buffers. The following utilities have been added:
+
+- Simple utilities to transform hex/base64/Uint8Arrays without nodejs Buffer
+- A function to transform a number to a little-endian array
+- Functions to validate a merkle proof from bchd
+- A class to read and match compact filters for outpoints and public keys
 
  For Bitcoin Cash and bchd specifically, functions are currently here to validate a transaction and block, as well as other utilities to handle different data types used or sent by bchd.
 

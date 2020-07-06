@@ -567,7 +567,7 @@ message Transaction {
         message Outpoint {
             // The hash of the transaction containing the output to be spent.
             bytes hash = 1;
-            // The index of the UXTO outpoint.
+            // The index of specific output on the transaction.
             uint32 index = 2;
         }
         // The number of the input, starting from zero.
@@ -646,6 +646,8 @@ message MempoolTransaction {
 }
 
 message UnspentOutput {
+
+    // A reference to the output given by transaction hash and index.
     Transaction.Input.Outpoint outpoint = 1;
     // The public key script used to pay coins.
     bytes pubkey_script = 2;
