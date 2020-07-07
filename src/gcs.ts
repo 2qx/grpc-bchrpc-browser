@@ -1,7 +1,4 @@
-
-// @ts-ignore
-import * as siphash from "./siphash.js";
-
+import * as siphash from "./siphash";
 import { base64toU8 } from "./util";
 
 function toValue(hi: number, lo: number) {
@@ -54,7 +51,7 @@ export class Filter {
      * @param values - A list of data as Base64 encoded strings to match
      */
     public matchAllBase64(values : string[]){
-        let valuesU8 = values.map(s => base64toU8(s))
+        const valuesU8 = values.map(s => base64toU8(s))
         return this.matchAllU8(valuesU8)
     }
 
@@ -81,8 +78,8 @@ export class Filter {
     }
 
     private _intersection(setA: Set<number>, setB: Set<number>) {
-        let _intersection = new Set()
-        for (let elem of setB) {
+        const _intersection = new Set()
+        for (const elem of setB) {
             if (setA.has(elem)) {
                 _intersection.add(elem)
             }
@@ -128,7 +125,7 @@ export class Filter {
     }
 
     /**
-     * Transform the filter from an Uint8Array to type number[] of 1/0s 
+     * Transform the filter from an Uint8Array to type number[] of 1/0s
      * @param f - A Uint8Array to match
      */
     private _gscFilterToArray(f: Uint8Array) {

@@ -954,37 +954,37 @@ unauthenticated.
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| GetMempoolInfo | [GetMempoolInfoRequest](#pb.GetMempoolInfoRequest) | [GetMempoolInfoResponse](#pb.GetMempoolInfoResponse) | Get info about the mempool. |
-| GetMempool | [GetMempoolRequest](#pb.GetMempoolRequest) | [GetMempoolResponse](#pb.GetMempoolResponse) | Returns information about all of the transactions currently in the memory pool. Offers an option to return full transactions or just transactions hashes. |
-| GetBlockchainInfo | [GetBlockchainInfoRequest](#pb.GetBlockchainInfoRequest) | [GetBlockchainInfoResponse](#pb.GetBlockchainInfoResponse) | GetBlockchainInfo info about the blockchain including the most recent block hash and height. |
-| GetBlockInfo | [GetBlockInfoRequest](#pb.GetBlockInfoRequest) | [GetBlockInfoResponse](#pb.GetBlockInfoResponse) | Get info about the given block. |
-| GetBlock | [GetBlockRequest](#pb.GetBlockRequest) | [GetBlockResponse](#pb.GetBlockResponse) | Get a block. |
-| GetRawBlock | [GetRawBlockRequest](#pb.GetRawBlockRequest) | [GetRawBlockResponse](#pb.GetRawBlockResponse) | Get a serialized block. |
-| GetBlockFilter | [GetBlockFilterRequest](#pb.GetBlockFilterRequest) | [GetBlockFilterResponse](#pb.GetBlockFilterResponse) | Get the compact filter (cf) of a block as a Golomb-Rice encoded set.
+| GetMempoolInfo | [GetMempoolInfoRequest](#pb.GetMempoolInfoRequest) | [GetMempoolInfoResponse](#pb.GetMempoolInfoResponse) | GetMempoolInfo returns the state of the current mempool. |
+| GetMempool | [GetMempoolRequest](#pb.GetMempoolRequest) | [GetMempoolResponse](#pb.GetMempoolResponse) | GetMempool returns information about all transactions currently in the memory pool. Offers an option to return full transactions or just transactions hashes. |
+| GetBlockchainInfo | [GetBlockchainInfoRequest](#pb.GetBlockchainInfoRequest) | [GetBlockchainInfoResponse](#pb.GetBlockchainInfoResponse) | GetBlockchainInfo returns data about the blockchain including the most recent block hash and height. |
+| GetBlockInfo | [GetBlockInfoRequest](#pb.GetBlockInfoRequest) | [GetBlockInfoResponse](#pb.GetBlockInfoResponse) | GetBlockInfo returns metadata and info for a specified block. |
+| GetBlock | [GetBlockRequest](#pb.GetBlockRequest) | [GetBlockResponse](#pb.GetBlockResponse) | GetBlock returns detailed data for a block. |
+| GetRawBlock | [GetRawBlockRequest](#pb.GetRawBlockRequest) | [GetRawBlockResponse](#pb.GetRawBlockResponse) | GetRawBlock returns a block in a serialized format. |
+| GetBlockFilter | [GetBlockFilterRequest](#pb.GetBlockFilterRequest) | [GetBlockFilterResponse](#pb.GetBlockFilterResponse) | GetBlockFilter returns the compact filter (cf) of a block as a Golomb-Rice encoded set.
 
 **Requires CfIndex** |
-| GetHeaders | [GetHeadersRequest](#pb.GetHeadersRequest) | [GetHeadersResponse](#pb.GetHeadersResponse) | This RPC sends a block locator object to the server and the server responds with a batch of no more than 2000 headers. Upon parsing the block locator, if the server concludes there has been a fork, it will send headers starting at the fork point, or genesis if no blocks in the locator are in the best chain. If the locator is already at the tip no headers will be returned. see: bchd/bchrpc/documentation/wallet_operation.md |
-| GetTransaction | [GetTransactionRequest](#pb.GetTransactionRequest) | [GetTransactionResponse](#pb.GetTransactionResponse) | Get a transaction given its hash.
+| GetHeaders | [GetHeadersRequest](#pb.GetHeadersRequest) | [GetHeadersResponse](#pb.GetHeadersResponse) | GetHeaders takes a block locator object and returns a batch of no more than 2000 headers. Upon parsing the block locator, if the server concludes there has been a fork, it will send headers starting at the fork point, or genesis if no blocks in the locator are in the best chain. If the locator is already at the tip no headers will be returned. see: bchd/bchrpc/documentation/wallet_operation.md |
+| GetTransaction | [GetTransactionRequest](#pb.GetTransactionRequest) | [GetTransactionResponse](#pb.GetTransactionResponse) | GetTransaction returns a transaction given a transaction hash.
 
 **Requires TxIndex** |
-| GetRawTransaction | [GetRawTransactionRequest](#pb.GetRawTransactionRequest) | [GetRawTransactionResponse](#pb.GetRawTransactionResponse) | Get a serialized transaction given its hash.
+| GetRawTransaction | [GetRawTransactionRequest](#pb.GetRawTransactionRequest) | [GetRawTransactionResponse](#pb.GetRawTransactionResponse) | GetRawTransaction returns a serialized transaction given a transaction hash.
 
 **Requires TxIndex** |
-| GetAddressTransactions | [GetAddressTransactionsRequest](#pb.GetAddressTransactionsRequest) | [GetAddressTransactionsResponse](#pb.GetAddressTransactionsResponse) | Returns the transactions for the given address. Offers offset, limit, and from block options.
+| GetAddressTransactions | [GetAddressTransactionsRequest](#pb.GetAddressTransactionsRequest) | [GetAddressTransactionsResponse](#pb.GetAddressTransactionsResponse) | GetAddressTransactions returns the transactions for the given address. Offers offset, limit, and from block options.
 
 **Requires AddressIndex** |
-| GetRawAddressTransactions | [GetRawAddressTransactionsRequest](#pb.GetRawAddressTransactionsRequest) | [GetRawAddressTransactionsResponse](#pb.GetRawAddressTransactionsResponse) | Returns the raw transactions for the given address. Offers offset, limit, and from block options.
+| GetRawAddressTransactions | [GetRawAddressTransactionsRequest](#pb.GetRawAddressTransactionsRequest) | [GetRawAddressTransactionsResponse](#pb.GetRawAddressTransactionsResponse) | GetRawAddressTransactions the serialized raw transactions for the given address. Offers offset, limit, and from block options.
 
 **Requires AddressIndex** |
-| GetAddressUnspentOutputs | [GetAddressUnspentOutputsRequest](#pb.GetAddressUnspentOutputsRequest) | [GetAddressUnspentOutputsResponse](#pb.GetAddressUnspentOutputsResponse) | Returns all the unspent transaction outputs for the given address.
+| GetAddressUnspentOutputs | [GetAddressUnspentOutputsRequest](#pb.GetAddressUnspentOutputsRequest) | [GetAddressUnspentOutputsResponse](#pb.GetAddressUnspentOutputsResponse) | GetAddressUnspentOutputs returns all the unspent transaction outputs for the given address.
 
 **Requires AddressIndex** |
-| GetUnspentOutput | [GetUnspentOutputRequest](#pb.GetUnspentOutputRequest) | [GetUnspentOutputResponse](#pb.GetUnspentOutputResponse) | Looks up the unspent output in the utxo set and returns the utxo metadata or not found. |
-| GetMerkleProof | [GetMerkleProofRequest](#pb.GetMerkleProofRequest) | [GetMerkleProofResponse](#pb.GetMerkleProofResponse) | Returns a Merkle (SPV) proof that the given transaction is in the provided block.
+| GetUnspentOutput | [GetUnspentOutputRequest](#pb.GetUnspentOutputRequest) | [GetUnspentOutputResponse](#pb.GetUnspentOutputResponse) | GetUnspentOutput takes an unspent output in the utxo set and returns the utxo metadata or not found. |
+| GetMerkleProof | [GetMerkleProofRequest](#pb.GetMerkleProofRequest) | [GetMerkleProofResponse](#pb.GetMerkleProofResponse) | GetMerkleProof returns a Merkle (SPV) proof for a specific transaction in the provided block.
 
 **Requires TxIndex*** |
-| SubmitTransaction | [SubmitTransactionRequest](#pb.SubmitTransactionRequest) | [SubmitTransactionResponse](#pb.SubmitTransactionResponse) | Submit a transaction to all connected peers. |
-| SubscribeTransactions | [SubscribeTransactionsRequest](#pb.SubscribeTransactionsRequest) | [TransactionNotification](#pb.TransactionNotification) stream | Subscribe to relevant transactions based on the subscription requests.
+| SubmitTransaction | [SubmitTransactionRequest](#pb.SubmitTransactionRequest) | [SubmitTransactionResponse](#pb.SubmitTransactionResponse) | SubmitTransaction broadcasts a transaction to all connected peers. |
+| SubscribeTransactions | [SubscribeTransactionsRequest](#pb.SubscribeTransactionsRequest) | [TransactionNotification](#pb.TransactionNotification) stream | SubscribeTransactions creates subscription to all relevant transactions based on the subscription filter.
 
 This RPC does not use bidirectional streams and therefore can be used with grpc-web. You will need to close and reopen the stream whenever you want to update the addresses. If you are not using grpc-web then SubscribeTransactionStream is more appropriate.
 
@@ -994,7 +994,7 @@ This RPC does not use bidirectional streams and therefore can be used with grpc-
 Because this RPC is using bi-directional streaming it cannot be used with grpc-web.
 
 **Requires TxIndex to receive input metadata** |
-| SubscribeBlocks | [SubscribeBlocksRequest](#pb.SubscribeBlocksRequest) | [BlockNotification](#pb.BlockNotification) stream | Subscribe to notifications of new blocks being connected to the blockchain or blocks being disconnected. |
+| SubscribeBlocks | [SubscribeBlocksRequest](#pb.SubscribeBlocksRequest) | [BlockNotification](#pb.BlockNotification) stream | SubscribeBlocks creates a subscription for notifications of new blocks being connected to the blockchain or blocks being disconnected. |
 
  
 

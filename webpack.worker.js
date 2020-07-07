@@ -15,6 +15,7 @@ module.exports = {
     extensions: [ '.tsx', '.ts', '.js' ],
   },
   target: 'webworker',
+  devtool: 'source-map',
   output: {
       filename: 'bchrpc.webworker.js',
       path: path.resolve(__dirname, 'dist'),

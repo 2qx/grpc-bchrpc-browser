@@ -8,5 +8,4 @@ src/*.js
 index.js
 .nyc_output
 *.js.map
-*.d.ts
 dist

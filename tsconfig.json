@@ -64,11 +64,11 @@
     "include": [
       "src/**/*.ts",
       "test/xhr2.d.ts", 
-      //"test/index.spec.ts", 
       "index.ts"
     ],
     "exclude": [
       "node_modules",
+      "docs",
       "example",
       "test",
       "test/bchrpc.webworker.js", 

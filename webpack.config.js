@@ -14,6 +14,7 @@ module.exports = {
   resolve: {
     extensions: [ '.tsx', '.ts', '.js' ],
   },
+  devtool: 'source-map',
   output: {
       filename: 'bchrpc.bundle.js',
       path: path.resolve(__dirname, 'dist'),

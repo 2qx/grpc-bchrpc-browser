@@ -296,8 +296,6 @@ describe("grpc-bchrpc-browser", () => {
     *
     */
 
-    // 
-
     it("match output should match without downloading full block", async () => {
 
         const block99059 = (await mainnet.getBlock({ index: 99059, fullTransactions: false }));
