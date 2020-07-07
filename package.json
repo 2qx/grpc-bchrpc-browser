@@ -1,11 +1,13 @@
 {
     "name": "grpc-bchrpc-browser",
-    "version": "0.0.7",
+    "version": "0.0.8",
     "description": "BCHD gRPC client for browsers",
     "main": "index.js",
     "types": "index.d.ts",
     "files": [
-        "dist/*.d.ts",
+        "*.d.ts",
+        "pb/*.d.ts",
+        "src/*.d.ts",
         "dist/*.js",
         "dist/*.js.map",
         "pb/"
