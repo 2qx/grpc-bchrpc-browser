@@ -147,7 +147,7 @@ describe("grpc-bchrpc-browser", () => {
     it("verifyBlock should validate a marshaled block", async () => {
         const blockHash = "SGDrGL8bFiDjfpSQ/IpCdRRBb9dRWauGaI6agwAAAAA="
         const block1 = await (await mainnet.getBlockInfo({ hash: blockHash })).getInfo();
-        const hashIsValid = await mainnet.verifyBlock({ block: block1, hash: blockHash })
+        const hashIsValid = await util.verifyBlock({ block: block1, hash: blockHash })
         assert.isTrue(hashIsValid, "the hash of the block data matches the block hash");
     });
 
@@ -217,12 +217,13 @@ describe("grpc-bchrpc-browser", () => {
         // const hash = "4a8gWWCuM4o3F0tAfucQZ8PNfwTUilzsfhP27Mth3Lw="; // A
         // const hash = "oxSXDNfGR9HMCkd+GiEiuYIFtpJLcwAbjasg7oHC9Pc="; // B
         // const hash = "sI653OBFKhsZcMTSnoi97gdmmipdGwhYbX/6F7Lj9rU="; // C
-        const hash = "lYuelK6ppIW6SUxQ+zGSVYBX98rtlwXUsRNp8HHxBkI="; // D
+        const hash1 = "lYuelK6ppIW6SUxQ+zGSVYBX98rtlwXUsRNp8HHxBkI="; // D
         // const hash = "2Xohz0b9WvsL+epCN7xL9chOi0fTjR7uK761wPihxiU="; // G
         // const hash = "kOAzGd3J1I2jirObLzfApa9a/HNvb/Kp2LhlPg/rMI0="; // I
         // const hash = "hCUYQqTA8OGI4cK/ZD7DehQC3YaiWpq1AEYzRn0W4xM="; // J
         const localMerkleRoot = "sVLspDZIUPNCTHrCszfWBsXKCj+W8VVPjbM9L28TC74=";
-        const proofIsValid = await mainnet.verifyTransaction({ txnHash: hash, merkleRoot: localMerkleRoot })
+        const proof1 = await mainnet.getMerkleProof({hash:hash1})
+        const proofIsValid = await util.verifyTransaction({ txnHash: hash1, merkleRoot: localMerkleRoot, proof: proof1 })
 
         assert.isTrue(proofIsValid, "the root of the calculated merkle tree should match merkle root provided");
     });

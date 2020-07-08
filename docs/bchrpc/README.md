@@ -149,7 +149,7 @@ Metadata for identifying and validating a block
 <a name="pb.GetAddressTransactionsRequest"></a>
 
 ### GetAddressTransactionsRequest
-Get encoded transactions related to a specific address.
+Get marshaled transactions related to a specific address.
 
 RECOMMENDED:
 Parameters have been provided to query without creating 

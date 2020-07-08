@@ -15574,51 +15574,6 @@ class GrpcClient {
             });
         });
     }
-    // TODO remove this from the client, move it elsewhere
-    async verifyBlock({ block, hash }) {
-        hash = (typeof hash === 'string') ? util.base64toU8(hash) : hash;
-        if (!block) {
-            return false;
-        }
-        const header = new Uint8Array([
-            ...util.numberTo4ByteLEArray(block.getVersion()),
-            ...block.getPreviousBlock_asU8(),
-            ...block.getMerkleRoot_asU8(),
-            ...util.numberTo4ByteLEArray(block.getTimestamp()),
-            ...util.numberTo4ByteLEArray(block.getBits()),
-            ...util.numberTo4ByteLEArray(block.getNonce())
-        ]);
-        const hashComputed = await util.hash(header);
-        return util.compareUint8Array(hashComputed, hash);
-    }
-    // TODO remove this from the client, move it elsewhere
-    async verifyTransaction({ txnHash, txnHashHex, merkleRoot, merkleRootHex }) {
-        let tx;
-        let localMerkleRoot;
-        if (txnHashHex) {
-            tx = util.hexToU8(txnHashHex);
-        }
-        else if (txnHash) {
-            tx = txnHash;
-        }
-        else {
-            throw Error("Most provide a transaction id for verification");
-        }
-        if (merkleRootHex) {
-            localMerkleRoot = util.hexToU8(merkleRootHex);
-        }
-        else if (merkleRoot) {
-            localMerkleRoot = merkleRoot;
-        }
-        else {
-            throw Error("Most provide a locally validated merkle root for verification");
-        }
-        const proof = await this.getMerkleProof({ hash: tx });
-        const merkleFlags = util.expandMerkleFlags(await proof.getFlags_asU8());
-        const merkleHashes = await proof.getHashesList();
-        const merkleCheckPromise = util.getMerkleRootFromProof(merkleHashes, merkleFlags, util.hashPair);
-        return util.compareUint8Array(await merkleCheckPromise, localMerkleRoot);
-    }
 }
 exports.default = GrpcClient;
 
@@ -15630,7 +15585,7 @@ exports.default = GrpcClient;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.arrayBufferToBase64 = exports.u8toBase64 = exports.u8toHex = exports.base64toU8 = exports.base64toHex = exports.hexToBase64 = exports.hexToU8 = exports.numberPairToBase64 = exports.numberTo4ByteLEArray = exports.getMerkleRootFromProof = exports.compareUint8Array = exports.expandMerkleFlags = exports.hashPair = exports.hash = exports.sha256sha256 = void 0;
+exports.verifyTransaction = exports.verifyBlock = exports.arrayBufferToBase64 = exports.u8toBase64 = exports.u8toHex = exports.base64toU8 = exports.base64toHex = exports.hexToBase64 = exports.hexToU8 = exports.numberPairToBase64 = exports.numberTo4ByteLEArray = exports.getMerkleRootFromProof = exports.compareUint8Array = exports.expandMerkleFlags = exports.hashPair = exports.hashSha256 = exports.sha256sha256 = void 0;
 async function sha256sha256(ab) {
     try {
         return await crypto.subtle.digest('SHA-256', await crypto.subtle.digest('SHA-256', ab));
@@ -15640,11 +15595,11 @@ async function sha256sha256(ab) {
     }
 }
 exports.sha256sha256 = sha256sha256;
-async function hash(a) {
+async function hashSha256(a) {
     a = (typeof a === 'string') ? base64toU8(a) : a;
     return await new Uint8Array(await sha256sha256(new Uint8Array([...a])));
 }
-exports.hash = hash;
+exports.hashSha256 = hashSha256;
 async function hashPair(a, b) {
     // If an argument is missing, assume it is a starting hash and return it
     if (!a) {
@@ -15763,6 +15718,50 @@ function arrayBufferToBase64(ab) {
     return u8toBase64(new Uint8Array(ab));
 }
 exports.arrayBufferToBase64 = arrayBufferToBase64;
+async function verifyBlock({ block, hash }) {
+    hash = (typeof hash === 'string') ? base64toU8(hash) : hash;
+    if (!block) {
+        return false;
+    }
+    const header = new Uint8Array([
+        ...numberTo4ByteLEArray(block.getVersion()),
+        ...block.getPreviousBlock_asU8(),
+        ...block.getMerkleRoot_asU8(),
+        ...numberTo4ByteLEArray(block.getTimestamp()),
+        ...numberTo4ByteLEArray(block.getBits()),
+        ...numberTo4ByteLEArray(block.getNonce())
+    ]);
+    const hashComputed = await hashSha256(header);
+    return compareUint8Array(hashComputed, hash);
+}
+exports.verifyBlock = verifyBlock;
+async function verifyTransaction({ txnHash, txnHashHex, merkleRoot, merkleRootHex, proof }) {
+    let tx;
+    let localMerkleRoot;
+    if (txnHashHex) {
+        tx = hexToU8(txnHashHex);
+    }
+    else if (txnHash) {
+        tx = txnHash;
+    }
+    else {
+        throw Error("Most provide a transaction id for verification");
+    }
+    if (merkleRootHex) {
+        localMerkleRoot = hexToU8(merkleRootHex);
+    }
+    else if (merkleRoot) {
+        localMerkleRoot = merkleRoot;
+    }
+    else {
+        throw Error("Most provide a locally validated merkle root for verification");
+    }
+    const merkleFlags = expandMerkleFlags(await proof.getFlags_asU8());
+    const merkleHashes = await proof.getHashesList();
+    const merkleCheckPromise = getMerkleRootFromProof(merkleHashes, merkleFlags, hashPair);
+    return compareUint8Array(await merkleCheckPromise, localMerkleRoot);
+}
+exports.verifyTransaction = verifyTransaction;
 
 
 /***/ }),

@@ -260,7 +260,7 @@ message GetRawTransactionResponse {
     bytes transaction = 1;
 }
 
-// Get encoded transactions related to a specific address.
+// Get marshaled transactions related to a specific address.
 //
 // RECOMMENDED:
 // Parameters have been provided to query without creating 

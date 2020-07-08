@@ -130,7 +130,7 @@ const client_1 = __importDefault(__webpack_require__(46));
 const util = __importStar(__webpack_require__(49));
 const gcs = __importStar(__webpack_require__(50));
 // Security notice:
-// Below is a collection of tools to approximate core javascript libraries that were not in nodejs.
+// Below is a collection of tools to approximate web javascript libraries that were not in nodejs.
 //
 // These libraries are only used for testing and should not be exported in the final module.
 //
@@ -166,11 +166,11 @@ const cat = (a, b) => {
 if (typeof window === 'undefined') {
     global.XMLHttpRequest = xhr2_1.default;
     global.crypto = new webcrypto_1.Crypto();
-    global.atob = function (str) {
+    global.atob = (str) => {
         return buffer_1.Buffer.from(str, 'base64').toString('binary');
     };
-    global.btoa = function (str) {
-        var buffer;
+    global.btoa = (str) => {
+        let buffer;
         if (str instanceof buffer_1.Buffer) {
             buffer = str;
         }
@@ -182,14 +182,14 @@ if (typeof window === 'undefined') {
 }
 describe("grpc-bchrpc-browser", () => {
     it("getBlockchainInfo returns mainnet node with address and tx index enabled", async () => {
-        const res = await mainnet.getBlockchainInfo({}, null);
+        const res = await mainnet.getBlockchainInfo({});
         chai_1.assert.equal(res.getBitcoinNet(), bchrpc_pb_1.GetBlockchainInfoResponse.BitcoinNet.MAINNET, "Check node is on mainnet");
         chai_1.assert.equal(res.getAddrIndex(), true, "Check address index is enabled");
         chai_1.assert.equal(res.getTxIndex(), true, "Check transaction index is enabled");
     });
     it("getBlockInfo for index 0", async () => {
         // returns the first block by default
-        const info = await mainnet.getBlockInfo({}, null);
+        const info = await mainnet.getBlockInfo({});
         chai_1.assert.equal(info.getInfo().getHeight(), 0);
         chai_1.assert.equal(info.getInfo().getVersion(), 1);
         chai_1.assert.equal(info.getInfo().getPreviousBlock_asB64(), "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=");
@@ -202,8 +202,8 @@ describe("grpc-bchrpc-browser", () => {
         chai_1.assert.equal(hash, "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
     });
     it("getBlockInfo for hex hash 000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f", async () => {
-        const hashHex = "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f";
-        const info = await mainnet.getBlockInfo({ hashHex: hashHex }, null);
+        const hashHex1 = "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f";
+        const info = await mainnet.getBlockInfo({ hashHex: hashHex1 });
         chai_1.assert.equal(info.getInfo().getHeight(), 0);
         const hash = util.u8toHex(info.getInfo().getHash_asU8().reverse());
         chai_1.assert.equal(hash, "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f");
@@ -211,34 +211,33 @@ describe("grpc-bchrpc-browser", () => {
     it("getBlockInfo for hash b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA=", async () => {
         const hexString = "00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048";
         const hashArray = util.hexToU8(hexString).reverse();
-        const hash = util.u8toBase64(hashArray); // "b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA="
-        const info = await mainnet.getBlockInfo({ hash: hash }, null);
+        const hash64 = util.u8toBase64(hashArray); // "b+KMCrbxs3LBpqJGrmP3T5Meg2XhWgicaNYZAAAAAAA="
+        const info = await mainnet.getBlockInfo({ hash: hash64 });
         chai_1.assert.equal(info.getInfo().getHeight(), 1);
         const hashHex = util.u8toHex(info.getInfo().getHash_asU8().reverse());
         chai_1.assert.equal(hashHex, "00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048");
     });
     it("getHeaders from first block", async () => {
         const locatorHashes = ["AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="];
-        const resp = await mainnet.getHeaders({ blockLocatorHashes: locatorHashes }, null);
+        const resp = await mainnet.getHeaders({ blockLocatorHashes: locatorHashes });
         chai_1.assert.equal(resp.getHeadersList().length, 2000, "2000 block headers were returned");
     });
     // 66faf1d89f76a1039e367462fc489ccb4003e5c6df05b3d6c9ca5e686569d724 a coinbase transaction
-    // 
     it("getRawTransaction returns a serialized raw tx with matching hash", async () => {
         const txHex = "11556da6ee3cb1d14727b3a8f4b37093b6fecd2bc7d577a02b4e98b7be58a7e8";
         const txArray = util.hexToU8(txHex).reverse();
-        const hash = util.u8toBase64(txArray); // 
-        const res = await mainnet.getRawTransaction({ hash: hash }, null);
+        const hash64 = util.u8toBase64(txArray);
+        const res = await mainnet.getRawTransaction({ hash: hash64 });
         const hashOne = await crypto.subtle.digest('SHA-256', res.getTransaction_asU8());
         const hashTwo = await crypto.subtle.digest('SHA-256', hashOne);
         const hashHash = await util.sha256sha256(res.getTransaction_asU8());
         chai_1.assert.equal(hashHash, hashHash, "check double sha function");
-        const hashTwo_u8 = new Uint8Array(hashTwo);
-        chai_1.assert.equal(hash, util.u8toBase64(hashTwo_u8), "check that raw transaction matches it's hash");
+        const hashTwoU8 = new Uint8Array(hashTwo);
+        chai_1.assert.equal(hash64, util.u8toBase64(hashTwoU8), "check that raw transaction matches it's hash");
     });
     it("getRawTransaction without a transaction should throw error", async () => {
         try {
-            await mainnet.getRawTransaction({}, null);
+            await mainnet.getRawTransaction({});
         }
         catch (err) {
             chai_1.assert.equal(err.message, "No hash provided for transaction");
@@ -246,18 +245,18 @@ describe("grpc-bchrpc-browser", () => {
     });
     it("getRawBlock should return a block with a valid block header", async () => {
         const blockHash = "SGDrGL8bFiDjfpSQ/IpCdRRBb9dRWauGaI6agwAAAAA=";
-        const block = await mainnet.getRawBlock({ hash: blockHash }, null);
+        const block = await mainnet.getRawBlock({ hash: blockHash });
         const blockHashVerify = await util.sha256sha256(block.getBlock_asU8().slice(0, 80));
         chai_1.assert.equal(blockHash, util.arrayBufferToBase64(blockHashVerify), "check that the header matches the block hash");
     });
     it("verifyBlock should validate a marshaled block", async () => {
         const blockHash = "SGDrGL8bFiDjfpSQ/IpCdRRBb9dRWauGaI6agwAAAAA=";
-        const block = await (await mainnet.getBlockInfo({ hash: blockHash }, null)).getInfo();
-        const hashIsValid = await mainnet.verifyBlock({ block: block, hash: blockHash });
+        const block1 = await (await mainnet.getBlockInfo({ hash: blockHash })).getInfo();
+        const hashIsValid = await util.verifyBlock({ block: block1, hash: blockHash });
         chai_1.assert.isTrue(hashIsValid, "the hash of the block data matches the block hash");
     });
     it("getMerkleRootFromProof should build merkle tree", async () => {
-        let block15000 = new Map();
+        const block15000 = new Map();
         block15000.set(11111, ["A", "B", "CD", "EFGH", "IJ"]);
         block15000.set(111101, ["A", "B", "CD", "EFGH", "IJ"]);
         block15000.set(111011, ["AB", "C", "D", "EFGH", "IJ"]);
@@ -269,7 +268,7 @@ describe("grpc-bchrpc-browser", () => {
         block15000.set(101111, ["ABCDEFGH", "I", "J"]);
         block15000.set(1011101, ["ABCDEFGH", "I", "J"]);
         block15000.forEach(async (value, key) => {
-            let flagArray = String(key).split("").map(x => parseInt(x));
+            const flagArray = String(key).split("").map(x => parseInt(x, 2));
             chai_1.assert.isTrue(String("ABCDEFGHIJ") === String(await util.getMerkleRootFromProof(value, flagArray, cat)));
         });
     });
@@ -277,9 +276,9 @@ describe("grpc-bchrpc-browser", () => {
         // These are little endian hex strings
         const a = util.hexToU8("e1af205960ae338a37174b407ee71067c3cd7f04d48a5cec7e13f6eccb61dcbc");
         const b = util.hexToU8("a314970cd7c647d1cc0a477e1a2122b98205b6924b73001b8dab20ee81c2f4f7");
-        const ab_u8 = util.hexToU8("a4a2774e14677eaf13a5e8d5f793618ee3b9763ebbd99ac20894b2cea5aa17b7");
+        const abU8 = util.hexToU8("a4a2774e14677eaf13a5e8d5f793618ee3b9763ebbd99ac20894b2cea5aa17b7");
         const hashPairResult = await util.hashPair(a, b);
-        chai_1.assert.deepEqual(ab_u8, hashPairResult);
+        chai_1.assert.deepEqual(abU8, hashPairResult);
     });
     it("hashPair returns sha256(sha256(ab)) from Uint8", async () => {
         const a = util.base64toU8("4a8gWWCuM4o3F0tAfucQZ8PNfwTUilzsfhP27Mth3Lw="); // A
@@ -296,25 +295,26 @@ describe("grpc-bchrpc-browser", () => {
         const efgh = util.base64toU8("i+FfwqsR7z4HlWjUOysJ7VpWkPsT7LEDL3qrmSOKGEc="); // EFGH
         const ij = util.base64toU8("6CczGx/nomifvCPRTNITF8aZWWy8oiIYKkiTIuzh+nQ="); // IJ
         const abcdefghij = util.base64toU8("sVLspDZIUPNCTHrCszfWBsXKCj+W8VVPjbM9L28TC74="); // Merkle Root
-        const abcdefghij_result = await util.hashPair(await util.hashPair(await util.hashPair(ab, await util.hashPair(c, await util.hashPair(d, ""))), efgh), ij);
-        chai_1.assert.deepEqual(abcdefghij, abcdefghij_result);
+        const abcdefghijResult = await util.hashPair(await util.hashPair(await util.hashPair(ab, await util.hashPair(c, await util.hashPair(d, ""))), efgh), ij);
+        chai_1.assert.deepEqual(abcdefghij, abcdefghijResult);
     });
     it("verifyTransaction should build merkle root from provided proof", async () => {
         // "f4d9e94ca7e03f6b114d1e699b4ff9f331c0b251b0e9f26a5b96aff33ee0ce1c";
         // const hash = "4a8gWWCuM4o3F0tAfucQZ8PNfwTUilzsfhP27Mth3Lw="; // A
         // const hash = "oxSXDNfGR9HMCkd+GiEiuYIFtpJLcwAbjasg7oHC9Pc="; // B
         // const hash = "sI653OBFKhsZcMTSnoi97gdmmipdGwhYbX/6F7Lj9rU="; // C
-        const hash = "lYuelK6ppIW6SUxQ+zGSVYBX98rtlwXUsRNp8HHxBkI="; // D
+        const hash1 = "lYuelK6ppIW6SUxQ+zGSVYBX98rtlwXUsRNp8HHxBkI="; // D
         // const hash = "2Xohz0b9WvsL+epCN7xL9chOi0fTjR7uK761wPihxiU="; // G
         // const hash = "kOAzGd3J1I2jirObLzfApa9a/HNvb/Kp2LhlPg/rMI0="; // I
         // const hash = "hCUYQqTA8OGI4cK/ZD7DehQC3YaiWpq1AEYzRn0W4xM="; // J
         const localMerkleRoot = "sVLspDZIUPNCTHrCszfWBsXKCj+W8VVPjbM9L28TC74=";
-        const proofIsValid = await mainnet.verifyTransaction({ txnHash: hash, merkleRoot: localMerkleRoot });
+        const proof1 = await mainnet.getMerkleProof({ hash: hash1 });
+        const proofIsValid = await util.verifyTransaction({ txnHash: hash1, merkleRoot: localMerkleRoot, proof: proof1 });
         chai_1.assert.isTrue(proofIsValid, "the root of the calculated merkle tree should match merkle root provided");
     });
     it("getTransaction returns the transaction", async () => {
         const txHex = "11556da6ee3cb1d14727b3a8f4b37093b6fecd2bc7d577a02b4e98b7be58a7e8";
-        const res = await mainnet.getTransaction({ hashHex: txHex }, null);
+        const res = await mainnet.getTransaction({ hashHex: txHex });
         chai_1.assert.equal(res.getTransaction().getSize(), 441);
         chai_1.assert.equal(res.getTransaction().getVersion(), 2);
         chai_1.assert.equal(res.getTransaction().getLockTime(), 0);
@@ -332,7 +332,7 @@ describe("grpc-bchrpc-browser", () => {
     it("getAddressTransactions for an address", async () => {
         const exampleAddress = "bitcoincash:qregyd3kcklc58fd6r8epfwulpvd9f4mr5gxg8n8y7";
         const firstTxid = "5248906d6ac8425f287727797307d7305291f57d30406cb627e6573bbb77a344";
-        const res = await mainnet.getAddressTransactions({ address: exampleAddress, height: 0 }, null);
+        const res = await mainnet.getAddressTransactions({ address: exampleAddress, height: 0 });
         const txns = res.getConfirmedTransactionsList();
         chai_1.assert.equal(txns.length >= 3, true);
         const tx1 = txns.filter((t) => util.u8toHex(t.getHash_asU8().reverse()) === firstTxid)[0];
@@ -348,9 +348,9 @@ describe("grpc-bchrpc-browser", () => {
     });
     it("getAddressUtxos should get UTXOs", async () => {
         const eaterAddress = "bitcoincash:qp6e6enhpy0fwwu7nkvlr8rgl06ru0c9lywalz8st5"; // 1BitcoinEaterAddressDontSendf59kuE
-        const confirmedRes = await mainnet.getAddressUtxos({ address: eaterAddress, includeMempool: false }, null);
+        const confirmedRes = await mainnet.getAddressUtxos({ address: eaterAddress, includeMempool: false });
         const confirmedTxns = await confirmedRes.getOutputsList();
-        const unconfirmedRes = await mainnet.getAddressUtxos({ address: eaterAddress, includeMempool: true }, null);
+        const unconfirmedRes = await mainnet.getAddressUtxos({ address: eaterAddress, includeMempool: true });
         const unconfirmedTxns = await unconfirmedRes.getOutputsList();
         const confirmedValueArray = await Promise.all(confirmedTxns.map(async (x) => { return x.getValue(); }));
         const confirmedValue = confirmedValueArray.reduce((a, b) => a + b, 0);
@@ -362,7 +362,7 @@ describe("grpc-bchrpc-browser", () => {
     it("submitTransaction should broadcast", async () => {
         const txnHex = "010000000552df9fd3f9bf1f13993e8b7e5b42530394ed644f0df4c0fdd32cf531acc75505030000006a47304402201039b25fa81feb74d8dd0eb25ae065e8baf3c944d7728f77fb68fa0c9b67d2c2022013f0bc158946826791c58dcd5187da1b2dfb3dd36227880e6d3830fe91327ea7c1210383c67be45a2bef59274c29341dd55592973d0b0f14c7810a353fbdff62f613defeffffff34e29914bd556e3a3818342ceff2ae526ef96bf3c3d09777df9f655be52931cf100300006a473044022034070971b4a27f279560a2f8b735ee3324d0dea54999bc24f851a7c6d500a1a102200b09402cf061a15f8ec88f606d8a864f9cc0e86c50ea78c9ce282337bdce19af4121020414832a8304904eec02ae00997ece267f234908d06633d75a8a4e1e4350e172ffffffff34e29914bd556e3a3818342ceff2ae526ef96bf3c3d09777df9f655be52931cf0f0300006a473044022071c84830f0da6abf35f93abebf2a8f3415cbeb3e9d967321a6944bbb6b6ec6aa022006bbfd5019fbc3d516dea6dde5f1d78c4e5428e6f305f00964efde70490ed2374121020414832a8304904eec02ae00997ece267f234908d06633d75a8a4e1e4350e172ffffffff34e29914bd556e3a3818342ceff2ae526ef96bf3c3d09777df9f655be52931cf0e0300006b483045022100ba0e0e300047c23f0e1bf5b83c240f8ad8da99c8021177b75329e30432953855022024d7ddffe1b8ad31d6f0a7955d7ae4d915ab40b31c367f9ed6e0400bc9ba69a94121020414832a8304904eec02ae00997ece267f234908d06633d75a8a4e1e4350e172ffffffff34e29914bd556e3a3818342ceff2ae526ef96bf3c3d09777df9f655be52931cf0d0300006b4830450221009d35b7f99e55486d4d5ee7208dc4c34c157e68f55a4fc7b7765c86b8d9af296f022058d754701593829d0ed4a5ea8881737ae185c7ead271b748e4eb76b92386261d4121020414832a8304904eec02ae00997ece267f234908d06633d75a8a4e1e4350e172ffffffff040000000000000000496a04534c500001010453454e4420c4b0d62156b3fa5c8f3436079b5394f7edc1bef5dc1cd2f9d0c4d46f82cca47908000000000000000108000000000000000408000000000000005a22020000000000001976a914d20919767967b6305778ef2c8680e1bab9f9070588ac22020000000000001976a914750689c893d2b2a0e805b8b356283126d7d1e5c088ac22020000000000001976a9149af63d01b056c5b3e0a1d6f74e46ba0543a579bd88ac00000000";
         try {
-            await mainnet.submitTransaction({ txnHex }, null);
+            await mainnet.submitTransaction({ txnHex });
         }
         catch (err) {
             chai_1.assert.equal(err.message, "tx rejected: transaction already exists");
@@ -374,33 +374,63 @@ describe("grpc-bchrpc-browser", () => {
     *
     *
     */
+    it("match output should match without downloading full block", async () => {
+        const block99059 = (await mainnet.getBlock({ index: 99059, fullTransactions: false }));
+        const block100000 = (await mainnet.getBlockInfo({ height: 100000 }));
+        const hash100000 = block100000.getInfo().getHash_asU8();
+        const filterData1 = (await mainnet.getBlockFilter({ height: 100000 })).getFilter_asU8();
+        const f = new gcs.Filter({ blockHash: hash100000, filterData: filterData1 });
+        const txHash = block99059.getBlock().getTransactionDataList()[2].getTransactionHash_asU8();
+        const serializedOutpoint = new Uint8Array([...txHash, ...util.numberTo4ByteLEArray(0)]);
+        const hitOutput = f.match({ data: serializedOutpoint });
+        chai_1.assert.isTrue(hitOutput, "the pubkeyScript should match filter");
+    });
     it("transaction output pubkeys should match the decoded block filter", async () => {
-        const block = (await (await mainnet.getBlock({ index: 100000, fullTransactions: true }, null)));
-        const hash = await block.getBlock().getInfo().getHash_asU8();
-        const filterData = (await mainnet.getBlockFilter({ hash: hash }, null)).getFilter_asU8();
-        let f = new gcs.default({ filterData: filterData });
+        const block = (await mainnet.getBlock({ index: 100000, fullTransactions: true }));
+        const hash100000 = block.getBlock().getInfo().getHash_asU8();
+        const filterData1 = (await mainnet.getBlockFilter({ hash: hash100000 })).getFilter_asU8();
+        const f = new gcs.Filter({ blockHash: hash100000, filterData: filterData1 });
         for (const tx of block.getBlock().getTransactionDataList()) {
             for (const txOutput of tx.getTransaction().getOutputsList()) {
-                let hitPubkeyScript = f.match(hash, txOutput.getPubkeyScript_asU8());
+                const hitPubkeyScript = f.match({ data: txOutput.getPubkeyScript_asU8() });
                 chai_1.assert.isTrue(hitPubkeyScript, "the pubkeyScript should match filter");
             }
         }
     });
     it("transaction serialized input outpoints should match the decoded block filter", async () => {
-        const block = (await (await mainnet.getBlock({ index: 100000, fullTransactions: true }, null)));
-        const hash = await block.getBlock().getInfo().getHash_asU8();
-        const filterData = (await mainnet.getBlockFilter({ hash: hash }, null)).getFilter_asU8();
-        const f = new gcs.default({ filterData: filterData });
+        const block = (await mainnet.getBlock({ index: 100000, fullTransactions: true }));
+        const hash100000 = block.getBlock().getInfo().getHash_asU8();
+        const filterData1 = (await mainnet.getBlockFilter({ hash: hash100000 })).getFilter_asU8();
+        const f = new gcs.Filter({ blockHash: hash100000, filterData: filterData1 });
         const nonCoinbaseTxns = block.getBlock().getTransactionDataList().slice(1);
         for (const tx of nonCoinbaseTxns) {
             for (const txInput of tx.getTransaction().getInputsList()) {
                 const opU8 = txInput.getOutpoint().getHash_asU8();
                 const opIdx = txInput.getOutpoint().getIndex();
                 const serializedOutpoint = new Uint8Array([...opU8, ...util.numberTo4ByteLEArray(opIdx)]);
-                const hitPubkeyScript = f.match(hash, serializedOutpoint);
-                chai_1.assert.isTrue(hitPubkeyScript, "the pubkeyScript should match filter");
+                const hitPubkeyScript = f.match({ data: serializedOutpoint });
+                chai_1.assert.isTrue(hitPubkeyScript, "the input outpoint should match filter");
             }
         }
+    });
+    it("MatchAllU8 should not return false positive on sizable block", async () => {
+        const block100000 = (await mainnet.getBlock({ index: 100000, fullTransactions: true }));
+        const nonCoinbaseTxns = block100000.getBlock().getTransactionDataList().slice(1);
+        const outPutSet = [];
+        for (const tx of nonCoinbaseTxns) {
+            for (const txInput of tx.getTransaction().getInputsList()) {
+                const opU8 = txInput.getOutpoint().getHash_asU8();
+                const opIdx = txInput.getOutpoint().getIndex();
+                const serializedOutpoint = new Uint8Array([...opU8, ...util.numberTo4ByteLEArray(opIdx)]);
+                outPutSet.push(serializedOutpoint);
+            }
+        }
+        const block633817 = (await mainnet.getBlock({ index: 633817, fullTransactions: false }));
+        const hash633817 = block633817.getBlock().getInfo().getHash_asU8();
+        const filterData633817 = (await mainnet.getBlockFilter({ hash: hash633817 })).getFilter_asU8();
+        const f = new gcs.Filter({ blockHash: hash633817, filterData: filterData633817 });
+        const hit = f.matchAllU8(outPutSet);
+        chai_1.assert.isFalse(hit, "False positive should be less than 1 in 2^19");
     });
 });
 
@@ -26196,11 +26226,11 @@ const bchrpc_pb_service = __importStar(__webpack_require__(47));
 const util = __importStar(__webpack_require__(49));
 class GrpcClient {
     /**
-    * Create a client.
-    * @param url - The bchd server expressed as host:port.
-    * @param testnet - Whether testnet is being used, default:false.
-    * @param options - grpc client options.
-    */
+     * Create a client.
+     * @param url - The bchd server expressed as host:port.
+     * @param testnet - Whether testnet is being used, default:false.
+     * @param options - grpc client options.
+     */
     constructor({ url, testnet = false, options }) {
         if (typeof url === 'string') {
             url = url;
@@ -26220,12 +26250,11 @@ class GrpcClient {
         this.client = new bchrpc_pb_service.bchrpcClient(url, null, options);
     }
     /**
-    * Get information about transactions in mempool
-    * @param metadata - optional parameters for grpcWeb client
-    */
-    getMempoolInfo(metadata) {
+     * Get information about transactions in mempool
+     */
+    getMempoolInfo() {
         return new Promise((resolve, reject) => {
-            this.client.getMempoolInfo(new bchrpc.GetMempoolInfoRequest(), metadata, (err, response) => {
+            this.client.getMempoolInfo(new bchrpc.GetMempoolInfoRequest(), null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -26236,17 +26265,16 @@ class GrpcClient {
         });
     }
     /**
-    * Get transactions from mempool
-    * @param fullTransactions - A flag to return full transaction data. Default is `false`, only transaction hashes are returned.
-    * @param metadata - Optional parameters for grpcWeb client
-    */
-    getMempool({ fullTransactions }, metadata) {
+     * Get transactions from mempool
+     * @param fullTransactions - A flag to return full transaction data. Default is `false`, only transaction hashes are returned.
+     */
+    getMempool({ fullTransactions }) {
         const req = new bchrpc.GetMempoolRequest();
         if (fullTransactions) {
             req.setFullTransactions(fullTransactions);
         }
         return new Promise((resolve, reject) => {
-            this.client.getMempool(req, metadata, (err, response) => {
+            this.client.getMempool(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -26257,12 +26285,11 @@ class GrpcClient {
         });
     }
     /**
-    * Get a raw transaction
-    * @param hash - the hash, in either a base64 encoded string or byte array, little-endian.
-    * @param hashHex - the hash as a big-endian hexadecimal encoded string, sill be overridden by hash if provided.
-    * @param metadata - Optional parameters for grpcWeb client
-    */
-    getRawTransaction({ hash, hashHex }, metadata) {
+     * Get a raw transaction
+     * @param hash - the hash, in either a base64 encoded string or byte array, little-endian.
+     * @param hashHex - the hash as a big-endian hexadecimal encoded string, sill be overridden by hash if provided.
+     */
+    getRawTransaction({ hash, hashHex }) {
         const req = new bchrpc.GetRawTransactionRequest();
         if (hashHex) {
             req.setHash(util.hexToU8(hashHex).reverse());
@@ -26274,7 +26301,7 @@ class GrpcClient {
             throw Error("No hash provided for transaction");
         }
         return new Promise((resolve, reject) => {
-            this.client.getRawTransaction(req, metadata, (err, response) => {
+            this.client.getRawTransaction(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -26285,12 +26312,11 @@ class GrpcClient {
         });
     }
     /**
-    * Get a transaction
-    * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
-    * @param hashHex - the hash as a big-endian hexadecimal encoded string, will be overridden by hash, if provided.
-    * @param metadata - Optional parameters for grpcWeb client
-    */
-    getTransaction({ hash, hashHex }, metadata) {
+     * Get a transaction
+     * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
+     * @param hashHex - the hash as a big-endian hexadecimal encoded string, will be overridden by hash, if provided.
+     */
+    getTransaction({ hash, hashHex }) {
         const req = new bchrpc.GetTransactionRequest();
         if (hashHex) {
             req.setHash(util.hexToU8(hashHex).reverse());
@@ -26302,7 +26328,7 @@ class GrpcClient {
             throw Error("No hash provided for transaction");
         }
         return new Promise((resolve, reject) => {
-            this.client.getTransaction(req, metadata, (err, response) => {
+            this.client.getTransaction(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -26313,11 +26339,11 @@ class GrpcClient {
         });
     }
     /**
-    * Get block header information
-    * @param blockLocatorHashes - Sparse list of hashes known to the client.
-    * @param stopHash -Last block hash to return.
-    */
-    getHeaders({ blockLocatorHashes, stopHash }, metadata) {
+     * Get block header information
+     * @param blockLocatorHashes - Sparse list of hashes known to the client.
+     * @param stopHash -Last block hash to return.
+     */
+    getHeaders({ blockLocatorHashes, stopHash }) {
         const req = new bchrpc.GetHeadersRequest();
         if (blockLocatorHashes) {
             req.setBlockLocatorHashesList(blockLocatorHashes);
@@ -26326,7 +26352,7 @@ class GrpcClient {
             req.setStopHash(stopHash);
         }
         return new Promise((resolve, reject) => {
-            this.client.getHeaders(req, metadata, (err, response) => {
+            this.client.getHeaders(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -26337,16 +26363,15 @@ class GrpcClient {
         });
     }
     /**
-    * Get transactions related to a particular address
-    * @param address - Bitcoin cash address in casharr format.
-    * @param nbSkip - Number of transactions to skip, in chronological order.
-    * @param nbFetch - Number of transactions return.
-    * @param height - Filter to only return transactions after this block number.
-    * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
-    * @param hashHex - the hash as a big-endian hexadecimal encoded string, will be overridden by `hash`, if provided.
-    * @param metadata - Optional parameters for grpcWeb client
-    */
-    getAddressTransactions({ address, nbSkip, nbFetch, height, hashHex }, metadata) {
+     * Get transactions related to a particular address
+     * @param address - Bitcoin cash address in casharr format.
+     * @param nbSkip - Number of transactions to skip, in chronological order.
+     * @param nbFetch - Number of transactions return.
+     * @param height - Filter to only return transactions after this block number.
+     * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
+     * @param hashHex - the hash as a big-endian hexadecimal encoded string, will be overridden by `hash`, if provided.
+     */
+    getAddressTransactions({ address, nbSkip, nbFetch, height, hashHex }) {
         const req = new bchrpc.GetAddressTransactionsRequest();
         if (nbSkip) {
             req.setNbSkip(nbSkip);
@@ -26362,7 +26387,7 @@ class GrpcClient {
         }
         req.setAddress(address);
         return new Promise((resolve, reject) => {
-            this.client.getAddressTransactions(req, metadata, (err, response) => {
+            this.client.getAddressTransactions(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -26372,7 +26397,7 @@ class GrpcClient {
             });
         });
     }
-    getUnspentOutput({ hash, hashHex, vout, includeMempool }, metadata) {
+    getUnspentOutput({ hash, hashHex, vout, includeMempool }) {
         const req = new bchrpc.GetUnspentOutputRequest();
         if (includeMempool) {
             req.setIncludeMempool(true);
@@ -26385,7 +26410,7 @@ class GrpcClient {
         }
         req.setIndex(vout);
         return new Promise((resolve, reject) => {
-            this.client.getUnspentOutput(req, metadata, (err, data) => {
+            this.client.getUnspentOutput(req, null, (err, data) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -26400,7 +26425,7 @@ class GrpcClient {
      * @param hash - the tx hash, in either a 'base64' encoded string or byte array, little-endian.
      * @param hashHex - the tx hash as a big-endian 'hex' encoded string, will be overridden by hash if also provided.
      */
-    getMerkleProof({ hash, hashHex }, metadata) {
+    getMerkleProof({ hash, hashHex }) {
         const req = new bchrpc.GetMerkleProofRequest();
         if (hashHex) {
             req.setTransactionHash(util.hexToU8(hashHex).reverse());
@@ -26409,7 +26434,7 @@ class GrpcClient {
             req.setTransactionHash(hash);
         }
         return new Promise((resolve, reject) => {
-            this.client.getMerkleProof(req, metadata, (err, data) => {
+            this.client.getMerkleProof(req, null, (err, data) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -26419,14 +26444,14 @@ class GrpcClient {
             });
         });
     }
-    getAddressUtxos({ address, includeMempool }, metadata) {
+    getAddressUtxos({ address, includeMempool }) {
         const req = new bchrpc.GetAddressUnspentOutputsRequest();
         req.setAddress(address);
         if (includeMempool) {
             req.setIncludeMempool(true);
         }
         return new Promise((resolve, reject) => {
-            this.client.getAddressUnspentOutputs(req, metadata, (err, response) => {
+            this.client.getAddressUnspentOutputs(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -26441,7 +26466,7 @@ class GrpcClient {
      * @param hash - the hash, in either a 'base64' encoded string or byte array, little-endian.
      * @param hashHex - the hash as a big-endian 'hex' encoded string, will be overridden by hash if also provided.
      */
-    getRawBlock({ hash, hashHex }, metadata) {
+    getRawBlock({ hash, hashHex }) {
         const req = new bchrpc.GetRawBlockRequest();
         if (hashHex) {
             req.setHash(util.hexToU8(hashHex).reverse());
@@ -26453,7 +26478,7 @@ class GrpcClient {
             throw Error("No hash provided for raw block request");
         }
         return new Promise((resolve, reject) => {
-            this.client.getRawBlock(req, metadata, (err, response) => {
+            this.client.getRawBlock(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -26470,7 +26495,7 @@ class GrpcClient {
      * @param hashHex - the hash as a big-endian 'hex' encoded string, will be overridden by hash if also provided.
      * @param fullTransactions - a flag to return full transaction data, by defult `false` only transaction hashes are returned.
      */
-    getBlock({ index, hash, hashHex, fullTransactions }, metadata) {
+    getBlock({ index, hash, hashHex, fullTransactions }) {
         const req = new bchrpc.GetBlockRequest();
         if (index !== null && index !== undefined) {
             req.setHeight(index);
@@ -26488,7 +26513,7 @@ class GrpcClient {
             req.setFullTransactions(true);
         }
         return new Promise((resolve, reject) => {
-            this.client.getBlock(req, metadata, (err, response) => {
+            this.client.getBlock(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -26504,7 +26529,7 @@ class GrpcClient {
      * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
      * @param hashHex - the hash as a big-endian 'hex' encoded string, will be overridden a hash if provided.
      */
-    getBlockFilter({ height, hash, hashHex }, metadata) {
+    getBlockFilter({ height, hash, hashHex }) {
         const req = new bchrpc.GetBlockInfoRequest();
         if (height !== null && height !== undefined) {
             req.setHeight(height);
@@ -26516,7 +26541,7 @@ class GrpcClient {
             req.setHash(hash);
         }
         return new Promise((resolve, reject) => {
-            this.client.getBlockFilter(req, metadata, (err, response) => {
+            this.client.getBlockFilter(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -26532,7 +26557,7 @@ class GrpcClient {
      * @param hash - the hash, expressed in little-endian in either a base64 encoded string or byte array.
      * @param hashHex - the hash as a big-endian 'hex' encoded string, will be overridden a hash if provided.
      */
-    getBlockInfo({ height, hash, hashHex }, metadata) {
+    getBlockInfo({ height, hash, hashHex }) {
         const req = new bchrpc.GetBlockInfoRequest();
         if (height !== null && height !== undefined) {
             req.setHeight(height);
@@ -26544,7 +26569,7 @@ class GrpcClient {
             req.setHash(hash);
         }
         return new Promise((resolve, reject) => {
-            this.client.getBlockInfo(req, metadata, (err, response) => {
+            this.client.getBlockInfo(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -26557,9 +26582,9 @@ class GrpcClient {
     /**
      * Retrieve block info for the network, network state and host node.
      */
-    getBlockchainInfo({}, metadata) {
+    getBlockchainInfo({}) {
         return new Promise((resolve, reject) => {
-            this.client.getBlockchainInfo(new bchrpc.GetBlockchainInfoRequest(), metadata, (err, response) => {
+            this.client.getBlockchainInfo(new bchrpc.GetBlockchainInfoRequest(), null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -26588,12 +26613,12 @@ class GrpcClient {
                 req.setSubscribe(transactionFilter);
             }
             else {
-                const transactionFilter = new bchrpc.TransactionFilter();
-                transactionFilter.setAllTransactions(true);
-                req.setSubscribe(transactionFilter);
+                const defaultFilter = new bchrpc.TransactionFilter();
+                defaultFilter.setAllTransactions(true);
+                req.setSubscribe(defaultFilter);
             }
             if (unsubscribe) {
-                throw 'Unsubscribing is not currently (2020) possible on grpc-web, see grpc-web ClientReadableStream.cancel()';
+                throw new Error('Unsubscribing is not currently (2020) possible on grpc-web, see grpc-web ClientReadableStream.cancel()');
             }
             try {
                 resolve(this.client.subscribeTransactions(req));
@@ -26617,7 +26642,7 @@ class GrpcClient {
             }
         });
     }
-    submitTransaction({ txnHex, txn }, metadata) {
+    submitTransaction({ txnHex, txn }) {
         let tx;
         const req = new bchrpc.SubmitTransactionRequest();
         if (txnHex) {
@@ -26631,7 +26656,7 @@ class GrpcClient {
         }
         req.setTransaction(tx);
         return new Promise((resolve, reject) => {
-            this.client.submitTransaction(req, metadata, (err, response) => {
+            this.client.submitTransaction(req, null, (err, response) => {
                 if (err !== null) {
                     reject(err);
                 }
@@ -26640,51 +26665,6 @@ class GrpcClient {
                 }
             });
         });
-    }
-    // TODO remove this from the client, move it elsewhere
-    async verifyBlock({ block, hash }) {
-        hash = (typeof hash === 'string') ? util.base64toU8(hash) : hash;
-        if (!block) {
-            return false;
-        }
-        const header = new Uint8Array([
-            ...util.numberTo4ByteLEArray(block.getVersion()),
-            ...block.getPreviousBlock_asU8(),
-            ...block.getMerkleRoot_asU8(),
-            ...util.numberTo4ByteLEArray(block.getTimestamp()),
-            ...util.numberTo4ByteLEArray(block.getBits()),
-            ...util.numberTo4ByteLEArray(block.getNonce())
-        ]);
-        const hashComputed = await util.hash(header);
-        return util.compareUint8Array(hashComputed, hash);
-    }
-    // TODO remove this from the client, move it elsewhere
-    async verifyTransaction({ txnHash, txnHashHex, merkleRoot, merkleRootHex }) {
-        let tx;
-        let localMerkleRoot;
-        if (txnHashHex) {
-            tx = util.hexToU8(txnHashHex);
-        }
-        else if (txnHash) {
-            tx = txnHash;
-        }
-        else {
-            throw Error("Most provide a transaction id for verification");
-        }
-        if (merkleRootHex) {
-            localMerkleRoot = util.hexToU8(merkleRootHex);
-        }
-        else if (merkleRoot) {
-            localMerkleRoot = merkleRoot;
-        }
-        else {
-            throw Error("Most provide a locally validated merkle root for verification");
-        }
-        const proof = await this.getMerkleProof({ hash: tx }, null);
-        const merkleFlags = util.expandMerkleFlags(await proof.getFlags_asU8());
-        const merkleHashes = await proof.getHashesList();
-        const merkleCheckPromise = util.getMerkleRootFromProof(merkleHashes, merkleFlags, util.hashPair);
-        return util.compareUint8Array(await merkleCheckPromise, localMerkleRoot);
     }
 }
 exports.default = GrpcClient;
@@ -26930,7 +26910,7 @@ W.MethodType={UNARY:"unary",SERVER_STREAMING:"server_streaming"};
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.arrayBufferToBase64 = exports.u8toBase64 = exports.u8toHex = exports.base64toU8 = exports.base64toHex = exports.hexToBase64 = exports.hexToU8 = exports.numberTo4ByteLEArray = exports.getMerkleRootFromProof = exports.compareUint8Array = exports.expandMerkleFlags = exports.hashPair = exports.hash = exports.sha256sha256 = void 0;
+exports.verifyTransaction = exports.verifyBlock = exports.arrayBufferToBase64 = exports.u8toBase64 = exports.u8toHex = exports.base64toU8 = exports.base64toHex = exports.hexToBase64 = exports.hexToU8 = exports.numberPairToBase64 = exports.numberTo4ByteLEArray = exports.getMerkleRootFromProof = exports.compareUint8Array = exports.expandMerkleFlags = exports.hashPair = exports.hashSha256 = exports.sha256sha256 = void 0;
 async function sha256sha256(ab) {
     try {
         return await crypto.subtle.digest('SHA-256', await crypto.subtle.digest('SHA-256', ab));
@@ -26940,11 +26920,11 @@ async function sha256sha256(ab) {
     }
 }
 exports.sha256sha256 = sha256sha256;
-async function hash(a) {
+async function hashSha256(a) {
     a = (typeof a === 'string') ? base64toU8(a) : a;
     return await new Uint8Array(await sha256sha256(new Uint8Array([...a])));
 }
-exports.hash = hash;
+exports.hashSha256 = hashSha256;
 async function hashPair(a, b) {
     // If an argument is missing, assume it is a starting hash and return it
     if (!a) {
@@ -27020,9 +27000,12 @@ function numberTo4ByteLEArray(num) {
 }
 exports.numberTo4ByteLEArray = numberTo4ByteLEArray;
 ;
-const hexArray = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
-const reduceToHex = (s, c) => s + hexArray[c >>> 4] + hexArray[c & 0x0F];
-const reduceToBase64 = (s, c) => s + String.fromCharCode(c);
+function numberPairToBase64(hi, lo) {
+    const hiArray = numberTo4ByteLEArray(hi);
+    const loArray = numberTo4ByteLEArray(lo);
+    return u8toBase64(new Uint8Array([...hiArray, ...loArray]));
+}
+exports.numberPairToBase64 = numberPairToBase64;
 function hexToU8(hashHex) {
     return new Uint8Array(hashHex.match(/.{1,2}/g).map((byte) => parseInt(byte, 16)));
 }
@@ -27035,14 +27018,23 @@ function base64toHex(b64) {
     return base64toU8(b64).reduce(reduceToHex, '');
 }
 exports.base64toHex = base64toHex;
+// see https://jsperf.com/base64-to-uint8array/19
 function base64toU8(b64) {
-    return new Uint8Array(atob(b64).split("").map((c) => c.charCodeAt(0)));
+    const binary = atob(b64);
+    const len = binary.length >>> 0;
+    const v = new Uint8Array(len);
+    for (let i = 0; i < len; ++i)
+        v[i] = binary.charCodeAt(i);
+    return v;
 }
 exports.base64toU8 = base64toU8;
+const hexArray = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
+const reduceToHex = (s, c) => s + hexArray[c >>> 4] + hexArray[c & 0x0F];
 function u8toHex(u8) {
     return u8.reduce(reduceToHex, '');
 }
 exports.u8toHex = u8toHex;
+const reduceToBase64 = (s, c) => s + String.fromCharCode(c);
 function u8toBase64(u8) {
     return btoa(u8.reduce(reduceToBase64, ''));
 }
@@ -27051,6 +27043,50 @@ function arrayBufferToBase64(ab) {
     return u8toBase64(new Uint8Array(ab));
 }
 exports.arrayBufferToBase64 = arrayBufferToBase64;
+async function verifyBlock({ block, hash }) {
+    hash = (typeof hash === 'string') ? base64toU8(hash) : hash;
+    if (!block) {
+        return false;
+    }
+    const header = new Uint8Array([
+        ...numberTo4ByteLEArray(block.getVersion()),
+        ...block.getPreviousBlock_asU8(),
+        ...block.getMerkleRoot_asU8(),
+        ...numberTo4ByteLEArray(block.getTimestamp()),
+        ...numberTo4ByteLEArray(block.getBits()),
+        ...numberTo4ByteLEArray(block.getNonce())
+    ]);
+    const hashComputed = await hashSha256(header);
+    return compareUint8Array(hashComputed, hash);
+}
+exports.verifyBlock = verifyBlock;
+async function verifyTransaction({ txnHash, txnHashHex, merkleRoot, merkleRootHex, proof }) {
+    let tx;
+    let localMerkleRoot;
+    if (txnHashHex) {
+        tx = hexToU8(txnHashHex);
+    }
+    else if (txnHash) {
+        tx = txnHash;
+    }
+    else {
+        throw Error("Most provide a transaction id for verification");
+    }
+    if (merkleRootHex) {
+        localMerkleRoot = hexToU8(merkleRootHex);
+    }
+    else if (merkleRoot) {
+        localMerkleRoot = merkleRoot;
+    }
+    else {
+        throw Error("Most provide a locally validated merkle root for verification");
+    }
+    const merkleFlags = expandMerkleFlags(await proof.getFlags_asU8());
+    const merkleHashes = await proof.getHashesList();
+    const merkleCheckPromise = getMerkleRootFromProof(merkleHashes, merkleFlags, hashPair);
+    return compareUint8Array(await merkleCheckPromise, localMerkleRoot);
+}
+exports.verifyTransaction = verifyTransaction;
 
 
 /***/ }),
@@ -27079,63 +27115,132 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// @ts-ignore
+exports.Filter = void 0;
 const siphash = __importStar(__webpack_require__(51));
+const util_1 = __webpack_require__(49);
 function toValue(hi, lo) {
-    return (BigInt(hi >>> 0) << 32n) + BigInt(lo >>> 0);
+    if (hi > 0) {
+        throw Error("GCS value overflowed 32bits");
+    }
+    else {
+        return Number(lo >>> 0);
+    }
 }
 class Filter {
-    constructor({ p = 19, m = 784931, filterData }) {
+    /**
+     * Create a Golomb-Rice encoded set filter handler for a particular block.
+     * @param blockHash - The hash block corresponding to the filter object.
+     * @param filterData - The compact filter for the block.
+     */
+    constructor({ blockHash, filterData, p = 19, m = 784931 }) {
+        this.blockHash = (typeof blockHash === 'string') ? util_1.base64toU8(blockHash) : blockHash;
         this.keySize = 16;
         this.p = p;
         this.m = m;
-        const filterArray = this._gscFilterToArray(filterData);
-        this.n = this._gcsGetFilterSize(filterArray);
-        this.filterValues = this._gcsGetFilterValues(filterArray, p);
+        const filterBlob = this._gscFilterToArray(filterData);
+        this.n = this._gcsGetFilterSize(filterBlob);
+        this.filterValues = this._gcsGetFilterValues(filterBlob, p);
     }
-    match(keyU8, data) {
-        const key = keyU8.subarray(0, this.keySize);
-        let modulus = siphash.mul64(this.m, this.n);
-        let b = siphash.sipmod(data, key, modulus.hi, modulus.lo);
-        return this.filterValues.includes(toValue(b[0], b[1]));
+    /**
+     * Determine whether some data likely matches the filter.
+     * @param data - The public key script or serialized outpoint to be matched
+     */
+    match({ data }) {
+        const dataValue = this._getFilterValue(data);
+        return this.filterValues.has(dataValue);
     }
-    _gcsGetFilterValues(f, p) {
-        f = f.splice(8);
-        let values = [];
-        let quo = 0n;
-        let value = 0n;
-        while (f.length > 0) {
-            let i = f.shift();
+    /**
+     * Determine whether a list of Base64 encoded strings likely matches the filter
+     * @param values - A list of data as Base64 encoded strings to match
+     */
+    matchAllBase64(values) {
+        const valuesU8 = values.map(s => util_1.base64toU8(s));
+        return this.matchAllU8(valuesU8);
+    }
+    /**
+     * Determine whether a list of Uint8Arrays likely matches the filter
+     * @param values - A list of data as Uint8Arrays to match
+     */
+    matchAllU8(values) {
+        const mapFn = (x) => this._getFilterValue(x);
+        const valueList = values.map(mapFn);
+        const intersection = this._intersection(this.filterValues, new Set([...valueList]));
+        return intersection.values().next().value > 0;
+    }
+    /**
+     * Get the numberic value corresponding to the data
+     * @param data - A Uint8Array to match
+     */
+    _getFilterValue(data) {
+        const key = this.blockHash.subarray(0, this.keySize);
+        const modulus = siphash.mul64(this.m, this.n);
+        const b = siphash.sipmod(data, key, modulus.hi, modulus.lo);
+        return toValue(b[0], b[1]);
+    }
+    _intersection(setA, setB) {
+        const _intersection = new Set();
+        for (const elem of setB) {
+            if (setA.has(elem)) {
+                _intersection.add(elem);
+            }
+        }
+        return _intersection;
+    }
+    /**
+     * Parse the compact filter for a block and return a set of numeric values.
+     * @param rawFilter - The filter as a binary numeric array
+     * @param p - The bucket size of the Golomb encoding
+     */
+    _gcsGetFilterValues(rawFilter, p) {
+        // disgard the first 8 bits
+        rawFilter = rawFilter.splice(8);
+        // Create a Set for the decoded values
+        const values = new Set();
+        let quo = 0;
+        let value = 0;
+        while (rawFilter.length > 0) {
+            const i = rawFilter.shift();
+            // end of quotent bits
             if (i === 0) {
-                let bucket = f.slice(0, p);
-                f = f.splice(p);
-                let bucketStr = "0b" + bucket.join("");
-                let delta = (quo << BigInt(p)) + BigInt(bucketStr);
+                // get a block value and store it in the Set
+                const remainder = Number("0b" + rawFilter.slice(0, p).join(""));
+                const delta = (quo << p) + Number(remainder);
                 if (delta > 0) {
                     value += delta;
-                    values.push(value);
+                    values.add(value);
                 }
-                quo = 0n;
+                quo = 0;
+                // remove the bucket bits
+                rawFilter = rawFilter.splice(p);
             }
             else {
+                // increment the quotent
                 quo++;
             }
         }
         return values;
     }
+    /**
+     * Transform the filter from an Uint8Array to type number[] of 1/0s
+     * @param f - A Uint8Array to match
+     */
     _gscFilterToArray(f) {
         return Array.from(f)
             .map(x => x.toString(2).padStart(8, '0'))
             .join("")
             .split("")
-            .map(x => parseInt(x, 10));
+            .map(x => parseInt(x, 2));
     }
+    /**
+     * Get the decimal value of the first eight bits of a binary array
+     * @param f - a binary array provided as an array of numbers
+     */
     _gcsGetFilterSize(f) {
-        let sizeN = f.slice(0, 8);
+        const sizeN = f.slice(0, 8);
         return parseInt(sizeN.join(""), 2);
     }
 }
-exports.default = Filter;
+exports.Filter = Filter;
 
 
 /***/ }),
@@ -27144,19 +27249,21 @@ exports.default = Filter;
 
 "use strict";
 /*!
+ *
+ * This is a truncated version of the bcoin library for siphash
+ *
+ *
  * siphash.js - siphash for bcoin
  * Copyright (c) 2017, Christopher Jeffrey (MIT License).
  * https://github.com/bcoin-org/bcoin
  */
 
-
-
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.mul64 = exports.sipmod = exports.siphash = void 0;
 /*
  * Constants
  */
-
 const HI = 1 / 0x100000000;
-
 /**
  * Javascript siphash 2-4 implementation.
  * @private
@@ -27164,70 +27271,62 @@ const HI = 1 / 0x100000000;
  * @param {Uint8Array} key - 128 bit key.
  * @returns {Array} [hi, lo]
  */
-
 function _siphash(data, key) {
-
-  const blocks = data.length >>> 3;
-  const c0 = new U64(0x736f6d65, 0x70736575);
-  const c1 = new U64(0x646f7261, 0x6e646f6d);
-  const c2 = new U64(0x6c796765, 0x6e657261);
-  const c3 = new U64(0x74656462, 0x79746573);
-  const f0 = new U64(data.length << 24, 0);
-  const f1 = new U64(0, 0xff);
-  const k0 = U64.fromRaw(key, 0);
-  const k1 = U64.fromRaw(key, 8);
-
-  // Init
-  const v0 = c0.ixor(k0);
-  const v1 = c1.ixor(k1);
-  const v2 = c2.ixor(k0);
-  const v3 = c3.ixor(k1);
-
-  // Blocks
-  let p = 0;
-  for (let i = 0; i < blocks; i++) {
-    const d = U64.fromRaw(data, p);
-    p += 8;
-    v3.ixor(d);
+    const blocks = data.length >>> 3;
+    const c0 = new U64(0x736f6d65, 0x70736575);
+    const c1 = new U64(0x646f7261, 0x6e646f6d);
+    const c2 = new U64(0x6c796765, 0x6e657261);
+    const c3 = new U64(0x74656462, 0x79746573);
+    const f0 = new U64(data.length << 24, 0);
+    const f1 = new U64(0, 0xff);
+    const k0 = U64.fromRaw(key, 0);
+    const k1 = U64.fromRaw(key, 8);
+    // Init
+    const v0 = c0.ixor(k0);
+    const v1 = c1.ixor(k1);
+    const v2 = c2.ixor(k0);
+    const v3 = c3.ixor(k1);
+    // Blocks
+    let p = 0;
+    for (let i = 0; i < blocks; i++) {
+        const d = U64.fromRaw(data, p);
+        p += 8;
+        v3.ixor(d);
+        sipround(v0, v1, v2, v3);
+        sipround(v0, v1, v2, v3);
+        v0.ixor(d);
+    }
+    switch (data.length & 7) {
+        case 7:
+            f0.hi |= data[p + 6] << 16;
+        case 6:
+            f0.hi |= data[p + 5] << 8;
+        case 5:
+            f0.hi |= data[p + 4];
+        case 4:
+            f0.lo |= data[p + 3] << 24;
+        case 3:
+            f0.lo |= data[p + 2] << 16;
+        case 2:
+            f0.lo |= data[p + 1] << 8;
+        case 1:
+            f0.lo |= data[p];
+    }
+    // Finalization
+    v3.ixor(f0);
     sipround(v0, v1, v2, v3);
     sipround(v0, v1, v2, v3);
-    v0.ixor(d);
-  }
-
-  switch (data.length & 7) {
-    case 7:
-      f0.hi |= data[p + 6] << 16;
-    case 6:
-      f0.hi |= data[p + 5] << 8;
-    case 5:
-      f0.hi |= data[p + 4];
-    case 4:
-      f0.lo |= data[p + 3] << 24;
-    case 3:
-      f0.lo |= data[p + 2] << 16;
-    case 2:
-      f0.lo |= data[p + 1] << 8;
-    case 1:
-      f0.lo |= data[p];
-  }
-  // Finalization
-  v3.ixor(f0);
-  sipround(v0, v1, v2, v3);
-  sipround(v0, v1, v2, v3);
-  v0.ixor(f0);
-  v2.ixor(f1);
-  sipround(v0, v1, v2, v3);
-  sipround(v0, v1, v2, v3);
-  sipround(v0, v1, v2, v3);
-  sipround(v0, v1, v2, v3);
-  v0.ixor(v1);
-  v0.ixor(v2);
-  v0.ixor(v3);
-
-  return [v0.hi, v0.lo];
+    v0.ixor(f0);
+    v2.ixor(f1);
+    sipround(v0, v1, v2, v3);
+    sipround(v0, v1, v2, v3);
+    sipround(v0, v1, v2, v3);
+    sipround(v0, v1, v2, v3);
+    v0.ixor(v1);
+    v0.ixor(v2);
+    v0.ixor(v3);
+    return [v0.hi, v0.lo];
 }
-
-
 /**
  * Javascript siphash 2-4 implementation.
  * Used by bitcoin for compact block relay.
@@ -27235,11 +27334,10 @@ function _siphash(data, key) {
  * @param {Uint8Array} key - 128 bit key.
  * @returns {Array} [hi, lo]
  */
-
 function siphash(data, key) {
-  return _siphash(data, key);
+    return _siphash(data, key);
 }
-
+exports.siphash = siphash;
 /**
  * Javascript siphash 2-4 implementation
  * plus 128 bit reduction by a modulus.
@@ -27250,205 +27348,156 @@ function siphash(data, key) {
  * @param {Number} mlo - Modulus lo bits.
  * @returns {Array} [hi, lo]
  */
-
 function sipmod(data, key, mhi, mlo) {
-  const [hi, lo] = _siphash(data, key);
-  return reduce64(hi, lo, mhi, mlo);
+    const [hi, lo] = _siphash(data, key);
+    return reduce64(hi, lo, mhi, mlo);
 }
-
-
+exports.sipmod = sipmod;
 /**
  * U64
  * @ignore
  */
-
 class U64 {
-  constructor(hi, lo) {
-    this.hi = hi | 0;
-    this.lo = lo | 0;
-  }
-
-  iadd(b) {
-    const a = this;
-
-    // Credit to @indutny for this method.
-    const lo = (a.lo + b.lo) | 0;
-
-    const s = lo >> 31;
-    const as = a.lo >> 31;
-    const bs = b.lo >> 31;
-
-    const c = ((as & bs) | (~s & (as ^ bs))) & 1;
-
-    const hi = ((a.hi + b.hi) | 0) + c;
-
-    a.hi = hi | 0;
-    a.lo = lo;
-
-    return a;
-  }
-
-  ixor(b) {
-    this.hi ^= b.hi;
-    this.lo ^= b.lo;
-    return this;
-  }
-
-  irotl(bits) {
-    let ahi = this.hi;
-    let alo = this.lo;
-    let bhi = this.hi;
-    let blo = this.lo;
-
-    // a = x << b
-    if (bits < 32) {
-      ahi <<= bits;
-      ahi |= alo >>> (32 - bits);
-      alo <<= bits;
-    } else {
-      ahi = alo << (bits - 32);
-      alo = 0;
+    constructor(hi, lo) {
+        this.hi = hi | 0;
+        this.lo = lo | 0;
     }
-
-    bits = 64 - bits;
-
-    // b = x >> (64 - b)
-    if (bits < 32) {
-      blo >>>= bits;
-      blo |= bhi << (32 - bits);
-      bhi >>>= bits;
-    } else {
-      blo = bhi >>> (bits - 32);
-      bhi = 0;
+    iadd(b) {
+        const a = this;
+        // Credit to @indutny for this method.
+        const lo = (a.lo + b.lo) | 0;
+        const s = lo >> 31;
+        const as = a.lo >> 31;
+        const bs = b.lo >> 31;
+        const c = ((as & bs) | (~s & (as ^ bs))) & 1;
+        const hi = ((a.hi + b.hi) | 0) + c;
+        a.hi = hi | 0;
+        a.lo = lo;
+        return a;
     }
-
-    // a | b
-    this.hi = ahi | bhi;
-    this.lo = alo | blo;
-
-    return this;
-  }
-
-  static fromRaw(data, off) {
-    const lo = readUInt32LE(data, off);
-    const hi = readUInt32LE(data, off + 4);
-    return new U64(hi, lo);
-  }
-
-
+    ixor(b) {
+        this.hi ^= b.hi;
+        this.lo ^= b.lo;
+        return this;
+    }
+    irotl(bits) {
+        let ahi = this.hi;
+        let alo = this.lo;
+        let bhi = this.hi;
+        let blo = this.lo;
+        // a = x << b
+        if (bits < 32) {
+            ahi <<= bits;
+            ahi |= alo >>> (32 - bits);
+            alo <<= bits;
+        }
+        else {
+            ahi = alo << (bits - 32);
+            alo = 0;
+        }
+        bits = 64 - bits;
+        // b = x >> (64 - b)
+        if (bits < 32) {
+            blo >>>= bits;
+            blo |= bhi << (32 - bits);
+            bhi >>>= bits;
+        }
+        else {
+            blo = bhi >>> (bits - 32);
+            bhi = 0;
+        }
+        // a | b
+        this.hi = ahi | bhi;
+        this.lo = alo | blo;
+        return this;
+    }
+    static fromRaw(data, off) {
+        const lo = readUInt32LE(data, off);
+        const hi = readUInt32LE(data, off + 4);
+        return new U64(hi, lo);
+    }
 }
-
 /*
  * Helpers
  */
-
 function sipround(v0, v1, v2, v3) {
-  v0.iadd(v1);
-  v1.irotl(13);
-  v1.ixor(v0);
-
-  v0.irotl(32);
-
-  v2.iadd(v3);
-  v3.irotl(16);
-  v3.ixor(v2);
-
-  v0.iadd(v3);
-  v3.irotl(21);
-  v3.ixor(v0);
-
-  v2.iadd(v1);
-  v1.irotl(17);
-  v1.ixor(v2);
-
-  v2.irotl(32);
+    v0.iadd(v1);
+    v1.irotl(13);
+    v1.ixor(v0);
+    v0.irotl(32);
+    v2.iadd(v3);
+    v3.irotl(16);
+    v3.ixor(v2);
+    v0.iadd(v3);
+    v3.irotl(21);
+    v3.ixor(v0);
+    v2.iadd(v1);
+    v1.irotl(17);
+    v1.ixor(v2);
+    v2.irotl(32);
 }
-
 // Compute `((uint128_t)a * b) >> 64`
 function reduce64(ahi, alo, bhi, blo) {
-  const axbhi = mul64(ahi, bhi);
-  const axbmid = mul64(ahi, blo);
-  const bxamid = mul64(bhi, alo);
-  const axblo = mul64(alo, blo);
-
-  // Hack:
-  const c = (axbmid.lo >>> 0) + (bxamid.lo >>> 0) + (axblo.hi >>> 0);
-  const m = (axbmid.hi >>> 0) + (bxamid.hi >>> 0) + ((c * HI) >>> 0);
-
-  // More hacks:
-  const mhi = (m * HI) | 0;
-  const mlo = m | 0;
-
-  const {hi, lo} = sum64(axbhi.hi, axbhi.lo, mhi, mlo);
-
-  return [hi, lo];
+    const axbhi = mul64(ahi, bhi);
+    const axbmid = mul64(ahi, blo);
+    const bxamid = mul64(bhi, alo);
+    const axblo = mul64(alo, blo);
+    // Hack:
+    const c = (axbmid.lo >>> 0) + (bxamid.lo >>> 0) + (axblo.hi >>> 0);
+    const m = (axbmid.hi >>> 0) + (bxamid.hi >>> 0) + ((c * HI) >>> 0);
+    // More hacks:
+    const mhi = (m * HI) | 0;
+    const mlo = m | 0;
+    const { hi, lo } = sum64(axbhi.hi, axbhi.lo, mhi, mlo);
+    return [hi, lo];
 }
-
 function sum64(ahi, alo, bhi, blo) {
-  // Credit to @indutny for this method.
-  const lo = (alo + blo) | 0;
-
-  const s = lo >> 31;
-  const as = alo >> 31;
-  const bs = blo >> 31;
-
-  const c = ((as & bs) | (~s & (as ^ bs))) & 1;
-
-  const hi = (((ahi + bhi) | 0) + c) | 0;
-
-  return { hi, lo };
+    // Credit to @indutny for this method.
+    const lo = (alo + blo) | 0;
+    const s = lo >> 31;
+    const as = alo >> 31;
+    const bs = blo >> 31;
+    const c = ((as & bs) | (~s & (as ^ bs))) & 1;
+    const hi = (((ahi + bhi) | 0) + c) | 0;
+    return { hi, lo };
 }
-
 function mul64(alo, blo) {
-  const a16 = alo >>> 16;
-  const a00 = alo & 0xffff;
-
-  const b16 = blo >>> 16;
-  const b00 = blo & 0xffff;
-
-  let c48 = 0;
-  let c32 = 0;
-  let c16 = 0;
-  let c00 = 0;
-
-  c00 += a00 * b00;
-  c16 += c00 >>> 16;
-  c00 &= 0xffff;
-  c16 += a16 * b00;
-  c32 += c16 >>> 16;
-  c16 &= 0xffff;
-  c16 += a00 * b16;
-  c32 += c16 >>> 16;
-  c16 &= 0xffff;
-  c48 += c32 >>> 16;
-  c32 &= 0xffff;
-  c32 += a16 * b16;
-  c48 += c32 >>> 16;
-  c32 &= 0xffff;
-  c48 += c32 >>> 16;
-  c48 &= 0xffff;
-
-  const hi = (c48 << 16) | c32;
-  const lo = (c16 << 16) | c00;
-
-  return { hi, lo };
+    const a16 = alo >>> 16;
+    const a00 = alo & 0xffff;
+    const b16 = blo >>> 16;
+    const b00 = blo & 0xffff;
+    let c48 = 0;
+    let c32 = 0;
+    let c16 = 0;
+    let c00 = 0;
+    c00 += a00 * b00;
+    c16 += c00 >>> 16;
+    c00 &= 0xffff;
+    c16 += a16 * b00;
+    c32 += c16 >>> 16;
+    c16 &= 0xffff;
+    c16 += a00 * b16;
+    c32 += c16 >>> 16;
+    c16 &= 0xffff;
+    c48 += c32 >>> 16;
+    c32 &= 0xffff;
+    c32 += a16 * b16;
+    c48 += c32 >>> 16;
+    c32 &= 0xffff;
+    c48 += c32 >>> 16;
+    c48 &= 0xffff;
+    const hi = (c48 << 16) | c32;
+    const lo = (c16 << 16) | c00;
+    return { hi, lo };
 }
-
-function readUInt32LE (data, offset) {
-    offset = offset >>> 0  
+exports.mul64 = mul64;
+function readUInt32LE(data, offset) {
+    offset = offset >>> 0;
     return ((data[offset]) |
         (data[offset + 1] << 8) |
         (data[offset + 2] << 16)) +
-        (data[offset + 3] * 0x1000000)
-  }
-
-/*
- * Expose
- */
-
-exports.mul64 = mul64;
-exports.siphash = siphash;
-exports.sipmod = sipmod;
+        (data[offset + 3] * 0x1000000);
+}
 
 
 /***/ }),

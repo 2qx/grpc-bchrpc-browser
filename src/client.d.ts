@@ -161,14 +161,4 @@ export default class GrpcClient {
         txnHex?: string;
         txn?: Uint8Array;
     }): Promise<bchrpc.SubmitTransactionResponse>;
-    verifyBlock({ block, hash }: {
-        block?: bchrpc.BlockInfo;
-        hash: string | Uint8Array;
-    }): Promise<boolean>;
-    verifyTransaction({ txnHash, txnHashHex, merkleRoot, merkleRootHex }: {
-        txnHash?: string | Uint8Array;
-        txnHashHex?: string;
-        merkleRoot?: string | Uint8Array;
-        merkleRootHex?: string;
-    }): Promise<boolean>;
 }
