@@ -1,3 +1,5 @@
+import { BlockInfo, GetMerkleProofResponse } from "../pb/bchrpc_pb"
+
 export async function sha256sha256(ab: Uint8Array): Promise<ArrayBuffer> {
     try {
         return await crypto.subtle.digest('SHA-256', await crypto.subtle.digest('SHA-256', ab))
@@ -6,7 +8,7 @@ export async function sha256sha256(ab: Uint8Array): Promise<ArrayBuffer> {
     }
 }
 
-export async function hash(a: string | Uint8Array) {
+export async function hashSha256(a: string | Uint8Array) {
     a = (typeof a === 'string') ? base64toU8(a) : a;
     return await new Uint8Array(
         await sha256sha256(
@@ -99,7 +101,7 @@ export function numberTo4ByteLEArray(num: number) {
     return byteArray;
 };
 
-export function numberPairToBase64(hi:number, lo:number):string{
+export function numberPairToBase64(hi: number, lo: number): string {
     const hiArray = numberTo4ByteLEArray(hi);
     const loArray = numberTo4ByteLEArray(lo);
     return u8toBase64(new Uint8Array([...hiArray, ...loArray]))
@@ -121,10 +123,10 @@ export function base64toHex(b64: string): string {
 
 // see https://jsperf.com/base64-to-uint8array/19
 export function base64toU8(b64: string) {
-    const  binary = atob(b64);
-    const  len = binary.length >>> 0;
-    const  v = new Uint8Array(len);
-    for (let i=0; i<len; ++i) v[i] = binary.charCodeAt(i)
+    const binary = atob(b64);
+    const len = binary.length >>> 0;
+    const v = new Uint8Array(len);
+    for (let i = 0; i < len; ++i) v[i] = binary.charCodeAt(i)
     return v
 }
 
@@ -142,4 +144,50 @@ export function u8toBase64(u8: Uint8Array) {
 
 export function arrayBufferToBase64(ab: ArrayBuffer) {
     return u8toBase64(new Uint8Array(ab))
+}
+
+
+
+export async function verifyBlock({ block, hash }: { block?: BlockInfo, hash: string | Uint8Array }) {
+    hash = (typeof hash === 'string') ? base64toU8(hash) : hash;
+    if (!block) {
+        return false
+    }
+    const header = new Uint8Array([
+        ...numberTo4ByteLEArray(block.getVersion()),
+        ...block.getPreviousBlock_asU8(),
+        ...block.getMerkleRoot_asU8(),
+        ...numberTo4ByteLEArray(block.getTimestamp()),
+        ...numberTo4ByteLEArray(block.getBits()),
+        ...numberTo4ByteLEArray(block.getNonce())
+    ])
+    const hashComputed = await hashSha256(header)
+    return compareUint8Array(hashComputed, hash)
+}
+
+
+
+export async function verifyTransaction({ txnHash, txnHashHex, merkleRoot, merkleRootHex, proof }:
+    { txnHash?: string | Uint8Array, txnHashHex?: string, merkleRoot?: string | Uint8Array, merkleRootHex?: string, proof: GetMerkleProofResponse }
+): Promise<boolean> {
+    let tx: string | Uint8Array
+    let localMerkleRoot: string | Uint8Array
+    if (txnHashHex) {
+        tx = hexToU8(txnHashHex)
+    } else if (txnHash) {
+        tx = txnHash
+    } else {
+        throw Error("Most provide a transaction id for verification");
+    }
+    if (merkleRootHex) {
+        localMerkleRoot = hexToU8(merkleRootHex)
+    } else if (merkleRoot) {
+        localMerkleRoot = merkleRoot
+    } else {
+        throw Error("Most provide a locally validated merkle root for verification");
+    }
+    const merkleFlags = expandMerkleFlags(await proof.getFlags_asU8());
+    const merkleHashes = await proof.getHashesList();
+    const merkleCheckPromise = getMerkleRootFromProof(merkleHashes, merkleFlags, hashPair)
+    return compareUint8Array(await merkleCheckPromise, localMerkleRoot)
 }
