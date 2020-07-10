@@ -19,6 +19,7 @@ module.exports = {
   output: {
       filename: 'bchrpc.webworker.js',
       path: path.resolve(__dirname, 'dist'),
-      libraryTarget: 'umd'
+      libraryTarget: 'umd',
+      library: 'bchrpc'
   }
 };
