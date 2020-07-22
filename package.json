@@ -2,7 +2,7 @@
     "name": "grpc-bchrpc-browser",
     "version": "0.0.9",
     "description": "BCHD gRPC client for browsers",
-    "main": "dist/bchrpc.bundle.js",
+    "main": "index.ts",
     "types": "index.d.ts",
     "files": [
         "*.d.ts",
@@ -16,12 +16,12 @@
         "build": "npx webpack --mode=none --config=./webpack.config.js && npx webpack --mode=none --config=./webpack.worker.js && cp dist/bchrpc.webworker.js example/",
         "build:docs": "npx typedoc  --excludeExternals --plugin typedoc-plugin-markdown --out docs/ts --plugin typedoc-plugin-external-module-name src/client.ts",
         "pb-build": "protoc -I=pb bchrpc.proto --js_out=import_style=commonjs,binary:pb --grpc-web_out=import_style=typescript,mode=grpcwebtext:pb",
-        "pb-clean": "echo the proto file in this project is forked ATM # rm pb/*",
+        "pb-clean": "rm pb/*",
         "pb-docs-html": "docker pull pseudomuto/protoc-gen-doc && docker run --rm -v $(pwd)/docs/bchrpc:/out  -v $(pwd)/pb:/protos pseudomuto/protoc-gen-doc --doc_opt=/out/html.tmpl,index.html",
         "pb-docs-md": "docker pull pseudomuto/protoc-gen-doc && docker run --rm -v $(pwd)/docs/bchrpc:/out  -v $(pwd)/pb:/protos pseudomuto/protoc-gen-doc --doc_opt=markdown,README.md",
         "pb-grpcui-install": "go get github.com/fullstorydev/grpcui && go install github.com/fullstorydev/grpcui/cmd/grpcui",
         "pb-grpcui": "grpcui -proto pb/bchrpc.proto bchd.fountainhead.cash:443",
-        "pb-update": "echo the proto file in this project is forked ATM # wget https://raw.githubusercontent.com/gcash/bchd/master/bchrpc/bchrpc.proto -O pb/bchrpc.proto",
+        "pb-update": "wget https://raw.githubusercontent.com/gcash/bchd/master/bchrpc/bchrpc.proto -O pb/bchrpc.proto",
         "lint": "tslint src/**/*.ts",
         "test": "mocha",
         "test:browser": "npx webpack --mode=none --config=./webpack.test.js && live-server --port=9000 test/"

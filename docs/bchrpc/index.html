@@ -504,8 +504,8 @@ limit, and from block options.
                 <td>GetRawAddressTransactions</td>
                 <td><a href="#pb.GetRawAddressTransactionsRequest">GetRawAddressTransactionsRequest</a></td>
                 <td><a href="#pb.GetRawAddressTransactionsResponse">GetRawAddressTransactionsResponse</a></td>
-                <td><p>GetRawAddressTransactions the serialized raw transactions for the given address. Offers offset,
-limit, and from block options.
+                <td><p>GetRawAddressTransactions the serialized raw transactions for
+the given address. Offers offset, limit, and from block options.
 
 **Requires AddressIndex**</p></td>
               </tr>
@@ -514,7 +514,8 @@ limit, and from block options.
                 <td>GetAddressUnspentOutputs</td>
                 <td><a href="#pb.GetAddressUnspentOutputsRequest">GetAddressUnspentOutputsRequest</a></td>
                 <td><a href="#pb.GetAddressUnspentOutputsResponse">GetAddressUnspentOutputsResponse</a></td>
-                <td><p>GetAddressUnspentOutputs returns all the unspent transaction outputs for the given address.
+                <td><p>GetAddressUnspentOutputs returns all the unspent transaction outputs
+for the given address.
 
 **Requires AddressIndex**</p></td>
               </tr>
@@ -523,14 +524,16 @@ limit, and from block options.
                 <td>GetUnspentOutput</td>
                 <td><a href="#pb.GetUnspentOutputRequest">GetUnspentOutputRequest</a></td>
                 <td><a href="#pb.GetUnspentOutputResponse">GetUnspentOutputResponse</a></td>
-                <td><p>GetUnspentOutput takes an unspent output in the utxo set and returns the utxo metadata or not found.</p></td>
+                <td><p>GetUnspentOutput takes an unspent output in the utxo set and returns
+the utxo metadata or not found.</p></td>
               </tr>
             
               <tr>
                 <td>GetMerkleProof</td>
                 <td><a href="#pb.GetMerkleProofRequest">GetMerkleProofRequest</a></td>
                 <td><a href="#pb.GetMerkleProofResponse">GetMerkleProofResponse</a></td>
-                <td><p>GetMerkleProof returns a Merkle (SPV) proof for a specific transaction in the provided block.
+                <td><p>GetMerkleProof returns a Merkle (SPV) proof for a specific transaction
+in the provided block.
 
 **Requires TxIndex***</p></td>
               </tr>
@@ -546,8 +549,9 @@ limit, and from block options.
                 <td>SubscribeTransactions</td>
                 <td><a href="#pb.SubscribeTransactionsRequest">SubscribeTransactionsRequest</a></td>
                 <td><a href="#pb.TransactionNotification">TransactionNotification</a> stream</td>
-                <td><p>SubscribeTransactions creates subscription to all relevant transactions based on 
-the subscription filter.
+                <td><p>SubscribeTransactions creates subscription to all relevant transactions based on
+the subscription filter.  The parameters to filter transactions on can be
+updated by sending new SubscribeTransactionsRequest objects on the stream.
 
 This RPC does not use bidirectional streams and therefore can be used
 with grpc-web. You will need to close and reopen the stream whenever
@@ -561,11 +565,11 @@ then SubscribeTransactionStream is more appropriate.
                 <td>SubscribeTransactionStream</td>
                 <td><a href="#pb.SubscribeTransactionsRequest">SubscribeTransactionsRequest</a> stream</td>
                 <td><a href="#pb.TransactionNotification">TransactionNotification</a> stream</td>
-                <td><p>Subscribe to relevant transactions based on the subscription requests.
-The parameters to filter transactions on can be updated by sending new
-SubscribeTransactionsRequest objects on the stream.
+                <td><p>SubscribeTransactionStream subscribes to relevant transactions based on
+the subscription requests. The parameters to filter transactions on can
+be updated by sending new SubscribeTransactionsRequest objects on the stream.
 
-Because this RPC is using bi-directional streaming it cannot be used with
+NOTE: Because this RPC is using bi-directional streaming it cannot be used with
 grpc-web.
 
 **Requires TxIndex to receive input metadata**</p></td>
@@ -785,7 +789,7 @@ result in a computed block hash below the difficulty target at the time. </p></t
                   <td>marshaled_block</td>
                   <td><a href="#pb.Block">Block</a></td>
                   <td></td>
-                  <td><p>A Block </p></td>
+                  <td><p>A Block. </p></td>
                 </tr>
               
                 <tr>
@@ -803,7 +807,7 @@ result in a computed block hash below the difficulty target at the time. </p></t
         
       
         <h3 id="pb.GetAddressTransactionsRequest">GetAddressTransactionsRequest</h3>
-        <p>Get marshaled transactions related to a specific address.</p><p>RECOMMENDED:</p><p>Parameters have been provided to query without creating </p><p>performance issues on the node or client.</p><p>- The number of transactions to skip and fetch allow for iterating</p><p>over a large set of transactions, if necessary.</p><p>- A starting block parameter (either `hash` or `height`) </p><p>may then be used to filter results to those occurring</p><p>after a certain time.</p><p>This approach will reduce network traffic and response processing </p><p>for the client, as well as reduce workload on the node.</p>
+        <p>Get marshaled transactions related to a specific address.</p><p>RECOMMENDED:</p><p>Parameters have been provided to query without creating</p><p>performance issues on the node or client.</p><p>- The number of transactions to skip and fetch allow for iterating</p><p>over a large set of transactions, if necessary.</p><p>- A starting block parameter (either `hash` or `height`)</p><p>may then be used to filter results to those occurring</p><p>after a certain time.</p><p>This approach will reduce network traffic and response processing</p><p>for the client, as well as reduce workload on the node.</p>
 
         
           <table class="field-table">
@@ -839,14 +843,16 @@ Does not affect results of unconfirmed transactions. </p></td>
                   <td>hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>Recommended. Only get transactions after (or within) a starting block identified by hash. </p></td>
+                  <td><p>Recommended. Only get transactions after (or within) a
+starting block identified by hash. </p></td>
                 </tr>
               
                 <tr>
                   <td>height</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p>Recommended. Only get transactions after (or within) a starting block identified by block number. </p></td>
+                  <td><p>Recommended. Only get transactions after (or within) a
+starting block identified by block number. </p></td>
                 </tr>
               
             </tbody>
@@ -902,14 +908,15 @@ Does not affect results of unconfirmed transactions. </p></td>
                   <td><a href="#string">string</a></td>
                   <td></td>
                   <td><p>The address to query transactions, in lowercase cashaddr format.
-The network identifiaer is optional (i.e. "cashaddress:"). </p></td>
+The network identifier is optional (i.e. "cashaddress:"). </p></td>
                 </tr>
               
                 <tr>
                   <td>include_mempool</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>When `include_mempool` is true, unconfirmed transactions from mempool are returned. Default is false. </p></td>
+                  <td><p>When `include_mempool` is true, unconfirmed transactions from mempool
+are returned. Default is false. </p></td>
                 </tr>
               
             </tbody>
@@ -988,7 +995,8 @@ The network identifiaer is optional (i.e. "cashaddress:"). </p></td>
                   <td>filter</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>A compact filter matching input outpoints and public key scripts contained in a block (encoded according to BIP158). </p></td>
+                  <td><p>A compact filter matching input outpoints and public key scripts contained
+in a block (encoded according to BIP158). </p></td>
                 </tr>
               
             </tbody>
@@ -1019,7 +1027,7 @@ The network identifiaer is optional (i.e. "cashaddress:"). </p></td>
                   <td>height</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p>The block number </p></td>
+                  <td><p>The block number. </p></td>
                 </tr>
               
             </tbody>
@@ -1081,7 +1089,8 @@ The network identifiaer is optional (i.e. "cashaddress:"). </p></td>
                   <td>full_transactions</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>When `full_transactions` is true, full transactions are returned instead of just hashes. Default is false. </p></td>
+                  <td><p>When `full_transactions` is true, full transactions are returned
+instead of just hashes. Default is false. </p></td>
                 </tr>
               
             </tbody>
@@ -1178,7 +1187,8 @@ The network identifiaer is optional (i.e. "cashaddress:"). </p></td>
                   <td>addr_index</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>When `addr_index` is true, the node has address index enabled and may be used with call related by address. </p></td>
+                  <td><p>When `addr_index` is true, the node has address index enabled and may
+be used with call related by address. </p></td>
                 </tr>
               
             </tbody>
@@ -1202,16 +1212,18 @@ The network identifiaer is optional (i.e. "cashaddress:"). </p></td>
                   <td>block_locator_hashes</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td>repeated</td>
-                  <td><p>A list of block hashes known to the client (most recent first) which is exponentially 
-sparser toward the genesis block (0).
-Common practice is to include all of the last 10 blocks, and then 9 blocks for each order of ten thereafter. </p></td>
+                  <td><p>A list of block hashes known to the client (most recent first) which
+is exponentially  sparser toward the genesis block (0).
+Common practice is to include all of the last 10 blocks, and then
+9 blocks for each order of ten thereafter. </p></td>
                 </tr>
               
                 <tr>
                   <td>stop_hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>hash of the latest desired block header; only blocks occurring before the stop will be returned. </p></td>
+                  <td><p>hash of the latest desired block header; only blocks occurring before
+the stop will be returned. </p></td>
                 </tr>
               
             </tbody>
@@ -1297,7 +1309,7 @@ Common practice is to include all of the last 10 blocks, and then 9 blocks for e
                   <td>full_transactions</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>When `full_transactions` is true, full transaction data is provided 
+                  <td><p>When `full_transactions` is true, full transaction data is provided
 instead of just transaction hashes. Default is false. </p></td>
                 </tr>
               
@@ -1408,7 +1420,7 @@ instead of just transaction hashes. Default is false. </p></td>
                   <td>hashes</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td>repeated</td>
-                  <td><p>A list containing the transaction hash, the adjacent leaf transaction hash 
+                  <td><p>A list containing the transaction hash, the adjacent leaf transaction hash
 and the hashes of the highest nodes in the merkle tree not built with the transaction.
 Proof hashes are ordered following transaction order, or left to right on the merkle tree </p></td>
                 </tr>
@@ -1418,7 +1430,8 @@ Proof hashes are ordered following transaction order, or left to right on the me
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
                   <td><p>Binary representing the location of the matching transaction in the full merkle tree,
-starting with the root (`1`) at position/level 0, where `1` corresponds to a left branch and `01` is a right branch. </p></td>
+starting with the root (`1`) at position/level 0, where `1` corresponds
+to a left branch and `01` is a right branch. </p></td>
                 </tr>
               
             </tbody>
@@ -1429,7 +1442,7 @@ starting with the root (`1`) at position/level 0, where `1` corresponds to a lef
         
       
         <h3 id="pb.GetRawAddressTransactionsRequest">GetRawAddressTransactionsRequest</h3>
-        <p>Get encoded transactions related to a specific address.</p><p>RECOMMENDED:</p><p>Parameters have been provided to query without creating </p><p>performance issues on the node or client.</p><p>- The number of transactions to skip and fetch allow for iterating</p><p>over a large set of transactions, if necessary.</p><p>- A starting block parameter (either `hash` or `height`) </p><p>may then be used to filter results to those occurring</p><p>after a certain time.</p><p>This approach will reduce network traffic and response processing </p><p>for the client, as well as reduce workload on the node.</p>
+        <p>Get encoded transactions related to a specific address.</p><p>RECOMMENDED:</p><p>Parameters have been provided to query without creating</p><p>performance issues on the node or client.</p><p>- The number of transactions to skip and fetch allow for iterating</p><p>over a large set of transactions, if necessary.</p><p>- A starting block parameter (either `hash` or `height`)</p><p>may then be used to filter results to those occurring</p><p>after a certain time.</p><p>This approach will reduce network traffic and response processing</p><p>for the client, as well as reduce workload on the node.</p>
 
         
           <table class="field-table">
@@ -1465,14 +1478,16 @@ Does not affect results of unconfirmed transactions. </p></td>
                   <td>hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>Recommended. Only return transactions after some starting block identified by hash. </p></td>
+                  <td><p>Recommended. Only return transactions after some starting block
+identified by hash. </p></td>
                 </tr>
               
                 <tr>
                   <td>height</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p>Recommended. Only return transactions after some starting block identified by block number. </p></td>
+                  <td><p>Recommended. Only return transactions after some starting block
+identified by block number. </p></td>
                 </tr>
               
             </tbody>
@@ -1692,7 +1707,8 @@ Does not affect results of unconfirmed transactions. </p></td>
                   <td>include_mempool</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>When include_mempool is true, unconfirmed transactions from mempool are returned. Default is false. </p></td>
+                  <td><p>When include_mempool is true, unconfirmed transactions from mempool
+are returned. Default is false. </p></td>
                 </tr>
               
             </tbody>
@@ -1737,7 +1753,8 @@ Does not affect results of unconfirmed transactions. </p></td>
                   <td>is_coinbase</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>When is_coinbase is true, the transaction was the first in a block, created by a miner, and used to pay the block reward </p></td>
+                  <td><p>When is_coinbase is true, the transaction was the first in a block,
+created by a miner, and used to pay the block reward </p></td>
                 </tr>
               
                 <tr>
@@ -1883,15 +1900,17 @@ Default is false, block metadata is sent. See `BlockInfo`. </p></td>
                   <td>full_transactions</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>When full_transactions is true, provide full transaction info for a marshaled block.
-Default is false, only the transaction hashes are included for a marshaled block. See `TransactionData`. </p></td>
+                  <td><p>When full_transactions is true, provide full transaction info
+for a marshaled block.
+Default is false, only the transaction hashes are included for
+a marshaled block. See `TransactionData`. </p></td>
                 </tr>
               
                 <tr>
                   <td>serialize_block</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>When serialize_block is true, blocks are serialized using bitcoin protocol encoding. 
+                  <td><p>When serialize_block is true, blocks are serialized using bitcoin protocol encoding.
 Default is false, block will be Marshaled (see `BlockInfo` and `BlockNotification`) </p></td>
                 </tr>
               
@@ -1946,8 +1965,9 @@ This notification is sent in addition to any requested mempool notifications. </
                   <td>serialize_tx</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>When serialize_tx is true, transactions are serialized using bitcoin protocol encoding. 
-Default is false, transaction will be Marshaled (see `Transaction`, `MempoolTransaction` and `TransactionNotification`) </p></td>
+                  <td><p>When serialize_tx is true, transactions are serialized using
+bitcoin protocol encoding. Default is false, transaction will be Marshaled
+(see `Transaction`, `MempoolTransaction` and `TransactionNotification`) </p></td>
                 </tr>
               
             </tbody>
@@ -1986,7 +2006,7 @@ sha256(sha256(encoded_transaction)) </p></td>
                   <td>inputs</td>
                   <td><a href="#pb.Transaction.Input">Transaction.Input</a></td>
                   <td>repeated</td>
-                  <td><p>List of inputs </p></td>
+                  <td><p>List of inputs. </p></td>
                 </tr>
               
                 <tr>
@@ -2000,7 +2020,7 @@ sha256(sha256(encoded_transaction)) </p></td>
                   <td>lock_time</td>
                   <td><a href="#uint32">uint32</a></td>
                   <td></td>
-                  <td><p>The block height or timestamp after which this transaction is allowed. 
+                  <td><p>The block height or timestamp after which this transaction is allowed.
 If value is greater than 500 million, it is assumed to be an epoch timestamp,
 otherwise it is treated as a block-height. Default is zero, or lock. </p></td>
                 </tr>
@@ -2023,7 +2043,8 @@ otherwise it is treated as a block-height. Default is zero, or lock. </p></td>
                   <td>confirmations</td>
                   <td><a href="#int32">int32</a></td>
                   <td></td>
-                  <td><p>Number of blocks including proof of the transaction, including the block it appeared. </p></td>
+                  <td><p>Number of blocks including proof of the transaction, including
+the block it appeared. </p></td>
                 </tr>
               
                 <tr>
@@ -2075,14 +2096,16 @@ otherwise it is treated as a block-height. Default is zero, or lock. </p></td>
                   <td>signature_script</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>An unlocking script asserting a transaction is permitted to spend the Outpoint (UTXO) </p></td>
+                  <td><p>An unlocking script asserting a transaction is permitted to spend
+the Outpoint (UTXO) </p></td>
                 </tr>
               
                 <tr>
                   <td>sequence</td>
                   <td><a href="#uint32">uint32</a></td>
                   <td></td>
-                  <td><p>As of BIP-68, the sequence number is interpreted as a relative lock-time for the input. </p></td>
+                  <td><p>As of BIP-68, the sequence number is interpreted as a relative
+lock-time for the input. </p></td>
                 </tr>
               
                 <tr>
@@ -2329,7 +2352,8 @@ will be ignored. </p></td>
                   <td>is_coinbase</td>
                   <td><a href="#bool">bool</a></td>
                   <td></td>
-                  <td><p>When is_coinbase is true, the output is the first in the block, a generation transaction, the result of mining. </p></td>
+                  <td><p>When is_coinbase is true, the output is the first in the block,
+a generation transaction, the result of mining. </p></td>
                 </tr>
               
                 <tr>

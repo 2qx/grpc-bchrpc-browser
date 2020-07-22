@@ -138,7 +138,7 @@ Metadata for identifying and validating a block
 | ----- | ---- | ----- | ----------- |
 | type | [BlockNotification.Type](#pb.BlockNotification.Type) |  | Whether the block is connected to the chain. |
 | block_info | [BlockInfo](#pb.BlockInfo) |  | Marshaled block header data, as well as metadata stored by the node. |
-| marshaled_block | [Block](#pb.Block) |  | A Block |
+| marshaled_block | [Block](#pb.Block) |  | A Block. |
 | serialized_block | [bytes](#bytes) |  | Binary block, serialized using bitcoin protocol encoding. |
 
 
@@ -152,17 +152,17 @@ Metadata for identifying and validating a block
 Get marshaled transactions related to a specific address.
 
 RECOMMENDED:
-Parameters have been provided to query without creating 
+Parameters have been provided to query without creating
   performance issues on the node or client.
 
 - The number of transactions to skip and fetch allow for iterating
       over a large set of transactions, if necessary.
 
-- A starting block parameter (either `hash` or `height`) 
+- A starting block parameter (either `hash` or `height`)
       may then be used to filter results to those occurring
       after a certain time.
 
-This approach will reduce network traffic and response processing 
+This approach will reduce network traffic and response processing
   for the client, as well as reduce workload on the node.
 
 
@@ -203,7 +203,7 @@ This approach will reduce network traffic and response processing
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| address | [string](#string) |  | The address to query transactions, in lowercase cashaddr format. The network identifiaer is optional (i.e. &#34;cashaddress:&#34;). |
+| address | [string](#string) |  | The address to query transactions, in lowercase cashaddr format. The network identifier is optional (i.e. &#34;cashaddress:&#34;). |
 | include_mempool | [bool](#bool) |  | When `include_mempool` is true, unconfirmed transactions from mempool are returned. Default is false. |
 
 
@@ -266,7 +266,7 @@ This approach will reduce network traffic and response processing
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | hash | [bytes](#bytes) |  | The block hash as a byte array or base64 encoded string, little-endian. |
-| height | [int32](#int32) |  | The block number |
+| height | [int32](#int32) |  | The block number. |
 
 
 
@@ -492,17 +492,17 @@ Request headers using a list of known block hashes.
 Get encoded transactions related to a specific address.
 
 RECOMMENDED:
-Parameters have been provided to query without creating 
+Parameters have been provided to query without creating
   performance issues on the node or client.
 
 - The number of transactions to skip and fetch allow for iterating
       over a large set of transactions, if necessary.
 
-- A starting block parameter (either `hash` or `height`) 
+- A starting block parameter (either `hash` or `height`)
       may then be used to filter results to those occurring
       after a certain time.
 
-This approach will reduce network traffic and response processing 
+This approach will reduce network traffic and response processing
   for the client, as well as reduce workload on the node.
 
 
@@ -775,7 +775,7 @@ Request to subscribe or unsubscribe from a stream of transactions.
 | ----- | ---- | ----- | ----------- |
 | hash | [bytes](#bytes) |  | The double sha256 hash of the encoded transaction. sha256(sha256(encoded_transaction)) |
 | version | [int32](#int32) |  | The version of the transaction format. |
-| inputs | [Transaction.Input](#pb.Transaction.Input) | repeated | List of inputs |
+| inputs | [Transaction.Input](#pb.Transaction.Input) | repeated | List of inputs. |
 | outputs | [Transaction.Output](#pb.Transaction.Output) | repeated | List of outputs. |
 | lock_time | [uint32](#uint32) |  | The block height or timestamp after which this transaction is allowed. If value is greater than 500 million, it is assumed to be an epoch timestamp, otherwise it is treated as a block-height. Default is zero, or lock. |
 | size | [int32](#int32) |  | The size of the transaction in bytes. |
@@ -984,14 +984,14 @@ unauthenticated.
 
 **Requires TxIndex*** |
 | SubmitTransaction | [SubmitTransactionRequest](#pb.SubmitTransactionRequest) | [SubmitTransactionResponse](#pb.SubmitTransactionResponse) | SubmitTransaction broadcasts a transaction to all connected peers. |
-| SubscribeTransactions | [SubscribeTransactionsRequest](#pb.SubscribeTransactionsRequest) | [TransactionNotification](#pb.TransactionNotification) stream | SubscribeTransactions creates subscription to all relevant transactions based on the subscription filter.
+| SubscribeTransactions | [SubscribeTransactionsRequest](#pb.SubscribeTransactionsRequest) | [TransactionNotification](#pb.TransactionNotification) stream | SubscribeTransactions creates subscription to all relevant transactions based on the subscription filter. The parameters to filter transactions on can be updated by sending new SubscribeTransactionsRequest objects on the stream.
 
 This RPC does not use bidirectional streams and therefore can be used with grpc-web. You will need to close and reopen the stream whenever you want to update the addresses. If you are not using grpc-web then SubscribeTransactionStream is more appropriate.
 
 **Requires TxIndex to receive input metadata** |
-| SubscribeTransactionStream | [SubscribeTransactionsRequest](#pb.SubscribeTransactionsRequest) stream | [TransactionNotification](#pb.TransactionNotification) stream | Subscribe to relevant transactions based on the subscription requests. The parameters to filter transactions on can be updated by sending new SubscribeTransactionsRequest objects on the stream.
+| SubscribeTransactionStream | [SubscribeTransactionsRequest](#pb.SubscribeTransactionsRequest) stream | [TransactionNotification](#pb.TransactionNotification) stream | SubscribeTransactionStream subscribes to relevant transactions based on the subscription requests. The parameters to filter transactions on can be updated by sending new SubscribeTransactionsRequest objects on the stream.
 
-Because this RPC is using bi-directional streaming it cannot be used with grpc-web.
+NOTE: Because this RPC is using bi-directional streaming it cannot be used with grpc-web.
 
 **Requires TxIndex to receive input metadata** |
 | SubscribeBlocks | [SubscribeBlocksRequest](#pb.SubscribeBlocksRequest) | [BlockNotification](#pb.BlockNotification) stream | SubscribeBlocks creates a subscription for notifications of new blocks being connected to the blockchain or blocks being disconnected. |
