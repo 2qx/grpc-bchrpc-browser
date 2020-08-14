@@ -81,6 +81,8 @@ If for some reason you need to update the gcash proto files yourself to add some
 **Important:** an [installed](https://github.com/protocolbuffers/protobuf/releases/latest) version of `protoc`  
  is required to run `pb-build`. 
 
+**IN ADDITION** you must have `protoc-gen-grpc-web`, see [grpc-web](https://github.com/grpc/grpc-web)
+
 ### Using bchrpc in a Postman-like webgui
 
 To facilitate debugging and development of the client, it may be useful make calls using a webui. The following npm scripts are 
