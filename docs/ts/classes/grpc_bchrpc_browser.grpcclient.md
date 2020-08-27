@@ -42,7 +42,7 @@
 
 \+ **new GrpcClient**(`__namedParameters`: object): *[GrpcClient](grpc_bchrpc_browser.grpcclient.md)*
 
-*Defined in [client.ts:8](https://github.com/2qx/grpc-bchrpc-browser/blob/573bb3d/src/client.ts#L8)*
+*Defined in [client.ts:8](https://github.com/2qx/grpc-bchrpc-browser/blob/472c44d/src/client.ts#L8)*
 
 Create a client.
 
@@ -64,7 +64,7 @@ Name | Type | Default | Description |
 
 • **client**: *bchrpcClient*
 
-*Defined in [client.ts:8](https://github.com/2qx/grpc-bchrpc-browser/blob/573bb3d/src/client.ts#L8)*
+*Defined in [client.ts:8](https://github.com/2qx/grpc-bchrpc-browser/blob/472c44d/src/client.ts#L8)*
 
 ## Methods
 
@@ -72,7 +72,7 @@ Name | Type | Default | Description |
 
 ▸ **getAddressTransactions**(`__namedParameters`: object): *Promise‹GetAddressTransactionsResponse›*
 
-*Defined in [client.ts:158](https://github.com/2qx/grpc-bchrpc-browser/blob/573bb3d/src/client.ts#L158)*
+*Defined in [client.ts:158](https://github.com/2qx/grpc-bchrpc-browser/blob/472c44d/src/client.ts#L158)*
 
 Get transactions related to a particular address
 
@@ -96,7 +96,7 @@ ___
 
 ▸ **getAddressUtxos**(`__namedParameters`: object): *Promise‹GetAddressUnspentOutputsResponse›*
 
-*Defined in [client.ts:236](https://github.com/2qx/grpc-bchrpc-browser/blob/573bb3d/src/client.ts#L236)*
+*Defined in [client.ts:236](https://github.com/2qx/grpc-bchrpc-browser/blob/472c44d/src/client.ts#L236)*
 
 **Parameters:**
 
@@ -115,7 +115,7 @@ ___
 
 ▸ **getBlock**(`__namedParameters`: object): *Promise‹GetBlockResponse›*
 
-*Defined in [client.ts:284](https://github.com/2qx/grpc-bchrpc-browser/blob/573bb3d/src/client.ts#L284)*
+*Defined in [client.ts:284](https://github.com/2qx/grpc-bchrpc-browser/blob/472c44d/src/client.ts#L284)*
 
 Retrieve block info given a block number or hash
 
@@ -138,7 +138,7 @@ ___
 
 ▸ **getBlockFilter**(`__namedParameters`: object): *Promise‹GetBlockFilterResponse›*
 
-*Defined in [client.ts:315](https://github.com/2qx/grpc-bchrpc-browser/blob/573bb3d/src/client.ts#L315)*
+*Defined in [client.ts:315](https://github.com/2qx/grpc-bchrpc-browser/blob/472c44d/src/client.ts#L315)*
 
 Retrieve block filter given a block number or hash
 
@@ -160,7 +160,7 @@ ___
 
 ▸ **getBlockInfo**(`__namedParameters`: object): *Promise‹GetBlockInfoResponse›*
 
-*Defined in [client.ts:338](https://github.com/2qx/grpc-bchrpc-browser/blob/573bb3d/src/client.ts#L338)*
+*Defined in [client.ts:338](https://github.com/2qx/grpc-bchrpc-browser/blob/472c44d/src/client.ts#L338)*
 
 Retrieve block info given a block number or hash
 
@@ -180,17 +180,11 @@ ___
 
 ###  getBlockchainInfo
 
-▸ **getBlockchainInfo**(`__namedParameters`: object): *Promise‹GetBlockchainInfoResponse›*
+▸ **getBlockchainInfo**(): *Promise‹GetBlockchainInfoResponse›*
 
-*Defined in [client.ts:358](https://github.com/2qx/grpc-bchrpc-browser/blob/573bb3d/src/client.ts#L358)*
+*Defined in [client.ts:358](https://github.com/2qx/grpc-bchrpc-browser/blob/472c44d/src/client.ts#L358)*
 
 Retrieve block info for the network, network state and host node.
-
-**Parameters:**
-
-Name | Type |
------- | ------ |
-`__namedParameters` | object |
 
 **Returns:** *Promise‹GetBlockchainInfoResponse›*
 
@@ -200,7 +194,7 @@ ___
 
 ▸ **getHeaders**(`__namedParameters`: object): *Promise‹GetHeadersResponse›*
 
-*Defined in [client.ts:129](https://github.com/2qx/grpc-bchrpc-browser/blob/573bb3d/src/client.ts#L129)*
+*Defined in [client.ts:129](https://github.com/2qx/grpc-bchrpc-browser/blob/472c44d/src/client.ts#L129)*
 
 Get block header information
 
@@ -221,7 +215,7 @@ ___
 
 ▸ **getMempool**(`__namedParameters`: object): *Promise‹GetMempoolResponse›*
 
-*Defined in [client.ts:56](https://github.com/2qx/grpc-bchrpc-browser/blob/573bb3d/src/client.ts#L56)*
+*Defined in [client.ts:56](https://github.com/2qx/grpc-bchrpc-browser/blob/472c44d/src/client.ts#L56)*
 
 Get transactions from mempool
 
@@ -241,7 +235,7 @@ ___
 
 ▸ **getMempoolInfo**(): *Promise‹GetMempoolInfoResponse›*
 
-*Defined in [client.ts:38](https://github.com/2qx/grpc-bchrpc-browser/blob/573bb3d/src/client.ts#L38)*
+*Defined in [client.ts:38](https://github.com/2qx/grpc-bchrpc-browser/blob/472c44d/src/client.ts#L38)*
 
 Get information about transactions in mempool
 
@@ -253,7 +247,7 @@ ___
 
 ▸ **getMerkleProof**(`__namedParameters`: object): *Promise‹GetMerkleProofResponse›*
 
-*Defined in [client.ts:217](https://github.com/2qx/grpc-bchrpc-browser/blob/573bb3d/src/client.ts#L217)*
+*Defined in [client.ts:217](https://github.com/2qx/grpc-bchrpc-browser/blob/472c44d/src/client.ts#L217)*
 
 Retrieve merkle (SPV) proof that the given transaction is in the provided block.
 
@@ -274,7 +268,7 @@ ___
 
 ▸ **getRawBlock**(`__namedParameters`: object): *Promise‹GetRawBlockResponse›*
 
-*Defined in [client.ts:257](https://github.com/2qx/grpc-bchrpc-browser/blob/573bb3d/src/client.ts#L257)*
+*Defined in [client.ts:257](https://github.com/2qx/grpc-bchrpc-browser/blob/472c44d/src/client.ts#L257)*
 
 Retrieve raw block from a hash
 
@@ -295,7 +289,7 @@ ___
 
 ▸ **getRawTransaction**(`__namedParameters`: object): *Promise‹GetRawTransactionResponse›*
 
-*Defined in [client.ts:79](https://github.com/2qx/grpc-bchrpc-browser/blob/573bb3d/src/client.ts#L79)*
+*Defined in [client.ts:79](https://github.com/2qx/grpc-bchrpc-browser/blob/472c44d/src/client.ts#L79)*
 
 Get a raw transaction
 
@@ -316,7 +310,7 @@ ___
 
 ▸ **getTransaction**(`__namedParameters`: object): *Promise‹GetTransactionResponse›*
 
-*Defined in [client.ts:104](https://github.com/2qx/grpc-bchrpc-browser/blob/573bb3d/src/client.ts#L104)*
+*Defined in [client.ts:104](https://github.com/2qx/grpc-bchrpc-browser/blob/472c44d/src/client.ts#L104)*
 
 Get a transaction
 
@@ -337,7 +331,7 @@ ___
 
 ▸ **getUnspentOutput**(`__namedParameters`: object): *Promise‹GetUnspentOutputResponse›*
 
-*Defined in [client.ts:188](https://github.com/2qx/grpc-bchrpc-browser/blob/573bb3d/src/client.ts#L188)*
+*Defined in [client.ts:188](https://github.com/2qx/grpc-bchrpc-browser/blob/472c44d/src/client.ts#L188)*
 
 **Parameters:**
 
@@ -358,7 +352,7 @@ ___
 
 ▸ **submitTransaction**(`__namedParameters`: object): *Promise‹SubmitTransactionResponse›*
 
-*Defined in [client.ts:431](https://github.com/2qx/grpc-bchrpc-browser/blob/573bb3d/src/client.ts#L431)*
+*Defined in [client.ts:431](https://github.com/2qx/grpc-bchrpc-browser/blob/472c44d/src/client.ts#L431)*
 
 **Parameters:**
 
@@ -377,7 +371,7 @@ ___
 
 ▸ **subscribeBlocks**(`__namedParameters`: object): *Promise‹ClientReadableStream‹BlockNotification››*
 
-*Defined in [client.ts:415](https://github.com/2qx/grpc-bchrpc-browser/blob/573bb3d/src/client.ts#L415)*
+*Defined in [client.ts:415](https://github.com/2qx/grpc-bchrpc-browser/blob/472c44d/src/client.ts#L415)*
 
 **Parameters:**
 
@@ -397,7 +391,7 @@ ___
 
 ▸ **subscribeTransactions**(`__namedParameters`: object): *Promise‹ClientReadableStream‹TransactionNotification››*
 
-*Defined in [client.ts:378](https://github.com/2qx/grpc-bchrpc-browser/blob/573bb3d/src/client.ts#L378)*
+*Defined in [client.ts:378](https://github.com/2qx/grpc-bchrpc-browser/blob/472c44d/src/client.ts#L378)*
 
 **Parameters:**
 

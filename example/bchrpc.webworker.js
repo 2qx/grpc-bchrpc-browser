@@ -132,6 +132,8 @@ __exportStar(__webpack_require__(12), exports);
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
+/* eslint-disable */
+// @ts-nocheck
 
 var jspb = __webpack_require__(2);
 var goog = jspb;
@@ -14903,6 +14905,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.bchrpcClient = void 0;
 // GENERATED CODE -- DO NOT EDIT!
+/* eslint-disable */
+// @ts-nocheck
 const grpcWeb = __importStar(__webpack_require__(9));
 const bchrpc_pb_1 = __webpack_require__(1);
 class bchrpcClient {
@@ -14963,6 +14967,8 @@ class bchrpcClient {
         }, bchrpc_pb_1.BlockNotification.deserializeBinary);
         if (!options)
             options = {};
+        if (!credentials)
+            credentials = {};
         options['format'] = 'text';
         this.client_ = new grpcWeb.GrpcWebClientBase(options);
         this.hostname_ = hostname;
@@ -14970,76 +14976,122 @@ class bchrpcClient {
         this.options_ = options;
     }
     getMempoolInfo(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetMempoolInfo', request, metadata || {}, this.methodInfoGetMempoolInfo, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetMempoolInfo', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetMempoolInfo, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetMempoolInfo', request, metadata || {}, this.methodInfoGetMempoolInfo);
     }
     getMempool(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetMempool', request, metadata || {}, this.methodInfoGetMempool, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetMempool', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetMempool, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetMempool', request, metadata || {}, this.methodInfoGetMempool);
     }
     getBlockchainInfo(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetBlockchainInfo', request, metadata || {}, this.methodInfoGetBlockchainInfo, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetBlockchainInfo', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetBlockchainInfo, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetBlockchainInfo', request, metadata || {}, this.methodInfoGetBlockchainInfo);
     }
     getBlockInfo(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetBlockInfo', request, metadata || {}, this.methodInfoGetBlockInfo, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetBlockInfo', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetBlockInfo, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetBlockInfo', request, metadata || {}, this.methodInfoGetBlockInfo);
     }
     getBlock(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetBlock', request, metadata || {}, this.methodInfoGetBlock, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetBlock', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetBlock, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetBlock', request, metadata || {}, this.methodInfoGetBlock);
     }
     getRawBlock(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetRawBlock', request, metadata || {}, this.methodInfoGetRawBlock, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetRawBlock', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetRawBlock, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetRawBlock', request, metadata || {}, this.methodInfoGetRawBlock);
     }
     getBlockFilter(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetBlockFilter', request, metadata || {}, this.methodInfoGetBlockFilter, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetBlockFilter', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetBlockFilter, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetBlockFilter', request, metadata || {}, this.methodInfoGetBlockFilter);
     }
     getHeaders(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetHeaders', request, metadata || {}, this.methodInfoGetHeaders, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetHeaders', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetHeaders, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetHeaders', request, metadata || {}, this.methodInfoGetHeaders);
     }
     getTransaction(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetTransaction', request, metadata || {}, this.methodInfoGetTransaction, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetTransaction', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetTransaction, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetTransaction', request, metadata || {}, this.methodInfoGetTransaction);
     }
     getRawTransaction(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetRawTransaction', request, metadata || {}, this.methodInfoGetRawTransaction, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetRawTransaction', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetRawTransaction, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetRawTransaction', request, metadata || {}, this.methodInfoGetRawTransaction);
     }
     getAddressTransactions(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetAddressTransactions', request, metadata || {}, this.methodInfoGetAddressTransactions, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetAddressTransactions', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetAddressTransactions, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetAddressTransactions', request, metadata || {}, this.methodInfoGetAddressTransactions);
     }
     getRawAddressTransactions(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetRawAddressTransactions', request, metadata || {}, this.methodInfoGetRawAddressTransactions, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetRawAddressTransactions', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetRawAddressTransactions, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetRawAddressTransactions', request, metadata || {}, this.methodInfoGetRawAddressTransactions);
     }
     getAddressUnspentOutputs(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetAddressUnspentOutputs', request, metadata || {}, this.methodInfoGetAddressUnspentOutputs, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetAddressUnspentOutputs', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetAddressUnspentOutputs, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetAddressUnspentOutputs', request, metadata || {}, this.methodInfoGetAddressUnspentOutputs);
     }
     getUnspentOutput(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetUnspentOutput', request, metadata || {}, this.methodInfoGetUnspentOutput, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetUnspentOutput', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetUnspentOutput, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetUnspentOutput', request, metadata || {}, this.methodInfoGetUnspentOutput);
     }
     getMerkleProof(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetMerkleProof', request, metadata || {}, this.methodInfoGetMerkleProof, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetMerkleProof', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetMerkleProof, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetMerkleProof', request, metadata || {}, this.methodInfoGetMerkleProof);
     }
     submitTransaction(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/SubmitTransaction', request, metadata || {}, this.methodInfoSubmitTransaction, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/SubmitTransaction', this.hostname_).toString(), request, metadata || {}, this.methodInfoSubmitTransaction, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/SubmitTransaction', request, metadata || {}, this.methodInfoSubmitTransaction);
     }
     subscribeTransactions(request, metadata) {
-        return this.client_.serverStreaming(this.hostname_ +
-            '/pb.bchrpc/SubscribeTransactions', request, metadata || {}, this.methodInfoSubscribeTransactions);
+        return this.client_.serverStreaming(new URL('/pb.bchrpc/SubscribeTransactions', this.hostname_).toString(), request, metadata || {}, this.methodInfoSubscribeTransactions);
     }
     subscribeBlocks(request, metadata) {
-        return this.client_.serverStreaming(this.hostname_ +
-            '/pb.bchrpc/SubscribeBlocks', request, metadata || {}, this.methodInfoSubscribeBlocks);
+        return this.client_.serverStreaming(new URL('/pb.bchrpc/SubscribeBlocks', this.hostname_).toString(), request, metadata || {}, this.methodInfoSubscribeBlocks);
     }
 }
 exports.bchrpcClient = bchrpcClient;
@@ -15490,7 +15542,7 @@ class GrpcClient {
     /**
      * Retrieve block info for the network, network state and host node.
      */
-    getBlockchainInfo({}) {
+    getBlockchainInfo() {
         return new Promise((resolve, reject) => {
             this.client.getBlockchainInfo(new bchrpc.GetBlockchainInfoRequest(), null, (err, response) => {
                 if (err !== null) {

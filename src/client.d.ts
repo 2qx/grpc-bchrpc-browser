@@ -136,7 +136,7 @@ export default class GrpcClient {
     /**
      * Retrieve block info for the network, network state and host node.
      */
-    getBlockchainInfo({}: {}): Promise<bchrpc.GetBlockchainInfoResponse>;
+    getBlockchainInfo(): Promise<bchrpc.GetBlockchainInfoResponse>;
     /**
      * @param includeMempoolAcceptance - If true, new unconfirmed transactions from mempool are included apart from the ones confirmed in a block.
      * @param includeBlockAcceptance - If true, transactions are included when they are confirmed. This notification is sent in addition to any requested mempool notifications.

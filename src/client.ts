@@ -356,7 +356,7 @@ export default class GrpcClient {
      * Retrieve block info for the network, network state and host node.
      */
     public getBlockchainInfo(
-        { }: {}
+        
     ): Promise<bchrpc.GetBlockchainInfoResponse> {
         return new Promise((resolve, reject) => {
             this.client.getBlockchainInfo(new bchrpc.GetBlockchainInfoRequest(), null, (err, response) => {

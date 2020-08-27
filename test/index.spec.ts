@@ -67,7 +67,7 @@ if (typeof window === 'undefined') {
 describe("grpc-bchrpc-browser", () => {
 
     it("getBlockchainInfo returns mainnet node with address and tx index enabled", async () => {
-        const res = await mainnet.getBlockchainInfo({});
+        const res = await mainnet.getBlockchainInfo();
         assert.equal(res.getBitcoinNet(), GetBlockchainInfoResponse.BitcoinNet.MAINNET, "Check node is on mainnet");
         assert.equal(res.getAddrIndex(), true, "Check address index is enabled");
         assert.equal(res.getTxIndex(), true, "Check transaction index is enabled");
