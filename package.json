@@ -1,6 +1,6 @@
 {
     "name": "grpc-bchrpc-browser",
-    "version": "0.0.10",
+    "version": "0.16.5",
     "description": "BCHD gRPC client for browsers",
     "main": "dist/bchrpc.bundle.js",
     "types": "index.d.ts",
@@ -64,7 +64,8 @@
     },
     "dependencies": {
         "google-protobuf": "^3.6.1",
-        "grpc-web": "^1.0.7"
+        "grpc-web": "^1.0.7",
+        "tslint": "^6.1.3"
     },
     "keywords": [
         "bch",

@@ -464,11 +464,11 @@ block hash and height.</p></td>
                 <td>GetHeaders</td>
                 <td><a href="#pb.GetHeadersRequest">GetHeadersRequest</a></td>
                 <td><a href="#pb.GetHeadersResponse">GetHeadersResponse</a></td>
-                <td><p>GetHeaders takes a block locator object and returns
-a batch of no more than 2000 headers. Upon parsing the block locator, if the server
-concludes there has been a fork, it will send headers starting at the fork point,
-or genesis if no blocks in the locator are in the best chain. If the locator is
-already at the tip no headers will be returned.
+                <td><p>GetHeaders takes a block locator object and returns a batch of no more than 2000
+headers. Upon parsing the block locator, if the server concludes there has been a
+fork, it will send headers starting at the fork point, or genesis if no blocks in
+the locator are in the best chain. If the locator is already at the tip no headers
+will be returned.
 see: bchd/bchrpc/documentation/wallet_operation.md</p></td>
               </tr>
             
@@ -550,12 +550,11 @@ in the provided block.
                 <td><a href="#pb.SubscribeTransactionsRequest">SubscribeTransactionsRequest</a></td>
                 <td><a href="#pb.TransactionNotification">TransactionNotification</a> stream</td>
                 <td><p>SubscribeTransactions creates subscription to all relevant transactions based on
-the subscription filter.  The parameters to filter transactions on can be
-updated by sending new SubscribeTransactionsRequest objects on the stream.
+the subscription filter.
 
 This RPC does not use bidirectional streams and therefore can be used
 with grpc-web. You will need to close and reopen the stream whenever
-you want to update the addresses. If you are not using grpc-web
+you want to update the subscription filter. If you are not using grpc-web
 then SubscribeTransactionStream is more appropriate.
 
 **Requires TxIndex to receive input metadata**</p></td>
@@ -633,7 +632,7 @@ connected to the blockchain or blocks being disconnected.</p></td>
                   <td>transaction_hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>Just the transaction hash. </p></td>
+                  <td><p>Just the transaction hash, little-endian. </p></td>
                 </tr>
               
                 <tr>
@@ -651,7 +650,7 @@ connected to the blockchain or blocks being disconnected.</p></td>
         
       
         <h3 id="pb.BlockInfo">BlockInfo</h3>
-        <p>Metadata for identifying and validating a block</p>
+        <p>Metadata for identifying and validating a block</p><p>Identification.</p>
 
         
           <table class="field-table">
@@ -665,7 +664,7 @@ connected to the blockchain or blocks being disconnected.</p></td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
                   <td><p>The double sha256 hash of the six header fields in the first 80 bytes
-of the block, when encoded according the bitcoin protocol.
+of the block, when encoded according the bitcoin protocol, little-endian.
 sha256(sha256(encoded_header)) </p></td>
                 </tr>
               
@@ -687,14 +686,14 @@ sha256(sha256(encoded_header)) </p></td>
                   <td>previous_block</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>Hash of the previous block </p></td>
+                  <td><p>Hash of the previous block, little-endian. </p></td>
                 </tr>
               
                 <tr>
                   <td>merkle_root</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>The root of the Merkle Tree built from all transactions in the block. </p></td>
+                  <td><p>The root of the Merkle Tree built from all transactions in the block, little-endian. </p></td>
                 </tr>
               
                 <tr>
@@ -737,7 +736,7 @@ result in a computed block hash below the difficulty target at the time. </p></t
                   <td>next_block_hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>Hash of the next block in this chain. </p></td>
+                  <td><p>Hash of the next block in this chain, little-endian. </p></td>
                 </tr>
               
                 <tr>
@@ -844,7 +843,7 @@ Does not affect results of unconfirmed transactions. </p></td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
                   <td><p>Recommended. Only get transactions after (or within) a
-starting block identified by hash. </p></td>
+starting block identified by hash, little-endian. </p></td>
                 </tr>
               
                 <tr>
@@ -1159,7 +1158,7 @@ instead of just hashes. Default is false. </p></td>
                   <td>best_block_hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>The hash of the best (tip) block in the most-work fully-validated chain. </p></td>
+                  <td><p>The hash of the best (tip) block in the most-work fully-validated chain, little-endian. </p></td>
                 </tr>
               
                 <tr>
@@ -1213,7 +1212,7 @@ be used with call related by address. </p></td>
                   <td><a href="#bytes">bytes</a></td>
                   <td>repeated</td>
                   <td><p>A list of block hashes known to the client (most recent first) which
-is exponentially  sparser toward the genesis block (0).
+is exponentially sparser toward the genesis block (0), little-endian.
 Common practice is to include all of the last 10 blocks, and then
 9 blocks for each order of ten thereafter. </p></td>
                 </tr>
@@ -1222,8 +1221,8 @@ Common practice is to include all of the last 10 blocks, and then
                   <td>stop_hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>hash of the latest desired block header; only blocks occurring before
-the stop will be returned. </p></td>
+                  <td><p>hash of the latest desired block header, little-endian; only blocks
+occurring before the stop will be returned. </p></td>
                 </tr>
               
             </tbody>
@@ -1358,14 +1357,14 @@ instead of just transaction hashes. Default is false. </p></td>
                   <td>transaction_hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>The transaction hash </p></td>
+                  <td><p>The transaction hash, little-endian. </p></td>
                 </tr>
               
                 <tr>
                   <td>transaction</td>
                   <td><a href="#pb.Transaction">Transaction</a></td>
                   <td></td>
-                  <td><p>The transaction data </p></td>
+                  <td><p>The transaction data. </p></td>
                 </tr>
               
             </tbody>
@@ -1389,7 +1388,7 @@ instead of just transaction hashes. Default is false. </p></td>
                   <td>transaction_hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>A transaction hash. </p></td>
+                  <td><p>A transaction hash, little-endian. </p></td>
                 </tr>
               
             </tbody>
@@ -1479,7 +1478,7 @@ Does not affect results of unconfirmed transactions. </p></td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
                   <td><p>Recommended. Only return transactions after some starting block
-identified by hash. </p></td>
+identified by hash, little-endian. </p></td>
                 </tr>
               
                 <tr>
@@ -1597,7 +1596,7 @@ identified by block number. </p></td>
                   <td>hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>A transaction hash. </p></td>
+                  <td><p>A transaction hash, little-endian. </p></td>
                 </tr>
               
             </tbody>
@@ -1645,7 +1644,7 @@ identified by block number. </p></td>
                   <td>hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>A transaction hash. </p></td>
+                  <td><p>A transaction hash, little-endian. </p></td>
                 </tr>
               
             </tbody>
@@ -1693,7 +1692,7 @@ identified by block number. </p></td>
                   <td>hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>The hash of the transaction. </p></td>
+                  <td><p>The hash of the transaction, little-endian. </p></td>
                 </tr>
               
                 <tr>
@@ -1868,7 +1867,7 @@ created by a miner, and used to pay the block reward </p></td>
                   <td>hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p> </p></td>
+                  <td><p>Transaction hash, little-endian. </p></td>
                 </tr>
               
             </tbody>
@@ -1991,7 +1990,7 @@ bitcoin protocol encoding. Default is false, transaction will be Marshaled
                   <td>hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>The double sha256 hash of the encoded transaction.
+                  <td><p>The double sha256 hash of the encoded transaction, little-endian.
 sha256(sha256(encoded_transaction)) </p></td>
                 </tr>
               
@@ -2058,7 +2057,7 @@ the block it appeared. </p></td>
                   <td>block_hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>Hash of the block the transaction was recorded in. </p></td>
+                  <td><p>Hash of the block the transaction was recorded in, little-endian. </p></td>
                 </tr>
               
             </tbody>
@@ -2119,7 +2118,7 @@ lock-time for the input. </p></td>
                   <td>previous_script</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>The hash of the transaction containing the output to be spent. </p></td>
+                  <td><p>The pubkey_script of the previous output that is being spent. </p></td>
                 </tr>
               
                 <tr>
@@ -2150,7 +2149,7 @@ lock-time for the input. </p></td>
                   <td>hash</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td></td>
-                  <td><p>The hash of the transaction containing the output to be spent. </p></td>
+                  <td><p>The hash of the transaction containing the output to be spent, little-endian </p></td>
                 </tr>
               
                 <tr>
@@ -2254,7 +2253,7 @@ lock-time for the input. </p></td>
                   <td>data_elements</td>
                   <td><a href="#bytes">bytes</a></td>
                   <td>repeated</td>
-                  <td><p> </p></td>
+                  <td><p>Filter by data elements contained in pubkey scripts. </p></td>
                 </tr>
               
                 <tr>

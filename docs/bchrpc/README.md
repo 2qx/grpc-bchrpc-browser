@@ -93,7 +93,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| transaction_hash | [bytes](#bytes) |  | Just the transaction hash. |
+| transaction_hash | [bytes](#bytes) |  | Just the transaction hash, little-endian. |
 | transaction | [Transaction](#pb.Transaction) |  | A marshaled transaction. |
 
 
@@ -106,20 +106,22 @@
 ### BlockInfo
 Metadata for identifying and validating a block
 
+Identification.
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hash | [bytes](#bytes) |  | The double sha256 hash of the six header fields in the first 80 bytes of the block, when encoded according the bitcoin protocol. sha256(sha256(encoded_header)) |
+| hash | [bytes](#bytes) |  | The double sha256 hash of the six header fields in the first 80 bytes of the block, when encoded according the bitcoin protocol, little-endian. sha256(sha256(encoded_header)) |
 | height | [int32](#int32) |  | The block number, an incremental index for each block mined. |
 | version | [int32](#int32) |  | A version number to track software/protocol upgrades. |
-| previous_block | [bytes](#bytes) |  | Hash of the previous block |
-| merkle_root | [bytes](#bytes) |  | The root of the Merkle Tree built from all transactions in the block. |
+| previous_block | [bytes](#bytes) |  | Hash of the previous block, little-endian. |
+| merkle_root | [bytes](#bytes) |  | The root of the Merkle Tree built from all transactions in the block, little-endian. |
 | timestamp | [int64](#int64) |  | When mining of the block started, expressed in seconds since 1970-01-01. |
 | bits | [uint32](#uint32) |  | Difficulty in Compressed Target Format. |
 | nonce | [uint32](#uint32) |  | A random value that was generated during block mining which happened to result in a computed block hash below the difficulty target at the time. |
 | confirmations | [int32](#int32) |  | Number of blocks in a chain, including the block itself upon creation. |
 | difficulty | [double](#double) |  | Difficulty target at time of creation. |
-| next_block_hash | [bytes](#bytes) |  | Hash of the next block in this chain. |
+| next_block_hash | [bytes](#bytes) |  | Hash of the next block in this chain, little-endian. |
 | size | [int32](#int32) |  | Size of the block in bytes. |
 | median_time | [int64](#int64) |  | The median block time of the latest 11 block timestamps. |
 
@@ -171,7 +173,7 @@ This approach will reduce network traffic and response processing
 | address | [string](#string) |  | The address to query transactions, in lowercase cashaddr format. The network prefix is optional (i.e. &#34;cashaddress:&#34;). |
 | nb_skip | [uint32](#uint32) |  | The number of confirmed transactions to skip, starting with the oldest first. Does not affect results of unconfirmed transactions. |
 | nb_fetch | [uint32](#uint32) |  | Specify the number of transactions to fetch. |
-| hash | [bytes](#bytes) |  | Recommended. Only get transactions after (or within) a starting block identified by hash. |
+| hash | [bytes](#bytes) |  | Recommended. Only get transactions after (or within) a starting block identified by hash, little-endian. |
 | height | [int32](#int32) |  | Recommended. Only get transactions after (or within) a starting block identified by block number. |
 
 
@@ -340,7 +342,7 @@ This approach will reduce network traffic and response processing
 | ----- | ---- | ----- | ----------- |
 | bitcoin_net | [GetBlockchainInfoResponse.BitcoinNet](#pb.GetBlockchainInfoResponse.BitcoinNet) |  | Which network the node is operating on. |
 | best_height | [int32](#int32) |  | The current number of blocks on the longest chain. |
-| best_block_hash | [bytes](#bytes) |  | The hash of the best (tip) block in the most-work fully-validated chain. |
+| best_block_hash | [bytes](#bytes) |  | The hash of the best (tip) block in the most-work fully-validated chain, little-endian. |
 | difficulty | [double](#double) |  | Threshold for adding new blocks. |
 | median_time | [int64](#int64) |  | Median time of the last 11 blocks. |
 | tx_index | [bool](#bool) |  | When `tx_index` is true, the node has full transaction index enabled. |
@@ -359,8 +361,8 @@ Request headers using a list of known block hashes.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| block_locator_hashes | [bytes](#bytes) | repeated | A list of block hashes known to the client (most recent first) which is exponentially sparser toward the genesis block (0). Common practice is to include all of the last 10 blocks, and then 9 blocks for each order of ten thereafter. |
-| stop_hash | [bytes](#bytes) |  | hash of the latest desired block header; only blocks occurring before the stop will be returned. |
+| block_locator_hashes | [bytes](#bytes) | repeated | A list of block hashes known to the client (most recent first) which is exponentially sparser toward the genesis block (0), little-endian. Common practice is to include all of the last 10 blocks, and then 9 blocks for each order of ten thereafter. |
+| stop_hash | [bytes](#bytes) |  | hash of the latest desired block header, little-endian; only blocks occurring before the stop will be returned. |
 
 
 
@@ -446,8 +448,8 @@ Request headers using a list of known block hashes.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| transaction_hash | [bytes](#bytes) |  | The transaction hash |
-| transaction | [Transaction](#pb.Transaction) |  | The transaction data |
+| transaction_hash | [bytes](#bytes) |  | The transaction hash, little-endian. |
+| transaction | [Transaction](#pb.Transaction) |  | The transaction data. |
 
 
 
@@ -462,7 +464,7 @@ Request headers using a list of known block hashes.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| transaction_hash | [bytes](#bytes) |  | A transaction hash. |
+| transaction_hash | [bytes](#bytes) |  | A transaction hash, little-endian. |
 
 
 
@@ -511,7 +513,7 @@ This approach will reduce network traffic and response processing
 | address | [string](#string) |  | The address to query transactions, in lowercase cashaddr format. The network prefix is optional (i.e. &#34;cashaddress:&#34;). |
 | nb_skip | [uint32](#uint32) |  | The number of confirmed transactions to skip, starting with the oldest first. Does not affect results of unconfirmed transactions. |
 | nb_fetch | [uint32](#uint32) |  | Specify the number of transactions to fetch. |
-| hash | [bytes](#bytes) |  | Recommended. Only return transactions after some starting block identified by hash. |
+| hash | [bytes](#bytes) |  | Recommended. Only return transactions after some starting block identified by hash, little-endian. |
 | height | [int32](#int32) |  | Recommended. Only return transactions after some starting block identified by block number. |
 
 
@@ -574,7 +576,7 @@ Get an encoded transaction from a transaction hash.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hash | [bytes](#bytes) |  | A transaction hash. |
+| hash | [bytes](#bytes) |  | A transaction hash, little-endian. |
 
 
 
@@ -604,7 +606,7 @@ Get a transaction from a transaction hash.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hash | [bytes](#bytes) |  | A transaction hash. |
+| hash | [bytes](#bytes) |  | A transaction hash, little-endian. |
 
 
 
@@ -634,7 +636,7 @@ Get a transaction from a transaction hash.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hash | [bytes](#bytes) |  | The hash of the transaction. |
+| hash | [bytes](#bytes) |  | The hash of the transaction, little-endian. |
 | index | [uint32](#uint32) |  | The number of the output, starting from zero. |
 | include_mempool | [bool](#bool) |  | When include_mempool is true, unconfirmed transactions from mempool are returned. Default is false. |
 
@@ -705,7 +707,7 @@ Get a transaction from a transaction hash.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hash | [bytes](#bytes) |  |  |
+| hash | [bytes](#bytes) |  | Transaction hash, little-endian. |
 
 
 
@@ -773,7 +775,7 @@ Request to subscribe or unsubscribe from a stream of transactions.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hash | [bytes](#bytes) |  | The double sha256 hash of the encoded transaction. sha256(sha256(encoded_transaction)) |
+| hash | [bytes](#bytes) |  | The double sha256 hash of the encoded transaction, little-endian. sha256(sha256(encoded_transaction)) |
 | version | [int32](#int32) |  | The version of the transaction format. |
 | inputs | [Transaction.Input](#pb.Transaction.Input) | repeated | List of inputs. |
 | outputs | [Transaction.Output](#pb.Transaction.Output) | repeated | List of outputs. |
@@ -782,7 +784,7 @@ Request to subscribe or unsubscribe from a stream of transactions.
 | timestamp | [int64](#int64) |  | When the transaction was included in a block, in epoch time. |
 | confirmations | [int32](#int32) |  | Number of blocks including proof of the transaction, including the block it appeared. |
 | block_height | [int32](#int32) |  | Number of the block containing the transaction. |
-| block_hash | [bytes](#bytes) |  | Hash of the block the transaction was recorded in. |
+| block_hash | [bytes](#bytes) |  | Hash of the block the transaction was recorded in, little-endian. |
 
 
 
@@ -802,7 +804,7 @@ Request to subscribe or unsubscribe from a stream of transactions.
 | signature_script | [bytes](#bytes) |  | An unlocking script asserting a transaction is permitted to spend the Outpoint (UTXO) |
 | sequence | [uint32](#uint32) |  | As of BIP-68, the sequence number is interpreted as a relative lock-time for the input. |
 | value | [int64](#int64) |  | Amount in satoshi. |
-| previous_script | [bytes](#bytes) |  | The hash of the transaction containing the output to be spent. |
+| previous_script | [bytes](#bytes) |  | The pubkey_script of the previous output that is being spent. |
 | address | [string](#string) |  | The bitcoin addresses associated with this input. |
 
 
@@ -818,7 +820,7 @@ Request to subscribe or unsubscribe from a stream of transactions.
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| hash | [bytes](#bytes) |  | The hash of the transaction containing the output to be spent. |
+| hash | [bytes](#bytes) |  | The hash of the transaction containing the output to be spent, little-endian |
 | index | [uint32](#uint32) |  | The index of specific output on the transaction. |
 
 
@@ -856,7 +858,7 @@ Request to subscribe or unsubscribe from a stream of transactions.
 | ----- | ---- | ----- | ----------- |
 | addresses | [string](#string) | repeated | Filter by address(es) |
 | outpoints | [Transaction.Input.Outpoint](#pb.Transaction.Input.Outpoint) | repeated | Filter by output hash and index. |
-| data_elements | [bytes](#bytes) | repeated |  |
+| data_elements | [bytes](#bytes) | repeated | Filter by data elements contained in pubkey scripts. |
 | all_transactions | [bool](#bool) |  | Subscribe/Unsubscribe to everything. Other filters will be ignored. |
 
 
@@ -984,9 +986,9 @@ unauthenticated.
 
 **Requires TxIndex*** |
 | SubmitTransaction | [SubmitTransactionRequest](#pb.SubmitTransactionRequest) | [SubmitTransactionResponse](#pb.SubmitTransactionResponse) | SubmitTransaction broadcasts a transaction to all connected peers. |
-| SubscribeTransactions | [SubscribeTransactionsRequest](#pb.SubscribeTransactionsRequest) | [TransactionNotification](#pb.TransactionNotification) stream | SubscribeTransactions creates subscription to all relevant transactions based on the subscription filter. The parameters to filter transactions on can be updated by sending new SubscribeTransactionsRequest objects on the stream.
+| SubscribeTransactions | [SubscribeTransactionsRequest](#pb.SubscribeTransactionsRequest) | [TransactionNotification](#pb.TransactionNotification) stream | SubscribeTransactions creates subscription to all relevant transactions based on the subscription filter.
 
-This RPC does not use bidirectional streams and therefore can be used with grpc-web. You will need to close and reopen the stream whenever you want to update the addresses. If you are not using grpc-web then SubscribeTransactionStream is more appropriate.
+This RPC does not use bidirectional streams and therefore can be used with grpc-web. You will need to close and reopen the stream whenever you want to update the subscription filter. If you are not using grpc-web then SubscribeTransactionStream is more appropriate.
 
 **Requires TxIndex to receive input metadata** |
 | SubscribeTransactionStream | [SubscribeTransactionsRequest](#pb.SubscribeTransactionsRequest) stream | [TransactionNotification](#pb.TransactionNotification) stream | SubscribeTransactionStream subscribes to relevant transactions based on the subscription requests. The parameters to filter transactions on can be updated by sending new SubscribeTransactionsRequest objects on the stream.

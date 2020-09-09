@@ -182,7 +182,7 @@ if (typeof window === 'undefined') {
 }
 describe("grpc-bchrpc-browser", () => {
     it("getBlockchainInfo returns mainnet node with address and tx index enabled", async () => {
-        const res = await mainnet.getBlockchainInfo({});
+        const res = await mainnet.getBlockchainInfo();
         chai_1.assert.equal(res.getBitcoinNet(), bchrpc_pb_1.GetBlockchainInfoResponse.BitcoinNet.MAINNET, "Check node is on mainnet");
         chai_1.assert.equal(res.getAddrIndex(), true, "Check address index is enabled");
         chai_1.assert.equal(res.getTxIndex(), true, "Check transaction index is enabled");
@@ -13540,6 +13540,8 @@ module.exports = Array.isArray || function (arr) {
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
+/* eslint-disable */
+// @ts-nocheck
 
 var jspb = __webpack_require__(45);
 var goog = jspb;
@@ -26582,7 +26584,7 @@ class GrpcClient {
     /**
      * Retrieve block info for the network, network state and host node.
      */
-    getBlockchainInfo({}) {
+    getBlockchainInfo() {
         return new Promise((resolve, reject) => {
             this.client.getBlockchainInfo(new bchrpc.GetBlockchainInfoRequest(), null, (err, response) => {
                 if (err !== null) {
@@ -26703,6 +26705,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.bchrpcClient = void 0;
 // GENERATED CODE -- DO NOT EDIT!
+/* eslint-disable */
+// @ts-nocheck
 const grpcWeb = __importStar(__webpack_require__(48));
 const bchrpc_pb_1 = __webpack_require__(44);
 class bchrpcClient {
@@ -26763,6 +26767,8 @@ class bchrpcClient {
         }, bchrpc_pb_1.BlockNotification.deserializeBinary);
         if (!options)
             options = {};
+        if (!credentials)
+            credentials = {};
         options['format'] = 'text';
         this.client_ = new grpcWeb.GrpcWebClientBase(options);
         this.hostname_ = hostname;
@@ -26770,76 +26776,122 @@ class bchrpcClient {
         this.options_ = options;
     }
     getMempoolInfo(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetMempoolInfo', request, metadata || {}, this.methodInfoGetMempoolInfo, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetMempoolInfo', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetMempoolInfo, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetMempoolInfo', request, metadata || {}, this.methodInfoGetMempoolInfo);
     }
     getMempool(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetMempool', request, metadata || {}, this.methodInfoGetMempool, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetMempool', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetMempool, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetMempool', request, metadata || {}, this.methodInfoGetMempool);
     }
     getBlockchainInfo(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetBlockchainInfo', request, metadata || {}, this.methodInfoGetBlockchainInfo, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetBlockchainInfo', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetBlockchainInfo, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetBlockchainInfo', request, metadata || {}, this.methodInfoGetBlockchainInfo);
     }
     getBlockInfo(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetBlockInfo', request, metadata || {}, this.methodInfoGetBlockInfo, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetBlockInfo', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetBlockInfo, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetBlockInfo', request, metadata || {}, this.methodInfoGetBlockInfo);
     }
     getBlock(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetBlock', request, metadata || {}, this.methodInfoGetBlock, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetBlock', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetBlock, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetBlock', request, metadata || {}, this.methodInfoGetBlock);
     }
     getRawBlock(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetRawBlock', request, metadata || {}, this.methodInfoGetRawBlock, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetRawBlock', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetRawBlock, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetRawBlock', request, metadata || {}, this.methodInfoGetRawBlock);
     }
     getBlockFilter(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetBlockFilter', request, metadata || {}, this.methodInfoGetBlockFilter, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetBlockFilter', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetBlockFilter, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetBlockFilter', request, metadata || {}, this.methodInfoGetBlockFilter);
     }
     getHeaders(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetHeaders', request, metadata || {}, this.methodInfoGetHeaders, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetHeaders', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetHeaders, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetHeaders', request, metadata || {}, this.methodInfoGetHeaders);
     }
     getTransaction(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetTransaction', request, metadata || {}, this.methodInfoGetTransaction, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetTransaction', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetTransaction, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetTransaction', request, metadata || {}, this.methodInfoGetTransaction);
     }
     getRawTransaction(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetRawTransaction', request, metadata || {}, this.methodInfoGetRawTransaction, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetRawTransaction', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetRawTransaction, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetRawTransaction', request, metadata || {}, this.methodInfoGetRawTransaction);
     }
     getAddressTransactions(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetAddressTransactions', request, metadata || {}, this.methodInfoGetAddressTransactions, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetAddressTransactions', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetAddressTransactions, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetAddressTransactions', request, metadata || {}, this.methodInfoGetAddressTransactions);
     }
     getRawAddressTransactions(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetRawAddressTransactions', request, metadata || {}, this.methodInfoGetRawAddressTransactions, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetRawAddressTransactions', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetRawAddressTransactions, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetRawAddressTransactions', request, metadata || {}, this.methodInfoGetRawAddressTransactions);
     }
     getAddressUnspentOutputs(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetAddressUnspentOutputs', request, metadata || {}, this.methodInfoGetAddressUnspentOutputs, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetAddressUnspentOutputs', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetAddressUnspentOutputs, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetAddressUnspentOutputs', request, metadata || {}, this.methodInfoGetAddressUnspentOutputs);
     }
     getUnspentOutput(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetUnspentOutput', request, metadata || {}, this.methodInfoGetUnspentOutput, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetUnspentOutput', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetUnspentOutput, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetUnspentOutput', request, metadata || {}, this.methodInfoGetUnspentOutput);
     }
     getMerkleProof(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/GetMerkleProof', request, metadata || {}, this.methodInfoGetMerkleProof, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/GetMerkleProof', this.hostname_).toString(), request, metadata || {}, this.methodInfoGetMerkleProof, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/GetMerkleProof', request, metadata || {}, this.methodInfoGetMerkleProof);
     }
     submitTransaction(request, metadata, callback) {
-        return this.client_.rpcCall(this.hostname_ +
-            '/pb.bchrpc/SubmitTransaction', request, metadata || {}, this.methodInfoSubmitTransaction, callback);
+        if (callback !== undefined) {
+            return this.client_.rpcCall(new URL('/pb.bchrpc/SubmitTransaction', this.hostname_).toString(), request, metadata || {}, this.methodInfoSubmitTransaction, callback);
+        }
+        return this.client_.unaryCall(this.hostname_ +
+            '/pb.bchrpc/SubmitTransaction', request, metadata || {}, this.methodInfoSubmitTransaction);
     }
     subscribeTransactions(request, metadata) {
-        return this.client_.serverStreaming(this.hostname_ +
-            '/pb.bchrpc/SubscribeTransactions', request, metadata || {}, this.methodInfoSubscribeTransactions);
+        return this.client_.serverStreaming(new URL('/pb.bchrpc/SubscribeTransactions', this.hostname_).toString(), request, metadata || {}, this.methodInfoSubscribeTransactions);
     }
     subscribeBlocks(request, metadata) {
-        return this.client_.serverStreaming(this.hostname_ +
-            '/pb.bchrpc/SubscribeBlocks', request, metadata || {}, this.methodInfoSubscribeBlocks);
+        return this.client_.serverStreaming(new URL('/pb.bchrpc/SubscribeBlocks', this.hostname_).toString(), request, metadata || {}, this.methodInfoSubscribeBlocks);
     }
 }
 exports.bchrpcClient = bchrpcClient;
@@ -64870,7 +64922,7 @@ elliptic.eddsa = __webpack_require__(238);
 /* 210 */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"_args\":[[\"elliptic@6.5.3\",\"/home/james/git/grpc-bchrpc-browser\"]],\"_from\":\"elliptic@6.5.3\",\"_id\":\"elliptic@6.5.3\",\"_inBundle\":false,\"_integrity\":\"sha512-IMqzv5wNQf+E6aHeIqATs0tOLeOTwj1QKbRcS3jBbYkl5oLAserA8yJTT7/VyHUYG91PRmPyeQDObKLPpeS4dw==\",\"_location\":\"/elliptic\",\"_phantomChildren\":{},\"_requested\":{\"type\":\"version\",\"registry\":true,\"raw\":\"elliptic@6.5.3\",\"name\":\"elliptic\",\"escapedName\":\"elliptic\",\"rawSpec\":\"6.5.3\",\"saveSpec\":null,\"fetchSpec\":\"6.5.3\"},\"_requiredBy\":[\"/browserify-sign\",\"/create-ecdh\"],\"_resolved\":\"https://registry.npmjs.org/elliptic/-/elliptic-6.5.3.tgz\",\"_spec\":\"6.5.3\",\"_where\":\"/home/james/git/grpc-bchrpc-browser\",\"author\":{\"name\":\"Fedor Indutny\",\"email\":\"fedor@indutny.com\"},\"bugs\":{\"url\":\"https://github.com/indutny/elliptic/issues\"},\"dependencies\":{\"bn.js\":\"^4.4.0\",\"brorand\":\"^1.0.1\",\"hash.js\":\"^1.0.0\",\"hmac-drbg\":\"^1.0.0\",\"inherits\":\"^2.0.1\",\"minimalistic-assert\":\"^1.0.0\",\"minimalistic-crypto-utils\":\"^1.0.0\"},\"description\":\"EC cryptography\",\"devDependencies\":{\"brfs\":\"^1.4.3\",\"coveralls\":\"^3.0.8\",\"grunt\":\"^1.0.4\",\"grunt-browserify\":\"^5.0.0\",\"grunt-cli\":\"^1.2.0\",\"grunt-contrib-connect\":\"^1.0.0\",\"grunt-contrib-copy\":\"^1.0.0\",\"grunt-contrib-uglify\":\"^1.0.1\",\"grunt-mocha-istanbul\":\"^3.0.1\",\"grunt-saucelabs\":\"^9.0.1\",\"istanbul\":\"^0.4.2\",\"jscs\":\"^3.0.7\",\"jshint\":\"^2.10.3\",\"mocha\":\"^6.2.2\"},\"files\":[\"lib\"],\"homepage\":\"https://github.com/indutny/elliptic\",\"keywords\":[\"EC\",\"Elliptic\",\"curve\",\"Cryptography\"],\"license\":\"MIT\",\"main\":\"lib/elliptic.js\",\"name\":\"elliptic\",\"repository\":{\"type\":\"git\",\"url\":\"git+ssh://git@github.com/indutny/elliptic.git\"},\"scripts\":{\"jscs\":\"jscs benchmarks/*.js lib/*.js lib/**/*.js lib/**/**/*.js test/index.js\",\"jshint\":\"jscs benchmarks/*.js lib/*.js lib/**/*.js lib/**/**/*.js test/index.js\",\"lint\":\"npm run jscs && npm run jshint\",\"test\":\"npm run lint && npm run unit\",\"unit\":\"istanbul test _mocha --reporter=spec test/index.js\",\"version\":\"grunt dist && git add dist/\"},\"version\":\"6.5.3\"}");
+module.exports = JSON.parse("{\"_args\":[[\"elliptic@6.5.3\",\"/home/amnesia/Projects/oss/grpc-bchrpc-browser\"]],\"_development\":true,\"_from\":\"elliptic@6.5.3\",\"_id\":\"elliptic@6.5.3\",\"_inBundle\":false,\"_integrity\":\"sha512-IMqzv5wNQf+E6aHeIqATs0tOLeOTwj1QKbRcS3jBbYkl5oLAserA8yJTT7/VyHUYG91PRmPyeQDObKLPpeS4dw==\",\"_location\":\"/elliptic\",\"_phantomChildren\":{},\"_requested\":{\"type\":\"version\",\"registry\":true,\"raw\":\"elliptic@6.5.3\",\"name\":\"elliptic\",\"escapedName\":\"elliptic\",\"rawSpec\":\"6.5.3\",\"saveSpec\":null,\"fetchSpec\":\"6.5.3\"},\"_requiredBy\":[\"/browserify-sign\",\"/create-ecdh\"],\"_resolved\":\"https://registry.npmjs.org/elliptic/-/elliptic-6.5.3.tgz\",\"_spec\":\"6.5.3\",\"_where\":\"/home/amnesia/Projects/oss/grpc-bchrpc-browser\",\"author\":{\"name\":\"Fedor Indutny\",\"email\":\"fedor@indutny.com\"},\"bugs\":{\"url\":\"https://github.com/indutny/elliptic/issues\"},\"dependencies\":{\"bn.js\":\"^4.4.0\",\"brorand\":\"^1.0.1\",\"hash.js\":\"^1.0.0\",\"hmac-drbg\":\"^1.0.0\",\"inherits\":\"^2.0.1\",\"minimalistic-assert\":\"^1.0.0\",\"minimalistic-crypto-utils\":\"^1.0.0\"},\"description\":\"EC cryptography\",\"devDependencies\":{\"brfs\":\"^1.4.3\",\"coveralls\":\"^3.0.8\",\"grunt\":\"^1.0.4\",\"grunt-browserify\":\"^5.0.0\",\"grunt-cli\":\"^1.2.0\",\"grunt-contrib-connect\":\"^1.0.0\",\"grunt-contrib-copy\":\"^1.0.0\",\"grunt-contrib-uglify\":\"^1.0.1\",\"grunt-mocha-istanbul\":\"^3.0.1\",\"grunt-saucelabs\":\"^9.0.1\",\"istanbul\":\"^0.4.2\",\"jscs\":\"^3.0.7\",\"jshint\":\"^2.10.3\",\"mocha\":\"^6.2.2\"},\"files\":[\"lib\"],\"homepage\":\"https://github.com/indutny/elliptic\",\"keywords\":[\"EC\",\"Elliptic\",\"curve\",\"Cryptography\"],\"license\":\"MIT\",\"main\":\"lib/elliptic.js\",\"name\":\"elliptic\",\"repository\":{\"type\":\"git\",\"url\":\"git+ssh://git@github.com/indutny/elliptic.git\"},\"scripts\":{\"jscs\":\"jscs benchmarks/*.js lib/*.js lib/**/*.js lib/**/**/*.js test/index.js\",\"jshint\":\"jscs benchmarks/*.js lib/*.js lib/**/*.js lib/**/**/*.js test/index.js\",\"lint\":\"npm run jscs && npm run jshint\",\"test\":\"npm run lint && npm run unit\",\"unit\":\"istanbul test _mocha --reporter=spec test/index.js\",\"version\":\"grunt dist && git add dist/\"},\"version\":\"6.5.3\"}");
 
 /***/ }),
 /* 211 */
